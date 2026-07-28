@@ -1,0 +1,5349 @@
+{
+  "meta": {
+    "anchor": "2026-07-14",
+    "seededAt": "2026-07-13T23:29:35.920Z",
+    "userModified": true,
+    "schema": 1,
+    "supplementaryTouched": true
+  },
+  "classrooms": [
+    {
+      "id": "cls-hanno",
+      "name": "飯能教室",
+      "rooms": [
+        {
+          "id": "room-1",
+          "name": "第1教室",
+          "capacity": 12
+        },
+        {
+          "id": "room-2",
+          "name": "第2教室",
+          "capacity": 8
+        },
+        {
+          "id": "room-3",
+          "name": "個別ブースA",
+          "capacity": 2
+        },
+        {
+          "id": "room-4",
+          "name": "自習室",
+          "capacity": 20
+        }
+      ]
+    }
+  ],
+  "subjects": [
+    "英語",
+    "数学",
+    "国語",
+    "理科",
+    "社会",
+    "物理",
+    "化学"
+  ],
+  "admins": [
+    {
+      "id": "adm-1",
+      "name": "松本 誠",
+      "role": "classroom_admin",
+      "classroomId": "cls-hanno",
+      "title": "教室長"
+    },
+    {
+      "id": "adm-2",
+      "name": "運営 管理者",
+      "role": "system_admin",
+      "classroomId": null,
+      "title": "システム管理"
+    }
+  ],
+  "teachers": [
+    {
+      "id": "tea-01",
+      "name": "松田 拓也",
+      "kana": "",
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "grades": [
+        "中1",
+        "中2",
+        "中3",
+        "高1",
+        "高2"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "常勤"
+    },
+    {
+      "id": "tea-02",
+      "name": "中村 直樹",
+      "kana": "",
+      "subjects": [
+        "英語"
+      ],
+      "grades": [
+        "中1",
+        "中2",
+        "中3",
+        "高1",
+        "高2",
+        "高3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-03",
+      "name": "小林 美咲",
+      "kana": "",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "grades": [
+        "小5",
+        "小6",
+        "中1",
+        "中2",
+        "中3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-04",
+      "name": "加藤 健一",
+      "kana": "",
+      "subjects": [
+        "数学"
+      ],
+      "grades": [
+        "小5",
+        "小6",
+        "中1",
+        "中2",
+        "中3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "常勤"
+    },
+    {
+      "id": "tea-05",
+      "name": "吉田 彩香",
+      "kana": "",
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "grades": [
+        "小4",
+        "小5",
+        "小6",
+        "中1",
+        "中2"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-06",
+      "name": "山田 涼介",
+      "kana": "",
+      "subjects": [
+        "理科",
+        "数学"
+      ],
+      "grades": [
+        "中2",
+        "中3",
+        "高1",
+        "高2",
+        "高3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-07",
+      "name": "佐藤 里奈",
+      "kana": "",
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "grades": [
+        "中1",
+        "中2",
+        "中3",
+        "高1"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "常勤"
+    },
+    {
+      "id": "tea-08",
+      "name": "伊藤 翔太",
+      "kana": "",
+      "subjects": [
+        "英語"
+      ],
+      "grades": [
+        "小6",
+        "中1",
+        "中2",
+        "中3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-09",
+      "name": "渡辺 加奈",
+      "kana": "",
+      "subjects": [
+        "数学",
+        "物理"
+      ],
+      "grades": [
+        "高1",
+        "高2",
+        "高3"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "非常勤"
+    },
+    {
+      "id": "tea-10",
+      "name": "高橋 遼",
+      "kana": "",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "grades": [
+        "小4",
+        "小5",
+        "小6",
+        "中1"
+      ],
+      "classroomId": "cls-hanno",
+      "employmentType": "常勤"
+    }
+  ],
+  "students": [
+    {
+      "id": "stu-01",
+      "name": "佐々木 陽翔",
+      "kana": "",
+      "grade": "小4",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "guardianIds": [
+        "gdn-01"
+      ],
+      "status": "在籍",
+      "barcode": "LB001",
+      "careNote": "板書が苦手なため、要点はプリントで補助する。"
+    },
+    {
+      "id": "stu-02",
+      "name": "井上 悠斗",
+      "kana": "",
+      "grade": "小5",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "guardianIds": [
+        "gdn-02"
+      ],
+      "status": "在籍",
+      "barcode": "LB002",
+      "careNote": ""
+    },
+    {
+      "id": "stu-03",
+      "name": "木村 蓮",
+      "kana": "",
+      "grade": "小6",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "guardianIds": [
+        "gdn-03"
+      ],
+      "status": "在籍",
+      "barcode": "LB003",
+      "careNote": ""
+    },
+    {
+      "id": "stu-04",
+      "name": "林 湊",
+      "kana": "",
+      "grade": "中1",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "理科",
+        "英語"
+      ],
+      "guardianIds": [
+        "gdn-04"
+      ],
+      "status": "在籍",
+      "barcode": "LB004",
+      "careNote": ""
+    },
+    {
+      "id": "stu-05",
+      "name": "清水 大和",
+      "kana": "",
+      "grade": "中2",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "社会",
+        "数学"
+      ],
+      "guardianIds": [
+        "gdn-05"
+      ],
+      "status": "在籍",
+      "barcode": "LB005",
+      "careNote": ""
+    },
+    {
+      "id": "stu-06",
+      "name": "山口 樹",
+      "kana": "",
+      "grade": "中3",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "guardianIds": [
+        "gdn-06"
+      ],
+      "status": "在籍",
+      "barcode": "LB006",
+      "careNote": "大きな物音が苦手。席は入口から離す配慮が望ましい。"
+    },
+    {
+      "id": "stu-07",
+      "name": "森 結衣",
+      "kana": "",
+      "grade": "高1",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "guardianIds": [
+        "gdn-07"
+      ],
+      "status": "在籍",
+      "barcode": "LB007",
+      "careNote": ""
+    },
+    {
+      "id": "stu-08",
+      "name": "池田 芽依",
+      "kana": "",
+      "grade": "高2",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "guardianIds": [
+        "gdn-08"
+      ],
+      "status": "在籍",
+      "barcode": "LB008",
+      "careNote": ""
+    },
+    {
+      "id": "stu-09",
+      "name": "橋本 咲良",
+      "kana": "",
+      "grade": "高3",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "理科",
+        "英語"
+      ],
+      "guardianIds": [
+        "gdn-09"
+      ],
+      "status": "在籍",
+      "barcode": "LB009",
+      "careNote": ""
+    },
+    {
+      "id": "stu-10",
+      "name": "阿部 莉子",
+      "kana": "",
+      "grade": "小4",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "社会",
+        "数学"
+      ],
+      "guardianIds": [
+        "gdn-10"
+      ],
+      "status": "在籍",
+      "barcode": "LB010",
+      "careNote": ""
+    },
+    {
+      "id": "stu-11",
+      "name": "石川 葵",
+      "kana": "",
+      "grade": "小5",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "guardianIds": [
+        "gdn-11"
+      ],
+      "status": "在籍",
+      "barcode": "LB011",
+      "careNote": "集中が途切れやすいので、こまめに声かけを行う。"
+    },
+    {
+      "id": "stu-12",
+      "name": "前田 悠真",
+      "kana": "",
+      "grade": "小6",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "guardianIds": [
+        "gdn-12"
+      ],
+      "status": "在籍",
+      "barcode": "LB012",
+      "careNote": ""
+    },
+    {
+      "id": "stu-13",
+      "name": "藤田 颯太",
+      "kana": "",
+      "grade": "中1",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "guardianIds": [
+        "gdn-13"
+      ],
+      "status": "在籍",
+      "barcode": "LB013",
+      "careNote": ""
+    },
+    {
+      "id": "stu-14",
+      "name": "後藤 律",
+      "kana": "",
+      "grade": "中2",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "理科",
+        "英語"
+      ],
+      "guardianIds": [
+        "gdn-14"
+      ],
+      "status": "在籍",
+      "barcode": "LB014",
+      "careNote": ""
+    },
+    {
+      "id": "stu-15",
+      "name": "岡田 澪",
+      "kana": "",
+      "grade": "中3",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "社会",
+        "数学"
+      ],
+      "guardianIds": [
+        "gdn-15"
+      ],
+      "status": "在籍",
+      "barcode": "LB015",
+      "careNote": ""
+    },
+    {
+      "id": "stu-16",
+      "name": "長谷川 心春",
+      "kana": "",
+      "grade": "高1",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "guardianIds": [
+        "gdn-16"
+      ],
+      "status": "在籍",
+      "barcode": "LB016",
+      "careNote": "発言に時間がかかることがある。急かさず待つ。"
+    },
+    {
+      "id": "stu-17",
+      "name": "村上 楓",
+      "kana": "",
+      "grade": "高2",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "guardianIds": [
+        "gdn-17"
+      ],
+      "status": "在籍",
+      "barcode": "LB017",
+      "careNote": ""
+    },
+    {
+      "id": "stu-18",
+      "name": "近藤 一花",
+      "kana": "",
+      "grade": "高3",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "guardianIds": [
+        "gdn-18"
+      ],
+      "status": "在籍",
+      "barcode": "LB018",
+      "careNote": ""
+    },
+    {
+      "id": "stu-19",
+      "name": "坂本 栞",
+      "kana": "",
+      "grade": "小4",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "理科",
+        "英語"
+      ],
+      "guardianIds": [
+        "gdn-19"
+      ],
+      "status": "在籍",
+      "barcode": "LB019",
+      "careNote": ""
+    },
+    {
+      "id": "stu-20",
+      "name": "遠藤 悠",
+      "kana": "",
+      "grade": "小5",
+      "classroomId": "cls-hanno",
+      "subjects": [
+        "社会",
+        "数学"
+      ],
+      "guardianIds": [
+        "gdn-20"
+      ],
+      "status": "在籍",
+      "barcode": "LB020",
+      "careNote": ""
+    }
+  ],
+  "guardians": [
+    {
+      "id": "gdn-01",
+      "name": "佐々木 隆",
+      "studentIds": [
+        "stu-01"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0101",
+      "email": "guardian01@example.com"
+    },
+    {
+      "id": "gdn-02",
+      "name": "井上 博之",
+      "studentIds": [
+        "stu-02"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0202",
+      "email": "guardian02@example.com"
+    },
+    {
+      "id": "gdn-03",
+      "name": "木村 恵子",
+      "studentIds": [
+        "stu-03"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0303",
+      "email": "guardian03@example.com"
+    },
+    {
+      "id": "gdn-04",
+      "name": "林 真理",
+      "studentIds": [
+        "stu-04"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0404",
+      "email": "guardian04@example.com"
+    },
+    {
+      "id": "gdn-05",
+      "name": "清水 和彦",
+      "studentIds": [
+        "stu-05"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0505",
+      "email": "guardian05@example.com"
+    },
+    {
+      "id": "gdn-06",
+      "name": "山口 洋子",
+      "studentIds": [
+        "stu-06"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0606",
+      "email": "guardian06@example.com"
+    },
+    {
+      "id": "gdn-07",
+      "name": "森 直子",
+      "studentIds": [
+        "stu-07"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0707",
+      "email": "guardian07@example.com"
+    },
+    {
+      "id": "gdn-08",
+      "name": "池田 慎一",
+      "studentIds": [
+        "stu-08"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0808",
+      "email": "guardian08@example.com"
+    },
+    {
+      "id": "gdn-09",
+      "name": "橋本 由美",
+      "studentIds": [
+        "stu-09"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-0909",
+      "email": "guardian09@example.com"
+    },
+    {
+      "id": "gdn-10",
+      "name": "阿部 剛",
+      "studentIds": [
+        "stu-10"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1010",
+      "email": "guardian10@example.com"
+    },
+    {
+      "id": "gdn-11",
+      "name": "石川 光男",
+      "studentIds": [
+        "stu-11"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1111",
+      "email": "guardian11@example.com"
+    },
+    {
+      "id": "gdn-12",
+      "name": "前田 智子",
+      "studentIds": [
+        "stu-12"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1212",
+      "email": "guardian12@example.com"
+    },
+    {
+      "id": "gdn-13",
+      "name": "藤田 伸夫",
+      "studentIds": [
+        "stu-13"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1313",
+      "email": "guardian13@example.com"
+    },
+    {
+      "id": "gdn-14",
+      "name": "後藤 香織",
+      "studentIds": [
+        "stu-14"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1414",
+      "email": "guardian14@example.com"
+    },
+    {
+      "id": "gdn-15",
+      "name": "岡田 正樹",
+      "studentIds": [
+        "stu-15"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1515",
+      "email": "guardian15@example.com"
+    },
+    {
+      "id": "gdn-16",
+      "name": "長谷川 悦子",
+      "studentIds": [
+        "stu-16"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1616",
+      "email": "guardian16@example.com"
+    },
+    {
+      "id": "gdn-17",
+      "name": "村上 孝",
+      "studentIds": [
+        "stu-17"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1717",
+      "email": "guardian17@example.com"
+    },
+    {
+      "id": "gdn-18",
+      "name": "近藤 久美子",
+      "studentIds": [
+        "stu-18"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1818",
+      "email": "guardian18@example.com"
+    },
+    {
+      "id": "gdn-19",
+      "name": "坂本 英樹",
+      "studentIds": [
+        "stu-19"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-1919",
+      "email": "guardian19@example.com"
+    },
+    {
+      "id": "gdn-20",
+      "name": "遠藤 純子",
+      "studentIds": [
+        "stu-20"
+      ],
+      "relation": "保護者",
+      "phone": "090-0000-2020",
+      "email": "guardian20@example.com"
+    }
+  ],
+  "users": [
+    {
+      "id": "u-adm-1",
+      "loginId": "kanri",
+      "role": "classroom_admin",
+      "name": "松本 誠",
+      "linkedId": "adm-1",
+      "classroomId": "cls-hanno",
+      "salt": "a4e6316a0ff6fbce75d7909a9054eb37",
+      "hash": "26ef5f97886aead513fc3070b35608e4642b3b71872674cc6fcf39c802ff4eac7329ac41a7d1a9f7f55382045a861da4830cdeca1a84609efdfd535505c7c1c1"
+    },
+    {
+      "id": "u-adm-2",
+      "loginId": "admin",
+      "role": "system_admin",
+      "name": "運営 管理者",
+      "linkedId": "adm-2",
+      "classroomId": null,
+      "salt": "fc9ad2b49c0aa85b68d3ebe043963310",
+      "hash": "d7d399a2b19839fa5c7da0feb80d331c939b92151abf8949c622635c778679457fd94e2f0f03948b6726cbf88617157a1a84eac15dbcc71ae11753a8fd37690e"
+    },
+    {
+      "id": "u-tea-01",
+      "loginId": "t01",
+      "role": "teacher",
+      "name": "松田 拓也",
+      "linkedId": "tea-01",
+      "classroomId": "cls-hanno",
+      "salt": "eb606d66a781f5ee6a8c11e3cc45397f",
+      "hash": "2d008d2609412b1184884fd779444d1732ec6dcdaf0350109f66e58f24de19d2daf54a114315ae3f2da77ed53fb35cd52cf86cd6689fd4b24639e768c87de80e"
+    },
+    {
+      "id": "u-tea-02",
+      "loginId": "t02",
+      "role": "teacher",
+      "name": "中村 直樹",
+      "linkedId": "tea-02",
+      "classroomId": "cls-hanno",
+      "salt": "1900984ef5cd22a5a304c1e52ef8d8be",
+      "hash": "4838792574a805dd42d552c5df657ef071f57fd7d92453b8184687730338dae27c84f9c137b2e6c462c2611d7105bb283f03046b0a9abfa10251298ce6de48f2"
+    },
+    {
+      "id": "u-tea-03",
+      "loginId": "t03",
+      "role": "teacher",
+      "name": "小林 美咲",
+      "linkedId": "tea-03",
+      "classroomId": "cls-hanno",
+      "salt": "5292ac6d9198cbe0241d0f45195bd6ac",
+      "hash": "270f59623a3c20e88c6ee66a5ff42eff48c476638271ba969b6a200a53691710714d8ee420410ad8c58821bb80ce0822666b9ba8a676a0ba4916a07ccc0761f9"
+    },
+    {
+      "id": "u-tea-04",
+      "loginId": "t04",
+      "role": "teacher",
+      "name": "加藤 健一",
+      "linkedId": "tea-04",
+      "classroomId": "cls-hanno",
+      "salt": "0917e3333608cb3c5dc757bbffc4ebf9",
+      "hash": "9075ceb7d2a7bf847d4b137f082554f112b6736c0a4cec223236749f9e7f044a9f8d87f12dc6ce5b62a39c6a5f30ac25c7fcbf6bbdfb95b09b0b7c4920fa6e47"
+    },
+    {
+      "id": "u-tea-05",
+      "loginId": "t05",
+      "role": "teacher",
+      "name": "吉田 彩香",
+      "linkedId": "tea-05",
+      "classroomId": "cls-hanno",
+      "salt": "3ca045769f87083a15278fc0291badba",
+      "hash": "db74daa2d46fe4a504646cfd56569f62ca2b93b9099c6fdd04a141789096aed64313aca3429c21ae2ed2145a1849302ef2b89cb05fb43634984d07c02463fb72"
+    },
+    {
+      "id": "u-tea-06",
+      "loginId": "t06",
+      "role": "teacher",
+      "name": "山田 涼介",
+      "linkedId": "tea-06",
+      "classroomId": "cls-hanno",
+      "salt": "0409a4937ff0af96e0a70f53baf6ab99",
+      "hash": "1bb526aebedbb6929056c832d11bd73dfd08606cbed16225ff6b7030c12844c48bc42eb82f06f5547849d13ad610e5ecc825e5c074741f31fc6c746b08df6365"
+    },
+    {
+      "id": "u-tea-07",
+      "loginId": "t07",
+      "role": "teacher",
+      "name": "佐藤 里奈",
+      "linkedId": "tea-07",
+      "classroomId": "cls-hanno",
+      "salt": "1b86f5a417333a7ee4bec595245e8f32",
+      "hash": "d43edc028f98ef9422b1f63fb5bc9ef265223fc7419e5b259dba6096337caeb5c4cd878e011e05d86ad6a1e1b80fa1befd003f83cb931518c4881a62401b5f4d"
+    },
+    {
+      "id": "u-tea-08",
+      "loginId": "t08",
+      "role": "teacher",
+      "name": "伊藤 翔太",
+      "linkedId": "tea-08",
+      "classroomId": "cls-hanno",
+      "salt": "753eb8d7f6151f89b4379c84a6b72b56",
+      "hash": "e8d34fb3792af22348026d223c07dd3bd856a332eb4751d90d168b1e5bd73e2a27c8c22c4f1ae899be7d1b2306b1348710099384afe3251577ca7ec4d3655eb3"
+    },
+    {
+      "id": "u-tea-09",
+      "loginId": "t09",
+      "role": "teacher",
+      "name": "渡辺 加奈",
+      "linkedId": "tea-09",
+      "classroomId": "cls-hanno",
+      "salt": "4a16679df1db2142de6643e4fadb2a5e",
+      "hash": "204ead12040b818ebb5304225ac80996fcd9889a3f158139adfd8640e600f627a7cf78ad0ecf023b0dff0c24102adc623cb0ce5c96e337e5bf7ab164f56534f0"
+    },
+    {
+      "id": "u-tea-10",
+      "loginId": "t10",
+      "role": "teacher",
+      "name": "高橋 遼",
+      "linkedId": "tea-10",
+      "classroomId": "cls-hanno",
+      "salt": "a27d3672b9592ba777561788eea725c5",
+      "hash": "eb8d9f4e2636b4290b01f944f0491428aa7ff3525325b403f7f85d7b7fe5b0aff2a60ee7c318701231f833cc9be044fcd20857b2909d80c6bab467456b186dc4"
+    },
+    {
+      "id": "u-stu-01",
+      "loginId": "s01",
+      "role": "student",
+      "name": "佐々木 陽翔",
+      "linkedId": "stu-01",
+      "classroomId": "cls-hanno",
+      "salt": "aaeedd251e07773ee5fbbfa14e5a358d",
+      "hash": "af18b795bc58a64c67adbfd631c5840b85fbedaabe9dfec8ee3c10df640eafb5e404c2dc24c8cacf90445b10fca518f8dafb5090998976d078e0a78628cdf87d"
+    },
+    {
+      "id": "u-gdn-01",
+      "loginId": "g01",
+      "role": "guardian",
+      "name": "佐々木 隆",
+      "linkedId": "gdn-01",
+      "classroomId": "cls-hanno",
+      "salt": "883b20ef11341ee7f4bc3a058cb0d086",
+      "hash": "f980a9aaf88e3b4e784d39c962417ccb0923cf71f3e46a4afd391d3836330e674738b835a49538a0c753613fa8076f2cf556362758b1e399e67ab3d3bf318316"
+    },
+    {
+      "id": "u-stu-02",
+      "loginId": "s02",
+      "role": "student",
+      "name": "井上 悠斗",
+      "linkedId": "stu-02",
+      "classroomId": "cls-hanno",
+      "salt": "c59c59397b288bde5361c1f82dcc22a1",
+      "hash": "4441eef38f34f3b71a82ce947af0b3276cab7050038b058320a93209028064dda8d69bf33a076589148ee6b44cffe286bc2611f5b611720622a18bbb83c8d7d4"
+    },
+    {
+      "id": "u-gdn-02",
+      "loginId": "g02",
+      "role": "guardian",
+      "name": "井上 博之",
+      "linkedId": "gdn-02",
+      "classroomId": "cls-hanno",
+      "salt": "9dde412e1f16972807a25f0031bd277a",
+      "hash": "ac786376f8a5706fbfe21ef8756c7ebc05c1da8a4de8415c97bca9ff583f091e78f794882bc4d96458da8853cd35079ab88589dbdb9171a897347bbaa8b62129"
+    },
+    {
+      "id": "u-stu-03",
+      "loginId": "s03",
+      "role": "student",
+      "name": "木村 蓮",
+      "linkedId": "stu-03",
+      "classroomId": "cls-hanno",
+      "salt": "cd02a61f847464715603d6f377c75a88",
+      "hash": "b973bbaf2d161ea7cc5e09d06f80a200d41721804a1ccfd868925144aaa3f0d3d30aa2cac49a438d25897ac0386be563c1a8539db614b8026588b6244c9dc077"
+    },
+    {
+      "id": "u-gdn-03",
+      "loginId": "g03",
+      "role": "guardian",
+      "name": "木村 恵子",
+      "linkedId": "gdn-03",
+      "classroomId": "cls-hanno",
+      "salt": "9be229c1a7317732309960d7e2d8a34f",
+      "hash": "9f89abd4d605af2731a667243ae67649f3385a796c60f5646be9de2b46cc989921cd538f6d79f9b7d2cc10abc230fdce0b5cce8b04bbedf6721bca8696b2d2e2"
+    },
+    {
+      "id": "u-stu-04",
+      "loginId": "s04",
+      "role": "student",
+      "name": "林 湊",
+      "linkedId": "stu-04",
+      "classroomId": "cls-hanno",
+      "salt": "c7afce5f1e936d328e4f25aa2126fba5",
+      "hash": "e11bd5bc3710807d008090e619e3650e9b42891b761d29bd8ed2ec8c4864e0109611282e976319db011fb43bce6eca84ce533762e1193f287ef0338c54bcab5f"
+    },
+    {
+      "id": "u-gdn-04",
+      "loginId": "g04",
+      "role": "guardian",
+      "name": "林 真理",
+      "linkedId": "gdn-04",
+      "classroomId": "cls-hanno",
+      "salt": "bac30cef6794cf6e778bfcfe2f733e82",
+      "hash": "bd0523d6d1a19a7b70975fb165b0b38070c6bee7396dacbfac80f718be8b99634bce5060df975bb067600eb66bcc6910dbfb87f66a2c7a13af0c9854413cc7a7"
+    },
+    {
+      "id": "u-stu-05",
+      "loginId": "s05",
+      "role": "student",
+      "name": "清水 大和",
+      "linkedId": "stu-05",
+      "classroomId": "cls-hanno",
+      "salt": "f3a93ff99a33fdd39f8dbfb49d554bca",
+      "hash": "c5e4d90b4061d1f257c28c97d5310131ddf419225cfb18a849aa4acf2a4ea56a057b2829909277ac80e6b5888cfc058129b82018d947d9d78548680ca248eb26"
+    },
+    {
+      "id": "u-gdn-05",
+      "loginId": "g05",
+      "role": "guardian",
+      "name": "清水 和彦",
+      "linkedId": "gdn-05",
+      "classroomId": "cls-hanno",
+      "salt": "65dc783e66bf33b52901f8e4cf2c0df0",
+      "hash": "a85ff1efee62cfd12b40b3f158728312b7357eca3ec19483651c1bd4615a84cff306c13a9db956bff7e4fcef59e027a93000a9749df75ba964512f7446c463d0"
+    },
+    {
+      "id": "u-stu-06",
+      "loginId": "s06",
+      "role": "student",
+      "name": "山口 樹",
+      "linkedId": "stu-06",
+      "classroomId": "cls-hanno",
+      "salt": "067a9e6ea0eb22ae7b99760a88154c6f",
+      "hash": "5d697be3cc77b98d5fd6b9cc0993d09592748aaeb7b84c86d10bfc59b382ab1798ed95e02748c92280ce95aa8881678558f602df5ede1bcfae54dc80e4b52fd7"
+    },
+    {
+      "id": "u-gdn-06",
+      "loginId": "g06",
+      "role": "guardian",
+      "name": "山口 洋子",
+      "linkedId": "gdn-06",
+      "classroomId": "cls-hanno",
+      "salt": "8d9b222e0b49d2a223472d749e37f7ad",
+      "hash": "47d298d6acfd7b49f9898fd18c6fa797a231c4b0e57afe53496565a377a0ab7307cf5a81dfaaf15a73015ad89295d7da0ff215893a1ca21c07b2880002bf716a"
+    },
+    {
+      "id": "u-stu-07",
+      "loginId": "s07",
+      "role": "student",
+      "name": "森 結衣",
+      "linkedId": "stu-07",
+      "classroomId": "cls-hanno",
+      "salt": "7bc60396daa7596f1cf246b7f123f417",
+      "hash": "3a013adfd0d7f86451f7aca2e72ae39daef053833b8fe30a46366d055525814ed25ada24499f4dd196a2bccde9766670f59bd92e6a2b4a1b9ba30bf9102831cd"
+    },
+    {
+      "id": "u-gdn-07",
+      "loginId": "g07",
+      "role": "guardian",
+      "name": "森 直子",
+      "linkedId": "gdn-07",
+      "classroomId": "cls-hanno",
+      "salt": "09ee670cfa63901ec0d44caef57ec6d1",
+      "hash": "3b10dffca7214b13d9ef127cc59c3e3ed65521d7ab7d22cda30072e4eb0d3d4997a2e96fdf3181c3517460764d6b81cd6f2a0676227b0c2cedbe6ca33e9f76e8"
+    },
+    {
+      "id": "u-stu-08",
+      "loginId": "s08",
+      "role": "student",
+      "name": "池田 芽依",
+      "linkedId": "stu-08",
+      "classroomId": "cls-hanno",
+      "salt": "37e2587091c32c6ae14c0ad2cd1a0efa",
+      "hash": "865220b14fd80f7699b65d1404cee161f51140f62c927305c355877ae9a79f947f2e681436a4e13f3a5ee0772e032f2acccfb53a7c7249e104b1130184b21d52"
+    },
+    {
+      "id": "u-gdn-08",
+      "loginId": "g08",
+      "role": "guardian",
+      "name": "池田 慎一",
+      "linkedId": "gdn-08",
+      "classroomId": "cls-hanno",
+      "salt": "32da1f6e8d809d3cba642d2e41e63e7f",
+      "hash": "56844fc57eacd9995732abac97305e1a51c3529798334825a430891c7865260519f8a64d03e8c0610055389e049436d395ddf74b066e37b076dcb3de2086a0d5"
+    },
+    {
+      "id": "u-stu-09",
+      "loginId": "s09",
+      "role": "student",
+      "name": "橋本 咲良",
+      "linkedId": "stu-09",
+      "classroomId": "cls-hanno",
+      "salt": "7415e1a977e08d8040998072388a6939",
+      "hash": "a9907b31215977b5e67af92be61e9cee4cddf17f3da2e758499d5bc97296c44bb1f494ccfbf57e3f4e26da1e1072fcfe74e941e9a6b8250193ab942d9980e34d"
+    },
+    {
+      "id": "u-gdn-09",
+      "loginId": "g09",
+      "role": "guardian",
+      "name": "橋本 由美",
+      "linkedId": "gdn-09",
+      "classroomId": "cls-hanno",
+      "salt": "1b2c049436e1aff04d9eb79a3b03fcb5",
+      "hash": "5ac387cede55577eaa5b4f7605c6e40326af4fa4493a329d5d4ba0c8e907d1de4f189359a968a70873df714ca69b938131c66547bf3e8e93b137a4cd41a6db25"
+    },
+    {
+      "id": "u-stu-10",
+      "loginId": "s10",
+      "role": "student",
+      "name": "阿部 莉子",
+      "linkedId": "stu-10",
+      "classroomId": "cls-hanno",
+      "salt": "fb595051cb9b2970160dabef477c58c4",
+      "hash": "0ad56c6ef147b84b9e1bbfca9e2f577fbcc7fd489d35f6e7ff59e7095fb727fa616a902e1056adb8cf78a6ed8533078fc100c68d2e94ba92128c098e78570be7"
+    },
+    {
+      "id": "u-gdn-10",
+      "loginId": "g10",
+      "role": "guardian",
+      "name": "阿部 剛",
+      "linkedId": "gdn-10",
+      "classroomId": "cls-hanno",
+      "salt": "babb86fd6d6aab058d1b8a0f7aef525d",
+      "hash": "936eb8004a9f05b8938854572303c116b8ac9c779f1a50a5f2b8762df874c7494c88ba4be206fecc0d23f64842a425dde29103443413368acb1a13bfe03a4e45"
+    },
+    {
+      "id": "u-stu-11",
+      "loginId": "s11",
+      "role": "student",
+      "name": "石川 葵",
+      "linkedId": "stu-11",
+      "classroomId": "cls-hanno",
+      "salt": "98ecb8f21ef7901eac2bc97cb52362c0",
+      "hash": "c2f59318b77209cd04365ff0b9ed9d8e2ee00e924b0f139912c3df5a80cd06df477d8120673afc162be05f1fcd55faca7aed610f620ca5ccd88c8bdf357955e0"
+    },
+    {
+      "id": "u-gdn-11",
+      "loginId": "g11",
+      "role": "guardian",
+      "name": "石川 光男",
+      "linkedId": "gdn-11",
+      "classroomId": "cls-hanno",
+      "salt": "755a013b7822928221121ba0166f14ff",
+      "hash": "99e3bbf0f29b8b4226bdeaedd49cc4dad0909cb2011db8d668f2350ed9263aa3fe01e586c67e70ed3d06d419274677f9d2929a1bc7e90af1fd50f9cac1958bb3"
+    },
+    {
+      "id": "u-stu-12",
+      "loginId": "s12",
+      "role": "student",
+      "name": "前田 悠真",
+      "linkedId": "stu-12",
+      "classroomId": "cls-hanno",
+      "salt": "03bc9af7e8304e771f481679b26bc130",
+      "hash": "eb70bfa031fff36a74097ead859dde7a63d74a1c34adba7462fda6cc2ca310e8ac01b5cc5d806eaf022eb270a7aac2a0f153b2cda7bb7d9993b2daebf661af68"
+    },
+    {
+      "id": "u-gdn-12",
+      "loginId": "g12",
+      "role": "guardian",
+      "name": "前田 智子",
+      "linkedId": "gdn-12",
+      "classroomId": "cls-hanno",
+      "salt": "877a53f235d92c0e3f97582db4ff3cc4",
+      "hash": "75e654e3c22e294d4b1c8f113ee2d37fe8f2ab88459766dcca7dcc7108c43cf4e4490a697bfd77a52945c7c8e95587e9723a6344f580e507f19e341a0e39b6a3"
+    },
+    {
+      "id": "u-stu-13",
+      "loginId": "s13",
+      "role": "student",
+      "name": "藤田 颯太",
+      "linkedId": "stu-13",
+      "classroomId": "cls-hanno",
+      "salt": "dd3443971226685ae155a899604e637b",
+      "hash": "aad3dead7f6e978e983fe43a986cfd3d12e5d9b1629da31d393cd150530322de9db9464b8b1f9a16ca529f3309bdf011e898334b0e518bc27cea49bc820b27eb"
+    },
+    {
+      "id": "u-gdn-13",
+      "loginId": "g13",
+      "role": "guardian",
+      "name": "藤田 伸夫",
+      "linkedId": "gdn-13",
+      "classroomId": "cls-hanno",
+      "salt": "f40a01c49d221eca739604e8dc2de268",
+      "hash": "5f109cd784d0269945da12f7cd96d47d1fd36b303864e95291d83c37c030d42001578ef993e27430c9911769401b5969684a397979edeb3cbf7156cba2e43ef5"
+    },
+    {
+      "id": "u-stu-14",
+      "loginId": "s14",
+      "role": "student",
+      "name": "後藤 律",
+      "linkedId": "stu-14",
+      "classroomId": "cls-hanno",
+      "salt": "771bd317fa7226e8fceb6b0d643200f5",
+      "hash": "f9ab60b35c2930b0cdf21e75026704621e813c6eddc43b07e0bba39060b36f9e2b69ad7ee139dbf1b85f5ad068ed357ba9e9b3934276743ee2fc4eb004c48688"
+    },
+    {
+      "id": "u-gdn-14",
+      "loginId": "g14",
+      "role": "guardian",
+      "name": "後藤 香織",
+      "linkedId": "gdn-14",
+      "classroomId": "cls-hanno",
+      "salt": "0e21fe73001f0dbdaeadc94980438605",
+      "hash": "638892fd28e0673ffe156c8b9fe60c98d5393141551aa7165345c40047711aca935d2f8f7f105cb00cf1d99394a1fce4bb9fa3dc4c2ae59491bc73abc1404075"
+    },
+    {
+      "id": "u-stu-15",
+      "loginId": "s15",
+      "role": "student",
+      "name": "岡田 澪",
+      "linkedId": "stu-15",
+      "classroomId": "cls-hanno",
+      "salt": "adb3051c4c7c816cc2ec3be8b81cd186",
+      "hash": "3389cac2b5dd9fdab09168a0d018e0ffdb824fea9757c7bacb73a41065de547f45058b8319063c64eda191d42eec20618be88c735a3d809205ca8a69664dc187"
+    },
+    {
+      "id": "u-gdn-15",
+      "loginId": "g15",
+      "role": "guardian",
+      "name": "岡田 正樹",
+      "linkedId": "gdn-15",
+      "classroomId": "cls-hanno",
+      "salt": "080f56c05e8f971fc3618b0d04833a6f",
+      "hash": "9a4853897b976d09672aa2d546a5d8310ac26279944b2e480e0ee2d33f3e24e098465fd370b4edd7fc9107055df0e7f1d097a74cb493c459eade4e976d7b0a8b"
+    },
+    {
+      "id": "u-stu-16",
+      "loginId": "s16",
+      "role": "student",
+      "name": "長谷川 心春",
+      "linkedId": "stu-16",
+      "classroomId": "cls-hanno",
+      "salt": "b40e5fa1807d2349950885063a4abc63",
+      "hash": "0622d13e7c4cb90d4f98fddc3f720b050103c61f68a96e56e0dc25575b6eb2e8ec93e450c52f9f3cf1d5f353d5fd94245ef337659e47cf7f1f4587209bfcf5ad"
+    },
+    {
+      "id": "u-gdn-16",
+      "loginId": "g16",
+      "role": "guardian",
+      "name": "長谷川 悦子",
+      "linkedId": "gdn-16",
+      "classroomId": "cls-hanno",
+      "salt": "39ae784d87f76b5b3c3d9b77fbc6c2ab",
+      "hash": "2d399724ca221961b5aad294e5dfafa93c428fd65a11d0e3c5fcbb67f9ef3f4a308f94ea5aa66a08109cefa6b9af8b4920a523c4f02e46afdf661730f001c6aa"
+    },
+    {
+      "id": "u-stu-17",
+      "loginId": "s17",
+      "role": "student",
+      "name": "村上 楓",
+      "linkedId": "stu-17",
+      "classroomId": "cls-hanno",
+      "salt": "ffeea3f1baf5be49a39c41ad5314aebc",
+      "hash": "a60efc58018eb8d71795a8063755b8b77ca2b6a1672dfa6714b909966a529f60738ae38ebfc03cfbd0ff5e21e74870fcff5505e829330c3fadb90f5cfe1973ec"
+    },
+    {
+      "id": "u-gdn-17",
+      "loginId": "g17",
+      "role": "guardian",
+      "name": "村上 孝",
+      "linkedId": "gdn-17",
+      "classroomId": "cls-hanno",
+      "salt": "17861bc8b12c3b4690658cd16c10b71c",
+      "hash": "11ac4412816260acb36bcf77924cf9b38fe58f40327814ff17486b178ce08f1bdafaf16fdd016e72ec3bf6214bda8163bac2086fdd96323849393de20e6ae790"
+    },
+    {
+      "id": "u-stu-18",
+      "loginId": "s18",
+      "role": "student",
+      "name": "近藤 一花",
+      "linkedId": "stu-18",
+      "classroomId": "cls-hanno",
+      "salt": "fb07a56c6ef7e060a78946b53f20e77f",
+      "hash": "09f94bab4286625e196fc54a914d6e984eb81c177d96e7ed92f463b7411b35e701ce6e775239d4236b0d1797dfe1947667cec2f01dff863e864e9ebd196b1bcd"
+    },
+    {
+      "id": "u-gdn-18",
+      "loginId": "g18",
+      "role": "guardian",
+      "name": "近藤 久美子",
+      "linkedId": "gdn-18",
+      "classroomId": "cls-hanno",
+      "salt": "6e23824c20148b42ff5ce4019ce56676",
+      "hash": "50d562bf16b28aae861ddf20d7c301f842ad13f09e21424d8c9c91788755e2e4b49c03deb98eaec0bd74c6ee2d55066a11a15c40fcef409e178e30841e8b29ee"
+    },
+    {
+      "id": "u-stu-19",
+      "loginId": "s19",
+      "role": "student",
+      "name": "坂本 栞",
+      "linkedId": "stu-19",
+      "classroomId": "cls-hanno",
+      "salt": "954c79490be78dfc84dc7ae3db26fe79",
+      "hash": "ab424758b011722a7e549c33ef7c76146e418a35dcfdd7f5fbbd83a03550575ed00ff88c6d6ebf6d828b1edf7cec2b5baad6f4d4038030e8c4e007a1bf3d9ec0"
+    },
+    {
+      "id": "u-gdn-19",
+      "loginId": "g19",
+      "role": "guardian",
+      "name": "坂本 英樹",
+      "linkedId": "gdn-19",
+      "classroomId": "cls-hanno",
+      "salt": "3fb03ba5c1d7353ac87d3e34178da438",
+      "hash": "0eca3253cacf4d158da86c46329e21e0c132763c0d7ef7a117fd3aea127bf66cc0744cad4f79d6f316e43b20860f14145678848857cd2fd91c8260dcf6341853"
+    },
+    {
+      "id": "u-stu-20",
+      "loginId": "s20",
+      "role": "student",
+      "name": "遠藤 悠",
+      "linkedId": "stu-20",
+      "classroomId": "cls-hanno",
+      "salt": "fce197766e9ca9a47422f2f9139e21da",
+      "hash": "b5a5b87d8304f7725094154641f4fb839fca9ea65e8f2cc258f8be1d86b36a91c21b8af83bb5882f58d21dd20a837247ab57e1c920df7485049c1acb7e1f3fe5"
+    },
+    {
+      "id": "u-gdn-20",
+      "loginId": "g20",
+      "role": "guardian",
+      "name": "遠藤 純子",
+      "linkedId": "gdn-20",
+      "classroomId": "cls-hanno",
+      "salt": "b01cdde2ef462bb4a47e8e0bfa846a03",
+      "hash": "2ea3461689004ffd80c12c08e5ef17ceeb9df6de2f8f4a5278bca4dbefd348bacfa55d031d08d9f5e8f0be3d29012a7fab144a67a8c308145115f9c2c1aab65a"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "les-01",
+      "date": "2026-07-02",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-01",
+        "stu-07",
+        "stu-14"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-02",
+      "date": "2026-07-02",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-05",
+        "stu-11",
+        "stu-18"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-03",
+      "date": "2026-07-02",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-09",
+        "stu-15",
+        "stu-02"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-04",
+      "date": "2026-07-02",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-13",
+        "stu-19",
+        "stu-06"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-05",
+      "date": "2026-07-03",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-06",
+        "stu-12",
+        "stu-19"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-06",
+      "date": "2026-07-03",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-10",
+        "stu-16",
+        "stu-03"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-07",
+      "date": "2026-07-03",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-14",
+        "stu-20",
+        "stu-07"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-08",
+      "date": "2026-07-03",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-18",
+        "stu-04",
+        "stu-11"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-09",
+      "date": "2026-07-04",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-11",
+        "stu-17",
+        "stu-04"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-10",
+      "date": "2026-07-04",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-15",
+        "stu-01",
+        "stu-08"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-11",
+      "date": "2026-07-04",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-19",
+        "stu-05",
+        "stu-12"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-12",
+      "date": "2026-07-04",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-03",
+        "stu-09",
+        "stu-16"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-13",
+      "date": "2026-07-05",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-16",
+        "stu-02",
+        "stu-09"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-14",
+      "date": "2026-07-05",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "理科",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-20",
+        "stu-06",
+        "stu-13"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-15",
+      "date": "2026-07-05",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-04",
+        "stu-10",
+        "stu-17"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-16",
+      "date": "2026-07-05",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-08",
+        "stu-14",
+        "stu-01"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-17",
+      "date": "2026-07-06",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-01",
+        "stu-07",
+        "stu-14"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-18",
+      "date": "2026-07-06",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-05",
+        "stu-11",
+        "stu-18"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-19",
+      "date": "2026-07-06",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-09",
+        "stu-15",
+        "stu-02"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-20",
+      "date": "2026-07-06",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-13",
+        "stu-19",
+        "stu-06"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-21",
+      "date": "2026-07-07",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-06",
+        "stu-12",
+        "stu-19"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-22",
+      "date": "2026-07-07",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "国語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-10",
+        "stu-16",
+        "stu-03"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-23",
+      "date": "2026-07-07",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-14",
+        "stu-20",
+        "stu-07"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-24",
+      "date": "2026-07-07",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "理科",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-18",
+        "stu-04",
+        "stu-11"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-25",
+      "date": "2026-07-08",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-11",
+        "stu-17",
+        "stu-04"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-26",
+      "date": "2026-07-08",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-15",
+        "stu-01",
+        "stu-08"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-27",
+      "date": "2026-07-08",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-19",
+        "stu-05",
+        "stu-12"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-28",
+      "date": "2026-07-08",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-03",
+        "stu-09",
+        "stu-16"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-29",
+      "date": "2026-07-09",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "理科",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-16",
+        "stu-02",
+        "stu-09"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-30",
+      "date": "2026-07-09",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "物理",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-20",
+        "stu-06",
+        "stu-13"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-31",
+      "date": "2026-07-09",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-04",
+        "stu-10",
+        "stu-17"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-32",
+      "date": "2026-07-09",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "国語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-08",
+        "stu-14",
+        "stu-01"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-33",
+      "date": "2026-07-10",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-01",
+        "stu-07",
+        "stu-14"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-34",
+      "date": "2026-07-10",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-05",
+        "stu-11",
+        "stu-18"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-35",
+      "date": "2026-07-10",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-09",
+        "stu-15",
+        "stu-02"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-36",
+      "date": "2026-07-10",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-13",
+        "stu-19",
+        "stu-06"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-37",
+      "date": "2026-07-11",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-06",
+        "stu-12",
+        "stu-19"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-38",
+      "date": "2026-07-11",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-10",
+        "stu-16",
+        "stu-03"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-39",
+      "date": "2026-07-11",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "理科",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-14",
+        "stu-20",
+        "stu-07"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-40",
+      "date": "2026-07-11",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "物理",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-18",
+        "stu-04",
+        "stu-11"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-41",
+      "date": "2026-07-12",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-11",
+        "stu-17",
+        "stu-04"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-42",
+      "date": "2026-07-12",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-15",
+        "stu-01",
+        "stu-08"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-43",
+      "date": "2026-07-12",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-19",
+        "stu-05",
+        "stu-12"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-44",
+      "date": "2026-07-12",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-03",
+        "stu-09",
+        "stu-16"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-45",
+      "date": "2026-07-13",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-16",
+        "stu-02",
+        "stu-09"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-46",
+      "date": "2026-07-13",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-20",
+        "stu-06",
+        "stu-13"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-47",
+      "date": "2026-07-13",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-04",
+        "stu-10",
+        "stu-17"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-48",
+      "date": "2026-07-13",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-08",
+        "stu-14",
+        "stu-01"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "終了"
+    },
+    {
+      "id": "les-49",
+      "date": "2026-07-14",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-01",
+        "stu-07",
+        "stu-14"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-50",
+      "date": "2026-07-14",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-05",
+        "stu-11",
+        "stu-18"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-51",
+      "date": "2026-07-14",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-09",
+        "stu-15",
+        "stu-02"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-52",
+      "date": "2026-07-14",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-13",
+        "stu-19",
+        "stu-06"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-53",
+      "date": "2026-07-15",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-06",
+        "stu-12",
+        "stu-19"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-54",
+      "date": "2026-07-15",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "理科",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-10",
+        "stu-16",
+        "stu-03"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-55",
+      "date": "2026-07-15",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-14",
+        "stu-20",
+        "stu-07"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-56",
+      "date": "2026-07-15",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "studentIds": [
+        "stu-18",
+        "stu-04",
+        "stu-11"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-57",
+      "date": "2026-07-16",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-11",
+        "stu-17",
+        "stu-04"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-58",
+      "date": "2026-07-16",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-15",
+        "stu-01",
+        "stu-08"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-59",
+      "date": "2026-07-16",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-19",
+        "stu-05",
+        "stu-12"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-60",
+      "date": "2026-07-16",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "studentIds": [
+        "stu-03",
+        "stu-09",
+        "stu-16"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-61",
+      "date": "2026-07-17",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-16",
+        "stu-02",
+        "stu-09"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-62",
+      "date": "2026-07-17",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "国語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-20",
+        "stu-06",
+        "stu-13"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-63",
+      "date": "2026-07-17",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-04",
+        "stu-10",
+        "stu-17"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-64",
+      "date": "2026-07-17",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "理科",
+      "teacherId": "tea-01",
+      "studentIds": [
+        "stu-08",
+        "stu-14",
+        "stu-01"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-65",
+      "date": "2026-07-18",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "数学",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-01",
+        "stu-07",
+        "stu-14"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-66",
+      "date": "2026-07-18",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-05",
+        "stu-11",
+        "stu-18"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-67",
+      "date": "2026-07-18",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-09",
+        "stu-15",
+        "stu-02"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-68",
+      "date": "2026-07-18",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "英語",
+      "teacherId": "tea-08",
+      "studentIds": [
+        "stu-13",
+        "stu-19",
+        "stu-06"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-69",
+      "date": "2026-07-19",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "理科",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-06",
+        "stu-12",
+        "stu-19"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-70",
+      "date": "2026-07-19",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "物理",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-10",
+        "stu-16",
+        "stu-03"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-71",
+      "date": "2026-07-19",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-14",
+        "stu-20",
+        "stu-07"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-72",
+      "date": "2026-07-19",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "国語",
+      "teacherId": "tea-05",
+      "studentIds": [
+        "stu-18",
+        "stu-04",
+        "stu-11"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-73",
+      "date": "2026-07-20",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-11",
+        "stu-17",
+        "stu-04"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-74",
+      "date": "2026-07-20",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-15",
+        "stu-01",
+        "stu-08"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-75",
+      "date": "2026-07-20",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "数学",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-19",
+        "stu-05",
+        "stu-12"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-76",
+      "date": "2026-07-20",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "英語",
+      "teacherId": "tea-02",
+      "studentIds": [
+        "stu-03",
+        "stu-09",
+        "stu-16"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-77",
+      "date": "2026-07-21",
+      "period": 1,
+      "start": "16:00",
+      "end": "17:20",
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "studentIds": [
+        "stu-16",
+        "stu-02",
+        "stu-09"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-78",
+      "date": "2026-07-21",
+      "period": 2,
+      "start": "17:30",
+      "end": "18:50",
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "studentIds": [
+        "stu-20",
+        "stu-06",
+        "stu-13"
+      ],
+      "roomId": "room-2",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-79",
+      "date": "2026-07-21",
+      "period": 3,
+      "start": "19:00",
+      "end": "20:20",
+      "subject": "理科",
+      "teacherId": "tea-06",
+      "studentIds": [
+        "stu-04",
+        "stu-10",
+        "stu-17"
+      ],
+      "roomId": "room-3",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    },
+    {
+      "id": "les-80",
+      "date": "2026-07-21",
+      "period": 4,
+      "start": "20:30",
+      "end": "21:50",
+      "subject": "物理",
+      "teacherId": "tea-09",
+      "studentIds": [
+        "stu-08",
+        "stu-14",
+        "stu-01"
+      ],
+      "roomId": "room-1",
+      "classroomId": "cls-hanno",
+      "type": "通常",
+      "status": "予定"
+    }
+  ],
+  "lessonRecords": [
+    {
+      "id": "rec-01",
+      "lessonId": "les-01",
+      "studentId": "stu-01",
+      "date": "2026-07-02",
+      "period": 1,
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "attendance": "出席",
+      "progress": "社会：歴史：明治維新",
+      "homework": "社会ワーク p.21〜p.23",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-02",
+      "lessonId": "les-01",
+      "studentId": "stu-07",
+      "date": "2026-07-02",
+      "period": 1,
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "attendance": "出席",
+      "progress": "社会：公民：三権分立",
+      "homework": "社会ワーク p.22〜p.24",
+      "checkNext": "",
+      "comment": "基礎は定着。応用を増やしましょう。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-03",
+      "lessonId": "les-01",
+      "studentId": "stu-14",
+      "date": "2026-07-02",
+      "period": 1,
+      "subject": "社会",
+      "teacherId": "tea-07",
+      "attendance": "欠席",
+      "progress": "社会：地理：世界の気候",
+      "homework": "社会ワーク p.23〜p.25",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-04",
+      "lessonId": "les-02",
+      "studentId": "stu-05",
+      "date": "2026-07-02",
+      "period": 2,
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "attendance": "出席",
+      "progress": "社会：歴史：明治維新",
+      "homework": "社会ワーク p.24〜p.26",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "集中して取り組めていました。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-05",
+      "lessonId": "les-02",
+      "studentId": "stu-11",
+      "date": "2026-07-02",
+      "period": 2,
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "attendance": "出席",
+      "progress": "社会：公民：三権分立",
+      "homework": "",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-06",
+      "lessonId": "les-02",
+      "studentId": "stu-18",
+      "date": "2026-07-02",
+      "period": 2,
+      "subject": "社会",
+      "teacherId": "tea-10",
+      "attendance": "欠席",
+      "progress": "社会：地理：世界の気候",
+      "homework": "社会ワーク p.26〜p.28",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": "2026-07-02",
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-07",
+      "lessonId": "les-03",
+      "studentId": "stu-09",
+      "date": "2026-07-02",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "attendance": "遅刻",
+      "progress": "国語：古文単語の暗記確認",
+      "homework": "国語ワーク p.27〜p.29",
+      "checkNext": "",
+      "comment": "遅れて参加。前半の内容は次回に補います。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-08",
+      "lessonId": "les-03",
+      "studentId": "stu-15",
+      "date": "2026-07-02",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "attendance": "出席",
+      "progress": "国語：記述問題の型を練習",
+      "homework": "国語ワーク p.28〜p.30",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "集中して取り組めていました。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-09",
+      "lessonId": "les-03",
+      "studentId": "stu-02",
+      "date": "2026-07-02",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-03",
+      "attendance": "欠席",
+      "progress": "国語：説明文の要旨把握",
+      "homework": "国語ワーク p.29〜p.31",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-10",
+      "lessonId": "les-04",
+      "studentId": "stu-13",
+      "date": "2026-07-02",
+      "period": 4,
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "attendance": "出席",
+      "progress": "数学：因数分解の演習",
+      "homework": "",
+      "checkNext": "",
+      "comment": "基礎は定着。応用を増やしましょう。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-06",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-11",
+      "lessonId": "les-04",
+      "studentId": "stu-19",
+      "date": "2026-07-02",
+      "period": 4,
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "attendance": "出席",
+      "progress": "数学：連立方程式の文章題",
+      "homework": "数学ワーク p.31〜p.33",
+      "checkNext": "",
+      "comment": "宿題の取り組みが丁寧です。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-06",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-12",
+      "lessonId": "les-04",
+      "studentId": "stu-06",
+      "date": "2026-07-02",
+      "period": 4,
+      "subject": "数学",
+      "teacherId": "tea-06",
+      "attendance": "欠席",
+      "progress": "数学：一次関数のグラフ",
+      "homework": "数学ワーク p.32〜p.34",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": "2026-07-02",
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-06",
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "rec-13",
+      "lessonId": "les-05",
+      "studentId": "stu-06",
+      "date": "2026-07-03",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "出席",
+      "progress": "数学：因数分解の演習",
+      "homework": "数学ワーク p.33〜p.35",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-14",
+      "lessonId": "les-05",
+      "studentId": "stu-12",
+      "date": "2026-07-03",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "遅刻",
+      "progress": "数学：連立方程式の文章題",
+      "homework": "数学ワーク p.34〜p.36",
+      "checkNext": "",
+      "comment": "遅れて参加。前半の内容は次回に補います。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-15",
+      "lessonId": "les-05",
+      "studentId": "stu-19",
+      "date": "2026-07-03",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "欠席",
+      "progress": "数学：一次関数のグラフ",
+      "homework": "",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-16",
+      "lessonId": "les-06",
+      "studentId": "stu-10",
+      "date": "2026-07-03",
+      "period": 2,
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "attendance": "出席",
+      "progress": "国語：古文単語の暗記確認",
+      "homework": "国語ワーク p.36〜p.38",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "集中して取り組めていました。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-17",
+      "lessonId": "les-06",
+      "studentId": "stu-16",
+      "date": "2026-07-03",
+      "period": 2,
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "attendance": "出席",
+      "progress": "国語：記述問題の型を練習",
+      "homework": "国語ワーク p.37〜p.39",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-18",
+      "lessonId": "les-06",
+      "studentId": "stu-03",
+      "date": "2026-07-03",
+      "period": 2,
+      "subject": "国語",
+      "teacherId": "tea-07",
+      "attendance": "欠席",
+      "progress": "国語：説明文の要旨把握",
+      "homework": "国語ワーク p.38〜p.40",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": "2026-07-03",
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-07",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-19",
+      "lessonId": "les-07",
+      "studentId": "stu-14",
+      "date": "2026-07-03",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "attendance": "出席",
+      "progress": "国語：古文単語の暗記確認",
+      "homework": "国語ワーク p.39〜p.41",
+      "checkNext": "",
+      "comment": "宿題の取り組みが丁寧です。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-20",
+      "lessonId": "les-07",
+      "studentId": "stu-20",
+      "date": "2026-07-03",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "attendance": "出席",
+      "progress": "国語：記述問題の型を練習",
+      "homework": "",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "集中して取り組めていました。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-21",
+      "lessonId": "les-07",
+      "studentId": "stu-07",
+      "date": "2026-07-03",
+      "period": 3,
+      "subject": "国語",
+      "teacherId": "tea-10",
+      "attendance": "欠席",
+      "progress": "国語：説明文の要旨把握",
+      "homework": "国語ワーク p.41〜p.43",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は国語の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-10",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-22",
+      "lessonId": "les-08",
+      "studentId": "stu-18",
+      "date": "2026-07-03",
+      "period": 4,
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "attendance": "出席",
+      "progress": "社会：歴史：明治維新",
+      "homework": "社会ワーク p.42〜p.44",
+      "checkNext": "",
+      "comment": "基礎は定着。応用を増やしましょう。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-23",
+      "lessonId": "les-08",
+      "studentId": "stu-04",
+      "date": "2026-07-03",
+      "period": 4,
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "attendance": "出席",
+      "progress": "社会：公民：三権分立",
+      "homework": "社会ワーク p.43〜p.45",
+      "checkNext": "",
+      "comment": "宿題の取り組みが丁寧です。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-24",
+      "lessonId": "les-08",
+      "studentId": "stu-11",
+      "date": "2026-07-03",
+      "period": 4,
+      "subject": "社会",
+      "teacherId": "tea-03",
+      "attendance": "欠席",
+      "progress": "社会：地理：世界の気候",
+      "homework": "社会ワーク p.44〜p.46",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は社会の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": "2026-07-03",
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-03",
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "rec-25",
+      "lessonId": "les-09",
+      "studentId": "stu-11",
+      "date": "2026-07-04",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "attendance": "出席",
+      "progress": "数学：因数分解の演習",
+      "homework": "",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-01",
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "rec-26",
+      "lessonId": "les-09",
+      "studentId": "stu-17",
+      "date": "2026-07-04",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "attendance": "出席",
+      "progress": "数学：連立方程式の文章題",
+      "homework": "数学ワーク p.46〜p.48",
+      "checkNext": "",
+      "comment": "基礎は定着。応用を増やしましょう。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-01",
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "rec-27",
+      "lessonId": "les-09",
+      "studentId": "stu-04",
+      "date": "2026-07-04",
+      "period": 1,
+      "subject": "数学",
+      "teacherId": "tea-01",
+      "attendance": "欠席",
+      "progress": "数学：一次関数のグラフ",
+      "homework": "数学ワーク p.47〜p.49",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-01",
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "rec-28",
+      "lessonId": "les-10",
+      "studentId": "stu-15",
+      "date": "2026-07-04",
+      "period": 2,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "遅刻",
+      "progress": "数学：因数分解の演習",
+      "homework": "数学ワーク p.48〜p.50",
+      "checkNext": "前回の小テストの直しを見直しておく。",
+      "comment": "遅れて参加。前半の内容は次回に補います。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "rec-29",
+      "lessonId": "les-10",
+      "studentId": "stu-01",
+      "date": "2026-07-04",
+      "period": 2,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "出席",
+      "progress": "数学：連立方程式の文章題",
+      "homework": "数学ワーク p.49〜p.51",
+      "checkNext": "",
+      "comment": "前回より正答率が上がっています。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": false,
+      "sharedWithGuardian": false,
+      "confirmedByStudentAt": null,
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "rec-30",
+      "lessonId": "les-10",
+      "studentId": "stu-08",
+      "date": "2026-07-04",
+      "period": 2,
+      "subject": "数学",
+      "teacherId": "tea-04",
+      "attendance": "欠席",
+      "progress": "数学：一次関数のグラフ",
+      "homework": "",
+      "checkNext": "",
+      "comment": "本日は欠席でした。進んだ範囲と宿題を共有します。次回で補足します。",
+      "nextPlan": "次回は数学の続きを扱います。",
+      "attachments": [],
+      "sharedWithStudent": true,
+      "sharedWithGuardian": true,
+      "confirmedByStudentAt": "2026-07-04",
+      "confirmedByGuardianAt": null,
+      "createdBy": "tea-04",
+      "createdAt": "2026-07-04T21:55:00"
+    }
+  ],
+  "notices": [
+    {
+      "id": "not-1",
+      "classroomId": "cls-hanno",
+      "title": "夏期講習の受付を開始しました",
+      "body": "7月下旬からの夏期講習について、希望調査を順次ご案内します。詳細は各担当までお問い合わせください。",
+      "audience": "all",
+      "createdBy": "adm-1",
+      "createdAt": "2026-07-12T10:00:00",
+      "readBy": [
+        "u-tea-01"
+      ]
+    },
+    {
+      "id": "not-2",
+      "classroomId": "cls-hanno",
+      "title": "第2教室の空調点検について",
+      "body": "2026-07-17の午前中に空調点検を行います。授業への影響はありません。",
+      "audience": "all",
+      "createdBy": "adm-1",
+      "createdAt": "2026-07-13T09:00:00",
+      "readBy": [
+        "u-tea-01"
+      ]
+    },
+    {
+      "id": "not-3",
+      "classroomId": "cls-hanno",
+      "title": "【講師向け】授業記録の入力期限について",
+      "body": "授業当日中の入力にご協力ください。欠席された生徒には記録が自動で共有されます。",
+      "audience": "teachers",
+      "createdBy": "adm-1",
+      "createdAt": "2026-07-13T12:00:00",
+      "readBy": [
+        "u-tea-01"
+      ]
+    }
+  ],
+  "attendanceEvents": [
+    {
+      "id": "att-01",
+      "studentId": "stu-01",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T16:03:00",
+      "checkOutAt": "2026-07-14T17:35:00",
+      "byUserId": "u-adm-1"
+    },
+    {
+      "id": "att-02",
+      "studentId": "stu-07",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T17:04:00",
+      "checkOutAt": "2026-07-14T18:35:00",
+      "byUserId": "u-adm-1"
+    },
+    {
+      "id": "att-03",
+      "studentId": "stu-14",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T18:05:00",
+      "checkOutAt": null,
+      "byUserId": "u-adm-1"
+    },
+    {
+      "id": "att-04",
+      "studentId": "stu-05",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T16:06:00",
+      "checkOutAt": null,
+      "byUserId": "u-adm-1"
+    },
+    {
+      "id": "att-05",
+      "studentId": "stu-11",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T17:07:00",
+      "checkOutAt": null,
+      "byUserId": "u-adm-1"
+    },
+    {
+      "id": "att-06",
+      "studentId": "stu-18",
+      "date": "2026-07-14",
+      "checkInAt": "2026-07-14T18:08:00",
+      "checkOutAt": null,
+      "byUserId": "u-adm-1"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "ntf-01",
+      "userId": "u-stu-14",
+      "type": "absence_record",
+      "refId": "rec-03",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-02",
+      "userId": "u-gdn-14",
+      "type": "absence_record",
+      "refId": "rec-03",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-03",
+      "userId": "u-stu-18",
+      "type": "absence_record",
+      "refId": "rec-06",
+      "text": "欠席の授業記録が共有されました。",
+      "read": true,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-04",
+      "userId": "u-gdn-18",
+      "type": "absence_record",
+      "refId": "rec-06",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-05",
+      "userId": "u-stu-02",
+      "type": "absence_record",
+      "refId": "rec-09",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-06",
+      "userId": "u-gdn-02",
+      "type": "absence_record",
+      "refId": "rec-09",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-07",
+      "userId": "u-stu-06",
+      "type": "absence_record",
+      "refId": "rec-12",
+      "text": "欠席の授業記録が共有されました。",
+      "read": true,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-08",
+      "userId": "u-gdn-06",
+      "type": "absence_record",
+      "refId": "rec-12",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-02T21:55:00"
+    },
+    {
+      "id": "ntf-09",
+      "userId": "u-stu-19",
+      "type": "absence_record",
+      "refId": "rec-15",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-10",
+      "userId": "u-gdn-19",
+      "type": "absence_record",
+      "refId": "rec-15",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-11",
+      "userId": "u-stu-03",
+      "type": "absence_record",
+      "refId": "rec-18",
+      "text": "欠席の授業記録が共有されました。",
+      "read": true,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-12",
+      "userId": "u-gdn-03",
+      "type": "absence_record",
+      "refId": "rec-18",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-13",
+      "userId": "u-stu-07",
+      "type": "absence_record",
+      "refId": "rec-21",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-14",
+      "userId": "u-gdn-07",
+      "type": "absence_record",
+      "refId": "rec-21",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-15",
+      "userId": "u-stu-11",
+      "type": "absence_record",
+      "refId": "rec-24",
+      "text": "欠席の授業記録が共有されました。",
+      "read": true,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-16",
+      "userId": "u-gdn-11",
+      "type": "absence_record",
+      "refId": "rec-24",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-03T21:55:00"
+    },
+    {
+      "id": "ntf-17",
+      "userId": "u-stu-04",
+      "type": "absence_record",
+      "refId": "rec-27",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "ntf-18",
+      "userId": "u-gdn-04",
+      "type": "absence_record",
+      "refId": "rec-27",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "ntf-19",
+      "userId": "u-stu-08",
+      "type": "absence_record",
+      "refId": "rec-30",
+      "text": "欠席の授業記録が共有されました。",
+      "read": true,
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "ntf-20",
+      "userId": "u-gdn-08",
+      "type": "absence_record",
+      "refId": "rec-30",
+      "text": "欠席の授業記録が共有されました。",
+      "read": false,
+      "createdAt": "2026-07-04T21:55:00"
+    },
+    {
+      "id": "4beaf8ec-16d9-4bc6-b962-8770870a91c1",
+      "userId": "u-stu-08",
+      "type": "question",
+      "refId": "sq-6",
+      "text": "質問を講師が確認しています。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:04.773Z"
+    },
+    {
+      "id": "695b5532-8144-4a5a-8871-1063ad0caa08",
+      "userId": "u-stu-08",
+      "type": "question",
+      "refId": "sq-6",
+      "text": "質問に回答が届きました。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:04.775Z"
+    },
+    {
+      "id": "e766845a-4baf-48bb-9571-d7dd10c6abbe",
+      "userId": "u-tea-01",
+      "type": "question",
+      "refId": "sq-dbf00ec1",
+      "text": "新しい質問が届きました（数学）。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:04.778Z"
+    },
+    {
+      "id": "6df7246e-9813-42aa-8cac-ddc543208761",
+      "userId": "u-tea-04",
+      "type": "question",
+      "refId": "sq-dbf00ec1",
+      "text": "新しい質問が届きました（数学）。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:04.778Z"
+    },
+    {
+      "id": "5854acfb-5bc5-4656-a84f-e4ffa0055a8e",
+      "userId": "u-tea-01",
+      "type": "question",
+      "refId": "sq-6",
+      "text": "質問に追加の確認が届きました。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:28.214Z"
+    },
+    {
+      "id": "023082ab-d80c-411b-9ddd-1c5426710b26",
+      "userId": "u-tea-01",
+      "type": "question",
+      "refId": "sq-6",
+      "text": "質問が解決済みになりました。",
+      "read": false,
+      "createdAt": "2026-07-13T23:30:28.216Z"
+    },
+    {
+      "id": "9cffcd7e-0841-4f6d-bb3d-8c72dbc717cc",
+      "userId": "u-tea-02",
+      "type": "supplementary",
+      "refId": "sbk-demo1",
+      "text": "佐々木 陽翔 さんが 7/15 3限の補習予約をキャンセルしました。",
+      "read": false,
+      "createdAt": "2026-07-14T04:03:48.723Z"
+    },
+    {
+      "id": "209fbaf1-dbd7-4a4f-97e2-98596691e930",
+      "userId": "u-tea-01",
+      "type": "supplementary",
+      "refId": "sbk-33d2b607",
+      "text": "佐々木 陽翔 さんが 7/20 3限（数学）の補習を予約しました。",
+      "read": false,
+      "createdAt": "2026-07-14T04:07:40.790Z"
+    },
+    {
+      "id": "652d52ac-c591-4061-b3f0-ef7e346cf74f",
+      "userId": "u-stu-04",
+      "type": "question",
+      "refId": "sq-dbf00ec1",
+      "text": "質問を講師が確認しています。",
+      "read": false,
+      "createdAt": "2026-07-14T04:09:03.807Z"
+    },
+    {
+      "id": "7039a6ae-fbe1-4d28-9044-56f071129e8b",
+      "userId": "u-stu-04",
+      "type": "question",
+      "refId": "sq-dbf00ec1",
+      "text": "質問に回答が届きました。",
+      "read": false,
+      "createdAt": "2026-07-14T04:09:09.432Z"
+    },
+    {
+      "id": "44c56288-86ad-43f5-8298-43a6ddc2ddf1",
+      "userId": "u-tea-05",
+      "type": "question",
+      "refId": "sq-73eb3735",
+      "text": "新しい質問が届きました（英語）。",
+      "read": false,
+      "createdAt": "2026-07-14T04:09:55.706Z"
+    },
+    {
+      "id": "885c1d53-882c-45a0-b0c9-4eb5a30fc6cc",
+      "userId": "u-tea-05",
+      "type": "question",
+      "refId": "sq-d7c17164",
+      "text": "新しい質問が届きました（英語）。",
+      "read": false,
+      "createdAt": "2026-07-15T06:37:19.509Z"
+    },
+    {
+      "id": "0c6947c6-f0e2-42ed-8c93-56204832123d",
+      "userId": "u-tea-01",
+      "type": "question",
+      "refId": "sq-a8065207",
+      "text": "新しい質問が届きました（数学）。",
+      "read": false,
+      "createdAt": "2026-07-15T06:45:28.768Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "f0cc1fb3-3d23-4e83-b59f-2fd916a8911f",
+      "at": "2026-07-13T23:30:04.549Z",
+      "userId": "u-stu-04",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-04",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "2f60c741-03b9-430e-9041-b5048bf4e7e7",
+      "at": "2026-07-13T23:30:04.607Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "c2c6ed3a-9997-4215-b509-b4db98adf11b",
+      "at": "2026-07-13T23:30:04.687Z",
+      "userId": "u-adm-1",
+      "role": "classroom_admin",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-adm-1",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "76029737-5a03-4f11-a566-e2239b864e17",
+      "at": "2026-07-13T23:30:04.764Z",
+      "userId": "u-stu-02",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-02",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "e94706df-12c7-4b41-ab78-88f272afd3cb",
+      "at": "2026-07-13T23:30:04.773Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "claim_question",
+      "targetType": "study_question",
+      "targetId": "sq-6",
+      "meta": null
+    },
+    {
+      "id": "5054b9ce-0f93-49e6-ab0b-471b23df1e1b",
+      "at": "2026-07-13T23:30:04.775Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "question_message",
+      "targetType": "study_question",
+      "targetId": "sq-6",
+      "meta": {
+        "kind": "answer"
+      }
+    },
+    {
+      "id": "2b15f8fb-d89c-4ca5-b6f5-945d92f2b941",
+      "at": "2026-07-13T23:30:04.778Z",
+      "userId": "u-stu-04",
+      "role": "student",
+      "action": "create_question",
+      "targetType": "study_question",
+      "targetId": "sq-dbf00ec1",
+      "meta": {
+        "subject": "数学",
+        "routing": "open"
+      }
+    },
+    {
+      "id": "ef455861-2a9b-4d33-bfba-a515d36fca18",
+      "at": "2026-07-13T23:30:28.207Z",
+      "userId": "u-stu-08",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-08",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "19c5bb72-c2b4-46a5-bb7e-c43045d8d703",
+      "at": "2026-07-13T23:30:28.214Z",
+      "userId": "u-stu-08",
+      "role": "student",
+      "action": "question_message",
+      "targetType": "study_question",
+      "targetId": "sq-6",
+      "meta": {
+        "kind": "followup"
+      }
+    },
+    {
+      "id": "bc55be0d-0f03-45f8-8fa3-03f944f73965",
+      "at": "2026-07-13T23:30:28.216Z",
+      "userId": "u-stu-08",
+      "role": "student",
+      "action": "resolve_question",
+      "targetType": "study_question",
+      "targetId": "sq-6",
+      "meta": null
+    },
+    {
+      "id": "53fcbb53-2f6b-470b-a04a-49d40fac6b11",
+      "at": "2026-07-13T23:32:23.478Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "790a6091-dfcb-4a7a-adbe-3a4fa6db8660",
+      "at": "2026-07-14T03:18:05.245Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-01",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "8f81b1a2-b5c0-472d-a6a7-acbedf743d15",
+      "at": "2026-07-14T03:18:24.514Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "c35a417b-e09e-4d73-908e-a87ac997a106",
+      "at": "2026-07-14T04:03:48.723Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "cancel_supplementary_booking",
+      "targetType": "supplementary_booking",
+      "targetId": "sbk-demo1",
+      "meta": null
+    },
+    {
+      "id": "4b040f30-1064-4e3a-a5de-c516fe5e0ed2",
+      "at": "2026-07-14T04:05:41.639Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "d6f40b29-51cb-494e-b23c-1b2fd266bac7",
+      "at": "2026-07-14T04:07:26.207Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "close_supplementary_slot",
+      "targetType": "supplementary_slot",
+      "targetId": "sup-12",
+      "meta": null
+    },
+    {
+      "id": "59e61b99-31cc-490d-a560-33ff68644d58",
+      "at": "2026-07-14T04:07:40.790Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "create_supplementary_booking",
+      "targetType": "supplementary_booking",
+      "targetId": "sbk-33d2b607",
+      "meta": {
+        "slotId": "sup-20",
+        "studentId": "stu-01"
+      }
+    },
+    {
+      "id": "f6f3fd9a-3f3e-4308-a0d7-63749073ff5f",
+      "at": "2026-07-14T04:09:03.807Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "claim_question",
+      "targetType": "study_question",
+      "targetId": "sq-dbf00ec1",
+      "meta": null
+    },
+    {
+      "id": "951892ad-19b7-4a55-80ef-54708a577bd8",
+      "at": "2026-07-14T04:09:09.432Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "question_message",
+      "targetType": "study_question",
+      "targetId": "sq-dbf00ec1",
+      "meta": {
+        "kind": "answer"
+      }
+    },
+    {
+      "id": "6c2034fe-b9c4-40af-88f2-684a59ffce15",
+      "at": "2026-07-14T04:09:55.706Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "create_question",
+      "targetType": "study_question",
+      "targetId": "sq-73eb3735",
+      "meta": {
+        "subject": "英語",
+        "routing": "open"
+      }
+    },
+    {
+      "id": "ee3f9641-214e-4cbd-ad28-b85f1e6deb0a",
+      "at": "2026-07-14T07:04:52.802Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-01",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "4d7e8d26-fca2-464d-8469-233895c21d4d",
+      "at": "2026-07-15T06:36:04.899Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-01",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "f81b08aa-7825-438f-a603-321da295b30b",
+      "at": "2026-07-15T06:37:19.510Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "create_question",
+      "targetType": "study_question",
+      "targetId": "sq-d7c17164",
+      "meta": {
+        "subject": "英語",
+        "routing": "assigned"
+      }
+    },
+    {
+      "id": "cfd3856c-8a0e-434c-87b6-5d71bafbf00a",
+      "at": "2026-07-15T06:38:49.505Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "f711c81b-dbd1-40d4-bc64-2f2041662c4f",
+      "at": "2026-07-15T06:43:42.777Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "6ce5a867-727b-4272-8085-9dc17789893a",
+      "at": "2026-07-15T06:45:28.768Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "create_question",
+      "targetType": "study_question",
+      "targetId": "sq-a8065207",
+      "meta": {
+        "subject": "数学",
+        "routing": "assigned"
+      }
+    },
+    {
+      "id": "a7b8b9ce-ba9b-49ef-9daa-f94caef4fabf",
+      "at": "2026-07-27T06:31:35.803Z",
+      "userId": "u-stu-01",
+      "role": "student",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-stu-01",
+      "meta": {
+        "scope": "family"
+      }
+    },
+    {
+      "id": "20469ab6-c891-4445-87df-ae4b0b3ee2a7",
+      "at": "2026-07-27T06:31:45.845Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-tea-01",
+      "meta": {
+        "scope": "staff"
+      }
+    },
+    {
+      "id": "9239a2f2-031d-4e04-9b08-44a0155533dc",
+      "at": "2026-07-27T06:34:09.589Z",
+      "userId": "u-tea-01",
+      "role": "teacher",
+      "action": "view_student",
+      "targetType": "student",
+      "targetId": "stu-01",
+      "meta": null
+    },
+    {
+      "id": "3b30616b-05c6-4e32-af4c-af5bf96161b4",
+      "at": "2026-07-27T06:35:59.465Z",
+      "userId": "u-adm-1",
+      "role": "classroom_admin",
+      "action": "login",
+      "targetType": "user",
+      "targetId": "u-adm-1",
+      "meta": {
+        "scope": "staff"
+      }
+    }
+  ],
+  "consultations": [
+    {
+      "id": "con-1",
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-gdn-01",
+      "createdByRole": "guardian",
+      "anonymous": false,
+      "wantsReply": true,
+      "category": "授業について",
+      "target": "",
+      "urgency": "低",
+      "body": "最近、宿題の量が多いようで家庭学習の負担を感じています。調整いただけないでしょうか。",
+      "attachments": [],
+      "status": "解決",
+      "assigneeUserId": "u-adm-1",
+      "responses": [
+        {
+          "at": "2026-07-10T15:10:00",
+          "byUserId": "u-adm-1",
+          "text": "ご連絡ありがとうございます。担当講師と相談し、宿題量を調整しました。ご様子を見てまたお知らせください。",
+          "status": "解決"
+        }
+      ],
+      "createdAt": "2026-07-09T09:30:00"
+    },
+    {
+      "id": "con-2",
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-stu-03",
+      "createdByRole": "student",
+      "anonymous": false,
+      "wantsReply": true,
+      "category": "人間関係",
+      "target": "",
+      "urgency": "中",
+      "body": "自習室で一部の生徒がうるさく、集中できないことがあります。",
+      "attachments": [],
+      "status": "対応中",
+      "assigneeUserId": "u-adm-1",
+      "responses": [
+        {
+          "at": "2026-07-13T18:00:00",
+          "byUserId": "u-adm-1",
+          "text": "教えてくれてありがとう。自習室の見回りを増やして様子を見ます。",
+          "status": "対応中"
+        }
+      ],
+      "createdAt": "2026-07-12T20:15:00"
+    },
+    {
+      "id": "con-3",
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-gdn-05",
+      "createdByRole": "guardian",
+      "anonymous": true,
+      "wantsReply": false,
+      "category": "ハラスメント",
+      "target": "",
+      "urgency": "高",
+      "body": "子どもが特定の生徒から強い言葉を受けているようです。名前は伏せて相談させてください。",
+      "attachments": [],
+      "status": "確認中",
+      "assigneeUserId": "u-adm-1",
+      "responses": [],
+      "createdAt": "2026-07-13T21:40:00"
+    },
+    {
+      "id": "con-4",
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-stu-08",
+      "createdByRole": "student",
+      "anonymous": false,
+      "wantsReply": true,
+      "category": "講師について",
+      "target": "",
+      "urgency": "中",
+      "body": "説明が少し速く、質問しづらいと感じることがあります。",
+      "attachments": [],
+      "status": "未確認",
+      "assigneeUserId": null,
+      "responses": [],
+      "createdAt": "2026-07-14T17:05:00"
+    },
+    {
+      "id": "con-5",
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-tea-02",
+      "createdByRole": "teacher",
+      "anonymous": false,
+      "wantsReply": true,
+      "category": "体調・安全",
+      "target": "",
+      "urgency": "高",
+      "body": "授業中に体調不良を訴える生徒がいました。教室での対応方針を確認したいです。",
+      "attachments": [],
+      "status": "未確認",
+      "assigneeUserId": null,
+      "responses": [],
+      "createdAt": "2026-07-14T19:20:00"
+    }
+  ],
+  "messageThreads": [
+    {
+      "id": "thr-1",
+      "type": "direct",
+      "title": "",
+      "participantUserIds": [
+        "u-tea-01",
+        "u-gdn-01"
+      ],
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-gdn-01",
+      "createdAt": "2026-07-12T20:00:00",
+      "lastMessageAt": "2026-07-13T09:15:00",
+      "reads": {
+        "u-gdn-01": "2026-07-12T20:05:00",
+        "u-tea-01": "2026-07-27T06:33:30.065Z"
+      }
+    },
+    {
+      "id": "thr-2",
+      "type": "group",
+      "title": "講師連絡：来週のシフト確認",
+      "participantUserIds": [
+        "u-adm-1",
+        "u-tea-01",
+        "u-tea-02"
+      ],
+      "classroomId": "cls-hanno",
+      "createdByUserId": "u-adm-1",
+      "createdAt": "2026-07-13T12:00:00",
+      "lastMessageAt": "2026-07-13T12:00:00",
+      "reads": {
+        "u-adm-1": "2026-07-13T12:00:00",
+        "u-tea-01": "2026-07-14T04:08:33.586Z"
+      }
+    }
+  ],
+  "messages": [
+    {
+      "id": "msg-1",
+      "threadId": "thr-1",
+      "senderUserId": "u-gdn-01",
+      "body": "いつもお世話になっております。家庭学習の進め方について相談したいことがあります。",
+      "attachments": [],
+      "createdAt": "2026-07-12T20:04:00",
+      "deleted": false,
+      "readBy": [],
+      "reportedBy": []
+    },
+    {
+      "id": "msg-2",
+      "threadId": "thr-1",
+      "senderUserId": "u-tea-01",
+      "body": "ご連絡ありがとうございます。次回の授業後にお時間よろしいでしょうか。",
+      "attachments": [],
+      "createdAt": "2026-07-13T09:15:00",
+      "deleted": false,
+      "readBy": [],
+      "reportedBy": []
+    },
+    {
+      "id": "msg-3",
+      "threadId": "thr-2",
+      "senderUserId": "u-adm-1",
+      "body": "来週のシフト希望を金曜までにご提出ください。よろしくお願いします。",
+      "attachments": [],
+      "createdAt": "2026-07-13T12:00:00",
+      "deleted": false,
+      "readBy": [],
+      "reportedBy": []
+    }
+  ],
+  "studyQuestions": [
+    {
+      "id": "sq-1",
+      "number": "Q-0001",
+      "studentId": "stu-04",
+      "studentUserId": "u-stu-04",
+      "classroomId": "cls-hanno",
+      "subject": "数学",
+      "unit": "一次関数",
+      "title": "一次関数のグラフの傾きが分かりません",
+      "body": "y=2x+3 のグラフで、傾きが2になる理由が分かりません。表は書けました。",
+      "attempted": "表は作れました。",
+      "stuckPoint": "グラフの傾きの読み取り方。",
+      "material": "中学必修テキスト 数学",
+      "page": "58",
+      "problemNo": "大問2",
+      "dueAt": "2026-07-16",
+      "routing": "assigned",
+      "assignedTeacherId": "tea-01",
+      "status": "回答あり",
+      "attachments": [],
+      "createdAt": "2026-07-13T18:20:00",
+      "updatedAt": "2026-07-13T21:05:00",
+      "reads": {
+        "u-stu-04": "2026-07-13T18:20:00",
+        "u-tea-01": "2026-07-13T21:05:00"
+      }
+    },
+    {
+      "id": "sq-2",
+      "number": "Q-0002",
+      "studentId": "stu-05",
+      "studentUserId": "u-stu-05",
+      "classroomId": "cls-hanno",
+      "subject": "英語",
+      "unit": "現在完了",
+      "title": "現在完了の経験用法について",
+      "body": "have been と have gone の使い分けが分かりません。",
+      "attempted": "教科書の例文を読みました。",
+      "stuckPoint": "意味の違い。",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "open",
+      "assignedTeacherId": null,
+      "status": "回答待ち",
+      "attachments": [],
+      "createdAt": "2026-07-14T16:40:00",
+      "updatedAt": "2026-07-14T16:40:00",
+      "reads": {
+        "u-stu-05": "2026-07-14T16:40:00"
+      }
+    },
+    {
+      "id": "sq-3",
+      "number": "Q-0003",
+      "studentId": "stu-06",
+      "studentUserId": "u-stu-06",
+      "classroomId": "cls-hanno",
+      "subject": "数学",
+      "unit": "因数分解",
+      "title": "因数分解の解き方",
+      "body": "x^2-5x+6 の因数分解のやり方を教えてください。",
+      "attempted": "公式は覚えました。",
+      "stuckPoint": "数の組み合わせの見つけ方。",
+      "material": "ワーク数学",
+      "page": "30",
+      "problemNo": "(3)",
+      "dueAt": "2026-07-15",
+      "routing": "assigned",
+      "assignedTeacherId": "tea-01",
+      "status": "講師確認中",
+      "attachments": [],
+      "createdAt": "2026-07-14T17:10:00",
+      "updatedAt": "2026-07-14T19:30:00",
+      "reads": {
+        "u-stu-06": "2026-07-14T17:10:00",
+        "u-tea-01": "2026-07-14T19:30:00"
+      }
+    },
+    {
+      "id": "sq-4",
+      "number": "Q-0004",
+      "studentId": "stu-04",
+      "studentUserId": "u-stu-04",
+      "classroomId": "cls-hanno",
+      "subject": "理科",
+      "unit": "電流と回路",
+      "title": "オームの法則の計算",
+      "body": "抵抗の直列と並列で式が変わる理由が分かりません。",
+      "attempted": "直列は解けました。",
+      "stuckPoint": "並列の合成抵抗。",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "open",
+      "assignedTeacherId": "tea-01",
+      "status": "解決済み",
+      "attachments": [],
+      "createdAt": "2026-07-11T18:00:00",
+      "updatedAt": "2026-07-12T20:00:00",
+      "reads": {
+        "u-stu-04": "2026-07-12T20:10:00",
+        "u-tea-01": "2026-07-12T20:00:00"
+      }
+    },
+    {
+      "id": "sq-5",
+      "number": "Q-0005",
+      "studentId": "stu-07",
+      "studentUserId": "u-stu-07",
+      "classroomId": "cls-hanno",
+      "subject": "国語",
+      "unit": "古文",
+      "title": "古文の助動詞「けり」について",
+      "body": "「けり」の意味が複数あって混乱します。",
+      "attempted": "単語帳は確認しました。",
+      "stuckPoint": "文中での見分け方。",
+      "material": "古文単語帳",
+      "page": "12",
+      "problemNo": "",
+      "dueAt": "2026-07-17",
+      "routing": "assigned",
+      "assignedTeacherId": "tea-07",
+      "status": "追加確認中",
+      "attachments": [],
+      "createdAt": "2026-07-13T20:00:00",
+      "updatedAt": "2026-07-14T09:00:00",
+      "reads": {
+        "u-stu-07": "2026-07-14T09:05:00",
+        "u-tea-07": "2026-07-14T09:00:00"
+      }
+    },
+    {
+      "id": "sq-6",
+      "number": "Q-0006",
+      "studentId": "stu-08",
+      "studentUserId": "u-stu-08",
+      "classroomId": "cls-hanno",
+      "subject": "数学",
+      "unit": "二次関数",
+      "title": "二次関数の最大最小",
+      "body": "定義域があるときの最大最小の求め方が分かりません。",
+      "attempted": "グラフは描けました。",
+      "stuckPoint": "頂点が定義域外のとき。",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "open",
+      "assignedTeacherId": "tea-01",
+      "status": "解決済み",
+      "attachments": [],
+      "createdAt": "2026-07-14T19:45:00",
+      "updatedAt": "2026-07-13T23:30:28.216Z",
+      "reads": {
+        "u-stu-08": "2026-07-13T23:30:28.214Z",
+        "u-tea-01": "2026-07-13T23:30:04.775Z"
+      }
+    },
+    {
+      "id": "sq-dbf00ec1",
+      "number": "Q-0007",
+      "studentId": "stu-04",
+      "studentUserId": "u-stu-04",
+      "classroomId": "cls-hanno",
+      "subject": "数学",
+      "unit": "",
+      "title": "数学の質問",
+      "body": "分数の計算が分かりません",
+      "attempted": "",
+      "stuckPoint": "",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "open",
+      "assignedTeacherId": "tea-01",
+      "status": "回答あり",
+      "attachments": [],
+      "createdAt": "2026-07-13T23:30:04.777Z",
+      "updatedAt": "2026-07-14T04:09:09.432Z",
+      "reads": {
+        "u-stu-04": "2026-07-13T23:30:04.777Z",
+        "u-tea-01": "2026-07-14T04:09:09.434Z"
+      }
+    },
+    {
+      "id": "sq-73eb3735",
+      "number": "Q-0008",
+      "studentId": "stu-01",
+      "studentUserId": "u-stu-01",
+      "classroomId": "cls-hanno",
+      "subject": "英語",
+      "unit": "」」",
+      "title": "英語の質問",
+      "body": "」」",
+      "attempted": "",
+      "stuckPoint": "",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "open",
+      "assignedTeacherId": null,
+      "status": "回答待ち",
+      "attachments": [],
+      "createdAt": "2026-07-14T04:09:55.706Z",
+      "updatedAt": "2026-07-14T04:09:55.706Z",
+      "reads": {
+        "u-stu-01": "2026-07-14T04:09:55.711Z"
+      }
+    },
+    {
+      "id": "sq-d7c17164",
+      "number": "Q-0009",
+      "studentId": "stu-01",
+      "studentUserId": "u-stu-01",
+      "classroomId": "cls-hanno",
+      "subject": "英語",
+      "unit": "過去形",
+      "title": "過去形",
+      "body": "過去形",
+      "attempted": "わ",
+      "stuckPoint": "わ",
+      "material": "ｔｔｔｔ",
+      "page": "２２",
+      "problemNo": "１",
+      "dueAt": "",
+      "routing": "assigned",
+      "assignedTeacherId": null,
+      "status": "回答待ち",
+      "attachments": [],
+      "createdAt": "2026-07-15T06:37:19.479Z",
+      "updatedAt": "2026-07-15T06:37:19.479Z",
+      "reads": {
+        "u-stu-01": "2026-07-15T06:43:16.465Z"
+      }
+    },
+    {
+      "id": "sq-a8065207",
+      "number": "Q-0010",
+      "studentId": "stu-01",
+      "studentUserId": "u-stu-01",
+      "classroomId": "cls-hanno",
+      "subject": "数学",
+      "unit": "",
+      "title": "数学の質問",
+      "body": "関数",
+      "attempted": "",
+      "stuckPoint": "",
+      "material": "",
+      "page": "",
+      "problemNo": "",
+      "dueAt": "",
+      "routing": "assigned",
+      "assignedTeacherId": "tea-01",
+      "status": "回答待ち",
+      "attachments": [],
+      "createdAt": "2026-07-15T06:45:28.768Z",
+      "updatedAt": "2026-07-15T06:45:28.768Z",
+      "reads": {
+        "u-stu-01": "2026-07-15T06:45:28.774Z",
+        "u-tea-01": "2026-07-15T06:45:43.310Z"
+      }
+    }
+  ],
+  "studyQuestionMessages": [
+    {
+      "id": "sqm-1",
+      "questionId": "sq-1",
+      "senderUserId": "u-tea-01",
+      "senderRole": "teacher",
+      "kind": "answer",
+      "body": "傾きは「xが1増えるとyがいくつ増えるか」を表します。y=2x+3 では xが1増えるとyが2増えるので傾きは2です。表で確認してみましょう。",
+      "attachments": [],
+      "createdAt": "2026-07-13T21:05:00",
+      "deleted": false
+    },
+    {
+      "id": "sqm-2",
+      "questionId": "sq-4",
+      "senderUserId": "u-tea-01",
+      "senderRole": "teacher",
+      "kind": "answer",
+      "body": "並列は「1/R = 1/R1 + 1/R2」で合成します。電流が分かれて流れるためです。",
+      "attachments": [],
+      "createdAt": "2026-07-12T19:40:00",
+      "deleted": false
+    },
+    {
+      "id": "sqm-3",
+      "questionId": "sq-4",
+      "senderUserId": "u-stu-04",
+      "senderRole": "student",
+      "kind": "followup",
+      "body": "ありがとうございます！理解できました。",
+      "attachments": [],
+      "createdAt": "2026-07-12T20:05:00",
+      "deleted": false
+    },
+    {
+      "id": "sqm-4",
+      "questionId": "sq-5",
+      "senderUserId": "u-tea-07",
+      "senderRole": "teacher",
+      "kind": "answer",
+      "body": "「けり」は主に「過去（〜た）」と「詠嘆（〜だなあ）」です。会話文や和歌では詠嘆になりやすいです。",
+      "attachments": [],
+      "createdAt": "2026-07-13T20:40:00",
+      "deleted": false
+    },
+    {
+      "id": "sqm-5",
+      "questionId": "sq-5",
+      "senderUserId": "u-stu-07",
+      "senderRole": "student",
+      "kind": "followup",
+      "body": "和歌のときはいつも詠嘆になりますか？",
+      "attachments": [],
+      "createdAt": "2026-07-14T09:00:00",
+      "deleted": false
+    },
+    {
+      "id": "sqm-82a883c6",
+      "questionId": "sq-6",
+      "senderUserId": "u-tea-01",
+      "senderRole": "teacher",
+      "kind": "answer",
+      "body": "ここはこう考えます。",
+      "attachments": [],
+      "createdAt": "2026-07-13T23:30:04.775Z",
+      "deleted": false
+    },
+    {
+      "id": "sqm-e0f06df9",
+      "questionId": "sq-6",
+      "senderUserId": "u-stu-08",
+      "senderRole": "student",
+      "kind": "followup",
+      "body": "追加で聞きたいです",
+      "attachments": [],
+      "createdAt": "2026-07-13T23:30:28.214Z",
+      "deleted": false
+    },
+    {
+      "id": "sqm-d2ec5dd0",
+      "questionId": "sq-dbf00ec1",
+      "senderUserId": "u-tea-01",
+      "senderRole": "teacher",
+      "kind": "answer",
+      "body": "いいいいい",
+      "attachments": [],
+      "createdAt": "2026-07-14T04:09:09.432Z",
+      "deleted": false
+    }
+  ],
+  "shiftAvailabilities": [],
+  "studentAvailabilities": [],
+  "schedules": [],
+  "supplementarySlots": [
+    {
+      "id": "sup-01",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-02",
+      "date": "2026-07-15",
+      "period": 3,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-02",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-02",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-04",
+      "date": "2026-07-15",
+      "period": 1,
+      "subjects": [
+        "数学"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-04",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-03",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-06",
+      "date": "2026-07-15",
+      "period": 3,
+      "subjects": [
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-06",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-04",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-10",
+      "date": "2026-07-15",
+      "period": 3,
+      "subjects": [
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-10",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-05",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-03",
+      "date": "2026-07-16",
+      "period": 1,
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-03",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-06",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-05",
+      "date": "2026-07-16",
+      "period": 3,
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-05",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-07",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-07",
+      "date": "2026-07-16",
+      "period": 1,
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-07",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-08",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-09",
+      "date": "2026-07-16",
+      "period": 3,
+      "subjects": [
+        "数学",
+        "物理"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-09",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-09",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-04",
+      "date": "2026-07-17",
+      "period": 3,
+      "subjects": [
+        "数学"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-04",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-10",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-06",
+      "date": "2026-07-17",
+      "period": 1,
+      "subjects": [
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-06",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-11",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-10",
+      "date": "2026-07-17",
+      "period": 1,
+      "subjects": [
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-10",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-12",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-01",
+      "date": "2026-07-18",
+      "period": 1,
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "closed",
+      "createdByUserId": "u-tea-01",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-13",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-03",
+      "date": "2026-07-18",
+      "period": 3,
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-03",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-14",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-05",
+      "date": "2026-07-18",
+      "period": 1,
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-05",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-15",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-07",
+      "date": "2026-07-18",
+      "period": 3,
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-07",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-16",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-04",
+      "date": "2026-07-19",
+      "period": 1,
+      "subjects": [
+        "数学"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-04",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-17",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-06",
+      "date": "2026-07-19",
+      "period": 3,
+      "subjects": [
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-06",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-18",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-08",
+      "date": "2026-07-19",
+      "period": 1,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-08",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-19",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-10",
+      "date": "2026-07-19",
+      "period": 3,
+      "subjects": [
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-10",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-20",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-01",
+      "date": "2026-07-20",
+      "period": 3,
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-01",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-21",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-05",
+      "date": "2026-07-20",
+      "period": 3,
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-05",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-22",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-07",
+      "date": "2026-07-20",
+      "period": 1,
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-07",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-23",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-02",
+      "date": "2026-07-21",
+      "period": 1,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-02",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-24",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-04",
+      "date": "2026-07-21",
+      "period": 3,
+      "subjects": [
+        "数学"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-04",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-25",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-06",
+      "date": "2026-07-21",
+      "period": 1,
+      "subjects": [
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-06",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-26",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-08",
+      "date": "2026-07-21",
+      "period": 3,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-08",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-27",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-01",
+      "date": "2026-07-22",
+      "period": 1,
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-01",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-28",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-03",
+      "date": "2026-07-22",
+      "period": 3,
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-03",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-29",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-05",
+      "date": "2026-07-22",
+      "period": 1,
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-05",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-30",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-07",
+      "date": "2026-07-22",
+      "period": 3,
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-07",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-31",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-09",
+      "date": "2026-07-22",
+      "period": 1,
+      "subjects": [
+        "数学",
+        "物理"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-09",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-32",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-02",
+      "date": "2026-07-23",
+      "period": 3,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-02",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-33",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-04",
+      "date": "2026-07-23",
+      "period": 1,
+      "subjects": [
+        "数学"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-04",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-34",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-06",
+      "date": "2026-07-23",
+      "period": 3,
+      "subjects": [
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-06",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-35",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-08",
+      "date": "2026-07-23",
+      "period": 1,
+      "subjects": [
+        "英語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-08",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-36",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-10",
+      "date": "2026-07-23",
+      "period": 3,
+      "subjects": [
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-10",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-37",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-01",
+      "date": "2026-07-24",
+      "period": 3,
+      "subjects": [
+        "数学",
+        "理科"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-01",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-38",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-03",
+      "date": "2026-07-24",
+      "period": 1,
+      "subjects": [
+        "国語",
+        "社会"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-03",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-39",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-05",
+      "date": "2026-07-24",
+      "period": 3,
+      "subjects": [
+        "英語",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-05",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-40",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-07",
+      "date": "2026-07-24",
+      "period": 1,
+      "subjects": [
+        "社会",
+        "国語"
+      ],
+      "capacity": 1,
+      "note": "欠席分の振替に対応します。",
+      "status": "open",
+      "createdByUserId": "u-tea-07",
+      "createdAt": "2026-07-14T09:00:00"
+    },
+    {
+      "id": "sup-41",
+      "classroomId": "cls-hanno",
+      "teacherId": "tea-09",
+      "date": "2026-07-24",
+      "period": 3,
+      "subjects": [
+        "数学",
+        "物理"
+      ],
+      "capacity": 1,
+      "note": "",
+      "status": "open",
+      "createdByUserId": "u-tea-09",
+      "createdAt": "2026-07-14T09:00:00"
+    }
+  ],
+  "supplementaryBookings": [
+    {
+      "id": "sbk-demo1",
+      "slotId": "sup-01",
+      "studentId": "stu-01",
+      "subject": "英語",
+      "note": "欠席した回の振替をお願いします。",
+      "status": "cancelled",
+      "bookedByUserId": "u-stu-01",
+      "createdAt": "2026-07-14T10:00:00",
+      "cancelledAt": "2026-07-14T04:03:48.722Z",
+      "cancelledByUserId": "u-stu-01"
+    },
+    {
+      "id": "sbk-33d2b607",
+      "slotId": "sup-20",
+      "studentId": "stu-01",
+      "subject": "数学",
+      "note": "",
+      "status": "confirmed",
+      "bookedByUserId": "u-stu-01",
+      "createdAt": "2026-07-14T04:07:40.790Z",
+      "cancelledAt": null,
+      "cancelledByUserId": null
+    }
+  ],
+  "sosAlerts": []
+}

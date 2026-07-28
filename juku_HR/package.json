@@ -1,0 +1,41 @@
+{
+  "name": "juku-hr",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force",
+    "db:studio": "prisma studio",
+    "verify:http": "tsx scripts/verify-redirects.ts",
+    "check:password": "tsx scripts/check-password.ts",
+    "verify": "cross-env DATABASE_URL=file:./test.db prisma migrate deploy && cross-env DATABASE_URL=file:./test.db tsx scripts/verify-shifts.ts && cross-env DATABASE_URL=file:./test.db tsx scripts/verify-payroll.ts && cross-env DATABASE_URL=file:./test.db tsx scripts/verify-teacher-access.ts && cross-env DATABASE_URL=file:./test.db tsx scripts/verify-cards.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "next": "16.2.10",
+    "prisma": "^7.8.0",
+    "qrcode": "^1.5.4",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
+    "tsx": "^4.23.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
+    "dotenv": "^17.4.2",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic UI",
+    "Meiryo", system-ui, sans-serif;
+}
+
+body {
+  background: #f6f7f9;
+  color: #171717;
+  font-family: var(--font-sans);
+}
+
+/* 欠席者カードの印刷。カード本体だけを紙に出す。 */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: 1px solid #999 !important;
+  }
+  @page {
+    margin: 12mm;
+  }
+}

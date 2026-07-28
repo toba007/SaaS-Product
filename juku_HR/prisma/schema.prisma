@@ -1,0 +1,421 @@
+// 塾HR - データモデル
+// 注: SQLite は enum 非対応のため、区分値は String + lib/constants.ts の定数で表現する。
+//     日付は timezone 事故を避けるため "YYYY-MM-DD" の String、時刻は "HH:MM" の String で持つ。
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ---------- マスタ ----------
+
+/// 科目（英語・数学・国語・理科・社会 など）
+model Subject {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  /// 表示順
+  order Int    @default(0)
+
+  lessons  Lesson[]
+  teachers TeacherSubject[]
+}
+
+/// 教室（個別ブース・集団教室）
+model Room {
+  id       Int    @id @default(autoincrement())
+  name     String @unique
+  /// GROUP | INDIVIDUAL
+  format   String
+  /// 収容できる生徒数（個別ブースなら 2 など）
+  capacity Int    @default(1)
+
+  lessons Lesson[]
+}
+
+/// コマ（1限 17:00-18:20 など）
+/// コマの時間帯は期タイプごとに違う。レギュラーは夕方から3コマだが、
+/// 講習期間は朝から始まって1日5コマ前後になる。そのため termKind ごとに持つ。
+model Period {
+  id        Int    @id @default(autoincrement())
+  /// REGULAR | SUMMER | WINTER | SPRING
+  termKind  String @default("REGULAR")
+  name      String
+  startTime String
+  endTime   String
+  order     Int    @default(0)
+
+  lessons     Lesson[]
+  requests    ShiftRequest[]
+  assignments ShiftAssignment[]
+  duties      DutyRecord[]
+
+  // 「夏期講習の1限」と「レギュラーの1限」は別物なので、名前だけでは一意にならない
+  @@unique([termKind, name])
+  @@index([termKind, order])
+}
+
+/// 講師
+model Teacher {
+  id           Int     @id @default(autoincrement())
+  name         String
+  kana         String  @default("")
+  /// FULL_TIME(社員) | PART_TIME(時間講師) | STUDENT(学生講師)
+  employment   String  @default("PART_TIME")
+  email        String?
+  phone        String?
+  active       Boolean @default(true)
+  /// 二次元コード打刻用。印刷して配るカードに入る。打刻しかできない。
+  /// カードを配り直せるように、作り直せる前提で持つ。
+  /// ログインは不要。教室に置いた端末やカードで打刻するため。
+  punchToken   String  @unique @default(cuid())
+
+  // --- ログイン ---
+  /// ログインID。管理者も講師も同じ入力欄から入る。
+  loginId      String  @unique
+  /// scrypt のハッシュ。"salt:hash" の形。平文は保存しない。
+  passwordHash String
+  /// ADMIN(管理者画面) | TEACHER(講師画面)
+  /// 塾の社員は授業も持つので、講師レコードに役割を持たせている。
+  role         String  @default("TEACHER")
+
+  // --- 給与計算用（PDF: コマ給と時給の併用、交通費は定期あり/なしで別計算） ---
+  /// 時給（事務作業に適用）円
+  hourlyWage    Int @default(0)
+  /// 交通費: 定期券あり期間の1日あたり支給額（通常は0）円
+  commuteRegular Int @default(0)
+  /// 交通費: 定期券なし期間（講習期間など）の1日あたり支給額 円
+  commuteSpot    Int @default(0)
+
+  subjects    TeacherSubject[]
+  lessons     Lesson[]
+  cards       AbsenceCard[]
+  requests    ShiftRequest[]
+  assignments ShiftAssignment[]
+  punches     Punch[]
+  duties      DutyRecord[]
+  adminWorks  AdminWork[]
+  messages    MessageRecipient[]
+  wageRates   WageRate[]
+}
+
+/// 授業形態ごとのコマ給。
+/// 同じ講師でも、集団を持つ日と個別を持つ日で単価が変わるため、講師×形態で持つ。
+/// （PDF の事例「同じ講師でも指導内容で時給が変わる」に対応）
+model WageRate {
+  id        Int    @id @default(autoincrement())
+  teacherId Int
+  /// GROUP(集団) | INDIV_1(個別1対1) | INDIV_2(個別1対2)
+  style     String
+  /// 1コマあたりの金額（円）
+  amount    Int    @default(0)
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([teacherId, style])
+}
+
+/// 講師が担当できる科目（時間割自動作成で使う科目適性）
+model TeacherSubject {
+  teacherId Int
+  subjectId Int
+  /// 1=可 2=得意 3=専門 (時間割最適化の優先度に使う)
+  level     Int @default(1)
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, subjectId])
+}
+
+/// 生徒
+model Student {
+  id     Int     @id @default(autoincrement())
+  name   String
+  kana   String  @default("")
+  /// 小1..小6 / 中1..中3 / 高1..高3
+  grade  String
+  school String  @default("")
+  active Boolean @default(true)
+
+  attendances Attendance[]
+  cards       AbsenceCard[]
+}
+
+// ---------- 塾の予定 ----------
+
+/// 塾の予定（休校日・行事）。管理者が入れ、講師側のカレンダーにも出る。
+/// 期間で持つので、1日の予定も「休校週間」のような連続した予定も同じ形で入る。
+model SchoolEvent {
+  id    Int    @id @default(autoincrement())
+  /// "YYYY-MM-DD"（1日だけなら startDate と endDate を同じにする）
+  startDate String
+  endDate   String
+  title     String
+  /// CLOSED(休校日・閉室) | EVENT(行事)
+  /// CLOSED の日はシフト希望を出せない。無駄な入力と、休校日への割当事故を防ぐため。
+  kind      String @default("EVENT")
+  note      String @default("")
+
+  createdAt DateTime @default(now())
+
+  @@index([startDate, endDate])
+}
+
+// ---------- シフト ----------
+
+/// 期（レギュラー / 夏期講習 / 冬期講習 / 春期講習）
+/// 講習期間はコマの組み方も交通費の扱いも変わるので、期を明示的に持つ。
+/// kind=REGULAR は定期券あり前提、講習は定期券なし前提で交通費を計算する。
+model Term {
+  id        Int    @id @default(autoincrement())
+  name      String
+  /// REGULAR | SUMMER | WINTER | SPRING
+  kind      String @default("REGULAR")
+  /// "YYYY-MM-DD"
+  startDate String
+  endDate   String
+
+  requests    ShiftRequest[]
+  assignments ShiftAssignment[]
+
+  @@index([startDate, endDate])
+}
+
+/// 講師が出したシフト希望（コマ単位）
+/// 「集める人の忖度が入る」ことへの対策として、希望は講師本人が入れた記録として残す。
+model ShiftRequest {
+  id        Int    @id @default(autoincrement())
+  teacherId Int
+  /// "YYYY-MM-DD"
+  date      String
+  periodId  Int
+  termId    Int?
+  /// OK(出られる) | PREFER(できれば入りたい) | NG(出られない)
+  status    String @default("OK")
+  /// 「テスト前は避けたい」等、講師の一言
+  note      String @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  period  Period  @relation(fields: [periodId], references: [id])
+  term    Term?   @relation(fields: [termId], references: [id])
+
+  @@unique([teacherId, date, periodId])
+  @@index([date])
+}
+
+/// 確定したシフト（この講師はこの日のこのコマに入る）
+/// 実際にどの生徒・どのブースを見るか（Lesson）はこの後の工程で決める。
+model ShiftAssignment {
+  id        Int    @id @default(autoincrement())
+  teacherId Int
+  date      String
+  periodId  Int
+  termId    Int?
+  note      String @default("")
+
+  createdAt DateTime @default(now())
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  period  Period  @relation(fields: [periodId], references: [id])
+  term    Term?   @relation(fields: [termId], references: [id])
+
+  @@unique([teacherId, date, periodId])
+  @@index([date])
+}
+
+// ---------- 勤怠 ----------
+// 学習塾特有の勤務形態にあわせる:
+//   - 1日に複数回の出退勤がある（Punch を1日に何本でも作れる）
+//   - 給与は「何コマ担当したか」で決まる部分がある（DutyRecord）
+//   - 授業以外に事務作業の時間がある（AdminWork）
+// ShiftAssignment は「予定」、ここにあるのは「実績」。当日の交代があるので別に持つ。
+
+/// 打刻（1回の出勤〜退勤）。1日に複数本ありうる。
+model Punch {
+  id        Int     @id @default(autoincrement())
+  teacherId Int
+  /// "YYYY-MM-DD"
+  date      String
+  /// "HH:MM"
+  inAt      String
+  /// 退勤前は null
+  outAt     String?
+  note      String  @default("")
+
+  createdAt DateTime @default(now())
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, date])
+  @@index([date])
+}
+
+/// その日に実際に担当したコマ（コマ給の計算根拠）
+/// コマ給は授業形態で変わるので、何を担当したかまで記録しないと給与が出せない。
+model DutyRecord {
+  id        Int    @id @default(autoincrement())
+  teacherId Int
+  date      String
+  periodId  Int
+  /// GROUP(集団) | INDIV_1(個別1対1) | INDIV_2(個別1対2)
+  style     String @default("GROUP")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  period  Period  @relation(fields: [periodId], references: [id])
+
+  @@unique([teacherId, date, periodId])
+  @@index([date])
+}
+
+/// 事務作業（時給の計算根拠）
+model AdminWork {
+  id        Int    @id @default(autoincrement())
+  teacherId Int
+  date      String
+  /// 何分やったか
+  minutes   Int
+  note      String @default("")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@index([teacherId, date])
+  @@index([date])
+}
+
+// ---------- 講師連絡 ----------
+
+/// 講師への連絡・アンケート
+model Message {
+  id    Int    @id @default(autoincrement())
+  title String
+  body  String
+  /// NOTICE(連絡) | SURVEY(アンケート)
+  kind  String @default("NOTICE")
+  /// アンケートの選択肢。1行1つ。空なら自由記述。
+  options String @default("")
+
+  createdAt DateTime @default(now())
+
+  recipients MessageRecipient[]
+}
+
+/// 誰に送ったか・読んだか・答えたか
+model MessageRecipient {
+  id        Int       @id @default(autoincrement())
+  messageId Int
+  teacherId Int
+  readAt    DateTime?
+  /// アンケートの回答
+  answer    String?
+  answeredAt DateTime?
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, teacherId])
+  @@index([teacherId])
+}
+
+// ---------- 授業 ----------
+
+/// 授業（1コマ・1教室・1講師ぶんの枠）
+model Lesson {
+  id        Int    @id @default(autoincrement())
+  /// "YYYY-MM-DD"
+  date      String
+  /// GROUP(集団) | INDIVIDUAL(個別)
+  format    String
+  /// 集団のクラス名など。個別は空でよい
+  title     String @default("")
+
+  periodId  Int
+  subjectId Int
+  teacherId Int
+  roomId    Int
+
+  period  Period  @relation(fields: [periodId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  room    Room    @relation(fields: [roomId], references: [id])
+
+  record      LessonRecord?
+  attendances Attendance[]
+  cards       AbsenceCard[]
+
+  createdAt DateTime @default(now())
+
+  @@index([date])
+  @@index([date, periodId])
+}
+
+/// 授業記録（進んだ内容・宿題）
+/// 集団授業では欠席者全員に共通の内容になるため、授業に対して1回だけ書けばよい。
+/// これが欠席者カードの下書きになる。
+model LessonRecord {
+  id        Int      @id @default(autoincrement())
+  lessonId  Int      @unique
+  /// 授業で進んだ内容
+  progress  String   @default("")
+  /// 宿題
+  homework  String   @default("")
+  /// 塾内向けの申し送り（カードには載せない）
+  note      String   @default("")
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+/// 出欠
+model Attendance {
+  id        Int    @id @default(autoincrement())
+  lessonId  Int
+  studentId Int
+  /// PRESENT(出席) | ABSENT(欠席) | LATE(遅刻) | MAKEUP(振替)
+  status    String @default("PRESENT")
+
+  lesson  Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([lessonId, studentId])
+  @@index([studentId])
+}
+
+/// 欠席者カード
+/// 進んだ内容・宿題は LessonRecord から複製して作るが、個別指導では生徒ごとに
+/// 中身が変わるため、カード側で上書きできるようにしている。
+/// カードは「実際に渡した紙の控え」に相当するので、渡した時点の内容を保持する。
+model AbsenceCard {
+  id        Int    @id @default(autoincrement())
+  lessonId  Int
+  studentId Int
+  /// カードに印字する担当講師（通常は lesson.teacher と同じ）
+  teacherId Int
+
+  progress String @default("")
+  homework String @default("")
+  /// その生徒だけへのひとこと
+  comment  String @default("")
+
+  /// DRAFT(下書き) | READY(渡す準備OK) | DELIVERED(受渡済)
+  status      String    @default("DRAFT")
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lesson  Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@unique([lessonId, studentId])
+  @@index([status])
+  @@index([studentId, status])
+}
