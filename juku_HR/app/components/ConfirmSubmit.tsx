@@ -7,15 +7,19 @@
 export function ConfirmSubmit({
   message,
   className,
+  formAction,
   children,
 }: {
   message: string;
   className?: string;
+  /** 同じ form に別の送信先を持たせたいときに使う（削除ボタンなど） */
+  formAction?: (formData: FormData) => void | Promise<void>;
   children: React.ReactNode;
 }) {
   return (
     <button
       type="submit"
+      formAction={formAction}
       className={className}
       onClick={(e) => {
         if (!window.confirm(message)) e.preventDefault();

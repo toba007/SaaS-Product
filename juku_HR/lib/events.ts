@@ -9,7 +9,15 @@ export type EventLite = {
   title: string;
   kind: string;
   note: string;
+  /** "HH:MM"。両方 null なら終日 */
+  startTime: string | null;
+  endTime: string | null;
 };
+
+/** 終日の予定か */
+export function isAllDay(e: { startTime: string | null }): boolean {
+  return e.startTime === null;
+}
 
 /** 期間が重なる塾の予定を取る */
 export async function eventsBetween(from: string, to: string): Promise<EventLite[]> {

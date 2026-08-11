@@ -1,11 +1,9 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../lib/generated/prisma/client";
+// 接続は lib/prisma と共有する。別々に張ると、同じ SQLite ファイルに
+// 2本つながることになり、_reset との間で書き込みが競合する。
+import { prisma } from "../lib/prisma";
 import { todayISO } from "../lib/constants";
 import { hashPassword } from "../lib/auth";
-
-const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" }),
-});
+import { resetAll } from "../scripts/_reset";
 
 /** today からの相対日で "YYYY-MM-DD" を作る */
 function dayOffset(offset: number): string {
@@ -24,27 +22,10 @@ function pick<T>(arr: T[], n: number): T[] {
 }
 
 async function main() {
-  // 何度流しても同じ状態になるように全消し（依存の深い順）
-  await prisma.schoolEvent.deleteMany();
-  await prisma.wageRate.deleteMany();
-  await prisma.messageRecipient.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.punch.deleteMany();
-  await prisma.dutyRecord.deleteMany();
-  await prisma.adminWork.deleteMany();
-  await prisma.absenceCard.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.lessonRecord.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.shiftAssignment.deleteMany();
-  await prisma.shiftRequest.deleteMany();
-  await prisma.term.deleteMany();
-  await prisma.teacherSubject.deleteMany();
-  await prisma.teacher.deleteMany();
-  await prisma.student.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.period.deleteMany();
-  await prisma.subject.deleteMany();
+  // 何度流しても同じ状態になるように全消し。
+  // 消す順番は scripts/_reset.ts に集約している。ここに同じ列挙を持つと、
+  // テーブルを足したときに必ずどちらかが漏れる（実際に漏れた）。
+  await resetAll();
 
   // ---- 科目 ----
   const subjectNames = ["英語", "数学", "国語", "理科", "社会"];
@@ -58,46 +39,72 @@ async function main() {
   };
 
   // ---- コマ ----
-  // コマの時間帯は期タイプごとに違う。
-  // レギュラーは学校の後なので夕方から3コマ。講習は学校が無いので朝から。
-  const periodDefsByKind: Record<string, { name: string; startTime: string; endTime: string }[]> = {
-    REGULAR: [
-      { name: "1限", startTime: "17:00", endTime: "18:20" },
-      { name: "2限", startTime: "18:30", endTime: "19:50" },
-      { name: "3限", startTime: "20:00", endTime: "21:20" },
-    ],
-    SUMMER: [
-      { name: "1限", startTime: "09:00", endTime: "10:20" },
-      { name: "2限", startTime: "10:30", endTime: "11:50" },
-      { name: "3限", startTime: "13:00", endTime: "14:20" },
-      { name: "4限", startTime: "14:30", endTime: "15:50" },
-      { name: "5限", startTime: "16:00", endTime: "17:20" },
-      { name: "6限", startTime: "17:30", endTime: "18:50" },
-    ],
-    WINTER: [
-      { name: "1限", startTime: "09:00", endTime: "10:20" },
-      { name: "2限", startTime: "10:30", endTime: "11:50" },
-      { name: "3限", startTime: "13:00", endTime: "14:20" },
-      { name: "4限", startTime: "14:30", endTime: "15:50" },
-    ],
-    SPRING: [
-      { name: "1限", startTime: "10:00", endTime: "11:20" },
-      { name: "2限", startTime: "11:30", endTime: "12:50" },
-      { name: "3限", startTime: "14:00", endTime: "15:20" },
-      { name: "4限", startTime: "15:30", endTime: "16:50" },
-    ],
-  };
+  //
+  // **ここは塾ごとに違う。** 実際の塾から聞いた例をそのまま入れてある。
+  // 小学生は下校が早いので17:40から40分授業、中学生は部活の後なので19:15から50分授業。
+  // 高校生は専用の枠を作らず、中学生と同じ枠を使う（lib/periods.ts の BAND_FALLBACK）。
+  //
+  // 講習期間のコマ割りは塾から未確認なので、動作確認用の仮の値。
+  // 本番では画面から登録してもらう。
+  const periodDefs: {
+    termKind: string;
+    gradeBand: string;
+    name: string;
+    startTime: string;
+    endTime: string;
+  }[] = [
+    { termKind: "REGULAR", gradeBand: "ELEM", name: "1限", startTime: "17:40", endTime: "18:20" },
+    { termKind: "REGULAR", gradeBand: "ELEM", name: "2限", startTime: "18:25", endTime: "19:05" },
+    { termKind: "REGULAR", gradeBand: "JUNIOR", name: "1限", startTime: "19:15", endTime: "20:05" },
+    { termKind: "REGULAR", gradeBand: "JUNIOR", name: "2限", startTime: "20:10", endTime: "21:00" },
+    { termKind: "REGULAR", gradeBand: "JUNIOR", name: "3限", startTime: "21:05", endTime: "21:55" },
+    // 講習期間（仮）。学年で分けず、全学年を同じ枠で回す前提にしてある。
+    { termKind: "SUMMER", gradeBand: "ALL", name: "1限", startTime: "09:00", endTime: "10:20" },
+    { termKind: "SUMMER", gradeBand: "ALL", name: "2限", startTime: "10:30", endTime: "11:50" },
+    { termKind: "SUMMER", gradeBand: "ALL", name: "3限", startTime: "13:00", endTime: "14:20" },
+    { termKind: "SUMMER", gradeBand: "ALL", name: "4限", startTime: "14:30", endTime: "15:50" },
+    { termKind: "SUMMER", gradeBand: "ALL", name: "5限", startTime: "16:00", endTime: "17:20" },
+    { termKind: "SUMMER", gradeBand: "ALL", name: "6限", startTime: "17:30", endTime: "18:50" },
+    { termKind: "WINTER", gradeBand: "ALL", name: "1限", startTime: "09:00", endTime: "10:20" },
+    { termKind: "WINTER", gradeBand: "ALL", name: "2限", startTime: "10:30", endTime: "11:50" },
+    { termKind: "WINTER", gradeBand: "ALL", name: "3限", startTime: "13:00", endTime: "14:20" },
+    { termKind: "WINTER", gradeBand: "ALL", name: "4限", startTime: "14:30", endTime: "15:50" },
+    { termKind: "SPRING", gradeBand: "ALL", name: "1限", startTime: "10:00", endTime: "11:20" },
+    { termKind: "SPRING", gradeBand: "ALL", name: "2限", startTime: "11:30", endTime: "12:50" },
+    { termKind: "SPRING", gradeBand: "ALL", name: "3限", startTime: "14:00", endTime: "15:20" },
+    { termKind: "SPRING", gradeBand: "ALL", name: "4限", startTime: "15:30", endTime: "16:50" },
+  ];
 
-  const allPeriods = await Promise.all(
-    Object.entries(periodDefsByKind).flatMap(([termKind, defs]) =>
-      defs.map((p, i) => prisma.period.create({ data: { ...p, termKind, order: i } })),
-    ),
-  );
-  // レギュラーのコマ。通常授業・出欠まわりはこれを使う。
-  const periods = allPeriods.filter((p) => p.termKind === "REGULAR");
+  const orderSeq = new Map<string, number>();
+  const allPeriods: Awaited<ReturnType<typeof prisma.period.create>>[] = [];
+  for (const d of periodDefs) {
+    const key = `${d.termKind}:${d.gradeBand}`;
+    const order = orderSeq.get(key) ?? 0;
+    orderSeq.set(key, order + 1);
+    allPeriods.push(await prisma.period.create({ data: { ...d, order } }));
+  }
+
+  // レギュラーのコマ。学年帯をまたいで時刻順に並べる（1日の出勤枠はこの並び）。
+  const periods = allPeriods
+    .filter((p) => p.termKind === "REGULAR")
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+  const elemPeriods = periods.filter((p) => p.gradeBand === "ELEM");
+  const juniorPeriods = periods.filter((p) => p.gradeBand === "JUNIOR");
+
+  // ---- 塾の設定 ----
+  // 個別は1人が4人まで、集団教室2つ、個別ブース3つ、という塾の例。
+  await prisma.schoolSetting.create({
+    data: { id: 1, indivMaxStudents: 4, maxGroupRooms: 2, maxIndivRooms: 3 },
+  });
 
   // ---- 期 ----
-  // 講習期間はコマの組み方も交通費の扱いも変わる。今日を含む年で作る。
+  //
+  // レギュラーは **1学期(4〜7月) / 2学期(9〜12月) / 3学期(1〜3月)** の3本。
+  // 8月は夏期講習なので学期に含めない。
+  // **講師へのシフト提出依頼は、この学期ごとに行う。**
+  //
+  // 日単位の区切りは年によって変わるので、ここの日付は仮の値。
+  // 本番では運用を始める年の日付を登録してもらう。
   const thisYear = new Date().getFullYear();
   await prisma.term.createMany({
     data: [
@@ -108,7 +115,7 @@ async function main() {
         endDate: `${thisYear}-04-05`,
       },
       {
-        name: `${thisYear}年度 レギュラー`,
+        name: `${thisYear}年度 1学期`,
         kind: "REGULAR",
         startDate: `${thisYear}-04-06`,
         endDate: `${thisYear}-07-20`,
@@ -120,7 +127,7 @@ async function main() {
         endDate: `${thisYear}-08-31`,
       },
       {
-        name: `${thisYear}年度 レギュラー(後期)`,
+        name: `${thisYear}年度 2学期`,
         kind: "REGULAR",
         startDate: `${thisYear}-09-01`,
         endDate: `${thisYear}-12-22`,
@@ -130,6 +137,12 @@ async function main() {
         kind: "WINTER",
         startDate: `${thisYear}-12-23`,
         endDate: `${thisYear + 1}-01-07`,
+      },
+      {
+        name: `${thisYear}年度 3学期`,
+        kind: "REGULAR",
+        startDate: `${thisYear + 1}-01-08`,
+        endDate: `${thisYear + 1}-03-24`,
       },
     ],
   });
@@ -189,6 +202,25 @@ async function main() {
     { name: "山本 翔", kana: "ヤマモト カケル", loginId: "yamamoto", role: "TEACHER", employment: "STUDENT", hourlyWage: 1100, rates: { INDIV_1: 1800, INDIV_2: 1900 }, commuteRegular: 0, commuteSpot: 550, subjects: ["理科", "数学"] },
     { name: "中村 結衣", kana: "ナカムラ ユイ", loginId: "nakamura", role: "TEACHER", employment: "PART_TIME", hourlyWage: 1250, rates: { GROUP: 2500, INDIV_1: 2100, INDIV_2: 2300 }, commuteRegular: 0, commuteSpot: 750, subjects: ["国語", "英語"] },
   ];
+  // ---- 賃金項目 ----
+  // 明細に並ぶ項目。教室が自由に作るものなので、ここで作るのは初期の一式。
+  // 「模試監督」は授業形態に対応しない項目の例（実績が payItemId で直接指す）。
+  const payItemDefs = [
+    { key: "GROUP", name: "集団授業", basis: "PER_SLOT", source: "", legacyStyle: "GROUP", order: 1 },
+    { key: "INDIV_1", name: "個別指導 1対1", basis: "PER_SLOT", source: "", legacyStyle: "INDIV_1", order: 2 },
+    { key: "INDIV_2", name: "個別指導 1対2", basis: "PER_SLOT", source: "", legacyStyle: "INDIV_2", order: 3 },
+    { key: "MOCK", name: "模試監督", basis: "PER_SLOT", source: "", legacyStyle: null, order: 4 },
+    { key: "ADMIN", name: "事務作業", basis: "PER_HOUR", source: "ADMIN", legacyStyle: null, order: 5 },
+    { key: "COMMUTE_REG", name: "交通費（定期あり期間）", basis: "PER_DAY", source: "REGULAR", legacyStyle: null, order: 6 },
+    { key: "COMMUTE_SPOT", name: "交通費（定期なし期間）", basis: "PER_DAY", source: "SPOT", legacyStyle: null, order: 7 },
+    { key: "ALLOWANCE", name: "役職手当", basis: "MONTHLY", source: "", legacyStyle: null, order: 8 },
+  ];
+  const payItems: Record<string, { id: number }> = {};
+  for (const d of payItemDefs) {
+    const { key, ...data } = d;
+    payItems[key] = await prisma.payItem.create({ data });
+  }
+
   const teachers = [];
   for (const t of teacherDefs) {
     const { subjects: subs, rates, ...rest } = t;
@@ -205,6 +237,29 @@ async function main() {
           },
           wageRates: {
             create: Object.entries(rates).map(([style, amount]) => ({ style, amount })),
+          },
+          // 単価は賃金項目ごとに持つ。空欄（未設定）と0円は区別するので、
+          // 金額が0のものは行を作らない。
+          payRates: {
+            create: [
+              ...Object.entries(rates).map(([style, amount]) => ({
+                payItemId: payItems[style].id,
+                amount,
+              })),
+              { payItemId: payItems.ADMIN.id, amount: rest.hourlyWage },
+              ...(rest.commuteRegular > 0
+                ? [{ payItemId: payItems.COMMUTE_REG.id, amount: rest.commuteRegular }]
+                : []),
+              { payItemId: payItems.COMMUTE_SPOT.id, amount: rest.commuteSpot },
+              // 模試監督と役職手当は社員だけが持つ想定。
+              // 月額固定の項目は、単価を入れた講師にだけ毎月付く。
+              ...(rest.role === "ADMIN"
+                ? [
+                    { payItemId: payItems.MOCK.id, amount: 2000 },
+                    { payItemId: payItems.ALLOWANCE.id, amount: 15000 },
+                  ]
+                : []),
+            ],
           },
         },
       }),
@@ -229,6 +284,150 @@ async function main() {
         },
       }),
     );
+  }
+
+  // ---- 生徒の受講科目とクラス編成 ----
+  // 入塾のときに聞く「何を取るか」。集団のクラス分けはここが出発点になる。
+  //
+  // 中1〜中3を「集団の学年」として扱い、英語・数学は集団、国語は個別で取らせる。
+  // わざと **中3の英語だけクラスを作らない** ようにして、
+  // 「受講しているのにクラスが無い」状態が画面で見えるようにする（要件 AC-27）。
+  const GROUP_GRADES = ["中1", "中2", "中3"];
+  const groupSubjects = ["英語", "数学"];
+
+  let studentSubjectCount = 0;
+  for (const s of students) {
+    if (GROUP_GRADES.includes(s.grade)) {
+      for (const name of groupSubjects) {
+        await prisma.studentSubject.create({
+          data: { studentId: s.id, subjectId: byName(name).id, format: "GROUP" },
+        });
+        studentSubjectCount++;
+      }
+    }
+    // 学年を問わず、3人に1人は国語を個別で取る。
+    // 週コマ数（生徒に聞いた「量」）も入れる。ここが 0 だと配置のしようが無い。
+    if (s.id % 3 === 0) {
+      await prisma.studentSubject.create({
+        data: {
+          studentId: s.id,
+          subjectId: byName("国語").id,
+          format: "INDIV_2",
+          slotsPerWeek: 1,
+        },
+      });
+      studentSubjectCount++;
+    }
+  }
+
+  // ---- 個別の配置 ----
+  //
+  // 「田中さんは毎週火曜2限に国語」。**これは入力ではなく決めた結果。**
+  // 担当できる講師がいつ来られるかを見て人が決めたもの、という位置づけ。
+  //
+  // わざと**一部だけ**入れてある。残りは「配置が足りない生徒」として画面に出て、
+  // 枠を足す操作を試せるようにするため（集団の未配属と同じ考え方）。
+  const regularTerm = await prisma.term.findFirst({
+    where: { kind: "REGULAR", startDate: { lte: `${thisYear}-07-20` } },
+    orderBy: { startDate: "asc" },
+  });
+  const indivLinks = await prisma.studentSubject.findMany({
+    where: { format: { startsWith: "INDIV" } },
+    orderBy: { id: "asc" },
+  });
+
+  let scheduleCount = 0;
+  if (regularTerm) {
+    // 学年帯ごとのコマを使う。小学生を中学生の時間帯に置かない。
+    const studentById = new Map(students.map((st) => [st.id, st]));
+    for (const [i, link] of indivLinks.entries()) {
+      // 4人に1人はわざと配置しないでおく
+      if (i % 4 === 3) continue;
+      const st = studentById.get(link.studentId);
+      if (!st) continue;
+      const pool = st.grade.startsWith("小") ? elemPeriods : juniorPeriods;
+      if (pool.length === 0) continue;
+
+      await prisma.studentSchedule.create({
+        data: {
+          studentSubjectId: link.id,
+          // 火曜か木曜に寄せる。同じ枠に集めると 1対n でまとめられる。
+          dayOfWeek: i % 2 === 0 ? 2 : 4,
+          periodId: pool[i % pool.length].id,
+          fromDate: regularTerm.startDate,
+          toDate: regularTerm.endDate,
+        },
+      });
+      scheduleCount++;
+    }
+  }
+
+  // クラスの時間割は毎週同じローテーション。
+  // 月曜の中1は「Ⅰが英英数、Ⅱが数数英」という組み方にしてある。
+  // 2クラスが同じ3コマを科目を入れ替えて使うので、教室2つ・講師2人で回る。
+  // クラスは学年帯のコマを使う。中1のクラスに小学生のコマを割り当てないこと。
+  const periodsOfGrade = (grade: string) =>
+    grade.startsWith("小") ? elemPeriods : juniorPeriods;
+  const classPlan: {
+    grade: string;
+    subject: string;
+    level: number;
+    /** [曜日, コマの並び順] */
+    slots: [number, number][];
+  }[] = [
+    // 中1：月曜 Ⅰ=英英数 / Ⅱ=数数英
+    { grade: "中1", subject: "英語", level: 1, slots: [[1, 0], [1, 1]] },
+    { grade: "中1", subject: "数学", level: 1, slots: [[1, 2]] },
+    { grade: "中1", subject: "数学", level: 2, slots: [[1, 0], [1, 1]] },
+    { grade: "中1", subject: "英語", level: 2, slots: [[1, 2]] },
+    // 中2：火曜。英語は3レベル、数学は2レベル（人数で数が変わることの再現）
+    { grade: "中2", subject: "英語", level: 1, slots: [[2, 0]] },
+    { grade: "中2", subject: "英語", level: 2, slots: [[2, 1]] },
+    { grade: "中2", subject: "英語", level: 3, slots: [[2, 2]] },
+    { grade: "中2", subject: "数学", level: 1, slots: [[4, 0]] },
+    { grade: "中2", subject: "数学", level: 2, slots: [[4, 1]] },
+    // 中3：数学だけ。英語はわざと作らず、未配属の警告を出す
+    { grade: "中3", subject: "数学", level: 1, slots: [[3, 0], [3, 1]] },
+  ];
+
+  const classGroups = [];
+  for (const c of classPlan) {
+    const subject = byName(c.subject);
+    const level = ["", "Ⅰ", "Ⅱ", "Ⅲ"][c.level];
+    classGroups.push(
+      await prisma.classGroup.create({
+        data: {
+          name: `${c.grade}${subject.name}${level}`,
+          grade: c.grade,
+          subjectId: subject.id,
+          level: c.level,
+          capacity: 8,
+          fromDate: `${thisYear}-04-01`,
+          toDate: `${thisYear + 1}-03-31`,
+          sessions: {
+            create: c.slots.map(([dow, order]) => ({
+              dayOfWeek: dow,
+              periodId: (periodsOfGrade(c.grade)[order] ?? periodsOfGrade(c.grade)[0]).id,
+            })),
+          },
+        },
+      }),
+    );
+  }
+
+  // 振り分けは人がやるものなので、seed では一部だけ入れておく。
+  // 残りが「未配属」として画面に出て、ドラッグして入れる操作を試せる。
+  let enrollCount = 0;
+  for (const cg of classGroups) {
+    const roster = students.filter((s) => s.grade === cg.grade);
+    // レベルごとに散らし、各クラス2人ずつだけ入れる
+    const members = roster.filter((s) => s.id % 3 === cg.level % 3).slice(0, 2);
+    for (const s of members) {
+      await prisma.classEnrollment.create({
+        data: { classGroupId: cg.id, studentId: s.id },
+      });
+      enrollCount++;
+    }
   }
 
   // ---- 授業（過去5日ぶん + 今日）----
@@ -269,7 +468,10 @@ async function main() {
           date,
           format: "GROUP",
           title: gc.title,
-          periodId: periods[gi % periods.length].id,
+          periodId: (() => {
+            const ps = periodsOfGrade(gc.grade);
+            return ps[gi % ps.length].id;
+          })(),
           subjectId: subject.id,
           teacherId: teacher.id,
           roomId: groupRooms[gi % groupRooms.length].id,
@@ -353,7 +555,7 @@ async function main() {
           date,
           format: "INDIVIDUAL",
           title: "",
-          periodId: periods[1].id,
+          periodId: juniorPeriods[ri % juniorPeriods.length].id,
           subjectId,
           teacherId: teacher.id,
           roomId: room.id,
@@ -419,9 +621,12 @@ async function main() {
   const termOf = (date: string) =>
     terms.find((t) => date >= t.startDate && date <= t.endDate) ?? null;
   // その日のコマ。期の登録が無い日はレギュラー扱い。
+  // その日の出勤枠。学年帯をまたいで時刻順に並べる（小2限のあとに中1限が来る）。
   const periodsOf = (date: string) => {
     const kind = termOf(date)?.kind ?? "REGULAR";
-    return allPeriods.filter((p) => p.termKind === kind);
+    return allPeriods
+      .filter((p) => p.termKind === kind)
+      .sort((a, b) => a.startTime.localeCompare(b.startTime));
   };
 
   // 今月と来月ぶん
@@ -463,7 +668,8 @@ async function main() {
       // 講習期間は朝から6コマあるので、その日のコマタイプに合ったコマで希望を作る
       for (const p of periodsOf(date)) {
         // 遅いコマまで出られる人ばかりではない。学生講師は最終コマを避けがち。
-        const isLast = p.order === periodsOf(date).length - 1;
+        const dayPeriods = periodsOf(date);
+        const isLast = p.id === dayPeriods[dayPeriods.length - 1].id;
         if (t.employment === "STUDENT" && isLast && status !== "NG") {
           requestRows.push({
             teacherId: t.id,
@@ -579,7 +785,7 @@ async function main() {
 
     const myPeriods = list
       .map((a) => allPeriods.find((p) => p.id === a.periodId)!)
-      .sort((x, y) => x.order - y.order);
+      .sort((x, y) => x.startTime.localeCompare(y.startTime));
     const first = myPeriods[0];
     const last = myPeriods[myPeriods.length - 1];
 
@@ -664,7 +870,8 @@ async function main() {
       `          授業${await prisma.lesson.count()} 欠席カード${cardCount} 期${terms.length}\n` +
       `          シフト希望${requestRows.length} 確定${assignmentRows.length}\n` +
       `          勤怠: コマ実績${dutyRows.length} 打刻${punchRows.length} 事務作業${adminRows.length}\n` +
-      `          講師連絡${await prisma.message.count()}件 塾の予定${await prisma.schoolEvent.count()}件`,
+      `          講師連絡${await prisma.message.count()}件 塾の予定${await prisma.schoolEvent.count()}件\n` +
+      `          受講科目${studentSubjectCount} 個別の配置${scheduleCount} クラス${classGroups.length} 在籍${enrollCount}`,
   );
 }
 

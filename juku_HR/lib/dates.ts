@@ -82,6 +82,22 @@ export function shiftDays(iso: string, days: number): string {
   return todayISO(new Date(y, m - 1, d + days));
 }
 
+/**
+ * from から to までの日を "YYYY-MM-DD" の配列で返す（両端を含む）。
+ * 逆順に渡されたら空を返す。カレンダーではなく期間で扱う画面で使う。
+ */
+export function datesBetween(from: string, to: string): string[] {
+  if (from > to) return [];
+  const out: string[] = [];
+  let cur = from;
+  // 月をまたぐので Date に落として1日ずつ進める。上限は安全弁。
+  for (let i = 0; i < 400 && cur <= to; i++) {
+    out.push(cur);
+    cur = shiftDays(cur, 1);
+  }
+  return out;
+}
+
 /** date が期間内か（両端を含む）。文字列のまま比較できるのが "YYYY-MM-DD" の利点。 */
 export function withinTerm(
   date: string,

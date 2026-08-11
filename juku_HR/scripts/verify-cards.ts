@@ -6,6 +6,7 @@
 import { prisma } from "../lib/prisma";
 import { saveRecord, setAttendanceStatus, syncCardsForLesson } from "../lib/cards";
 import { ATTENDANCE, CARD_STATUS } from "../lib/constants";
+import { resetAll } from "./_reset";
 
 let failed = 0;
 function check(label: string, actual: unknown, expected: unknown) {
@@ -18,16 +19,7 @@ function check(label: string, actual: unknown, expected: unknown) {
 }
 
 async function reset() {
-  await prisma.absenceCard.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.lessonRecord.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.teacherSubject.deleteMany();
-  await prisma.teacher.deleteMany();
-  await prisma.student.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.period.deleteMany();
-  await prisma.subject.deleteMany();
+  await resetAll();
 }
 
 async function main() {

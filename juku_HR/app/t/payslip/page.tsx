@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAuth } from "@/lib/dal";
-import { computePayslip, formatMinutes, yen } from "@/lib/payroll";
-import { LESSON_STYLE_LABEL, formatDateJP } from "@/lib/constants";
+import { computePayslip, payLineDetail, yen } from "@/lib/payroll";
+import { formatDateJP } from "@/lib/constants";
 import { addMonths, formatYm, parseYm } from "@/lib/dates";
 
 export const dynamic = "force-dynamic";
@@ -75,36 +75,17 @@ export default async function MyPayslipPage({
           <h2 className="font-semibold text-slate-900 text-sm">内訳</h2>
         </div>
         <ul className="divide-y divide-slate-100">
-          {slip.styleLines.length === 0 ? (
-            <Row label="コマ給" detail="担当なし" amount={0} />
+          {slip.lines.length === 0 ? (
+            <Row label="実績" detail="この月の実績はありません" amount={0} />
           ) : (
-            slip.styleLines.map((l) => (
+            slip.lines.map((l) => (
               <Row
-                key={l.style}
-                label="コマ給"
-                detail={
-                  l.rate === null
-                    ? `${LESSON_STYLE_LABEL[l.style]} ${l.count}コマ`
-                    : `${LESSON_STYLE_LABEL[l.style]} ${l.count}コマ × ${yen(l.rate)}`
-                }
+                key={l.itemId}
+                label={l.name}
+                detail={payLineDetail(l)}
                 amount={l.amount}
               />
             ))
-          )}
-          <Row
-            label="事務作業"
-            detail={
-              slip.adminMinutes > 0
-                ? `${formatMinutes(slip.adminMinutes)} × 時給${yen(slip.hourlyWage)}`
-                : "なし"
-            }
-            amount={slip.adminPay}
-          />
-          {[...commuteGroups.entries()].map(([key, g]) => (
-            <Row key={key} label="交通費" detail={`${key} ${g.days}日`} amount={g.amount} />
-          ))}
-          {commuteGroups.size === 0 && (
-            <Row label="交通費" detail="出勤なし" amount={0} />
           )}
         </ul>
         <div className="px-3 py-2.5 border-t-2 border-slate-800 flex items-center justify-between">

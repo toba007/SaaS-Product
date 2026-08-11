@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
-import { FORMAT, LESSON_STYLE, LESSON_STYLE_ORDER, todayISO } from "./constants";
+import { FORMAT, LESSON_STYLE, indivStyle, lessonStyles, todayISO } from "./constants";
+import { getSetting } from "./settings";
 
 /** "HH:MM" を返す */
 export function nowHM(d: Date = new Date()): string {
@@ -59,16 +60,18 @@ export async function cycleDuty(
   periodId: number,
 ) {
   const key = { teacherId_date_periodId: { teacherId, date, periodId } };
+  // 回す順は塾の設定で決まる。個別が1対4までの塾なら 集団→1対1→…→1対4→未担当。
+  const order = lessonStyles((await getSetting()).indivMaxStudents);
   const existing = await prisma.dutyRecord.findUnique({ where: key });
 
   if (!existing) {
     await prisma.dutyRecord.create({
-      data: { teacherId, date, periodId, style: LESSON_STYLE_ORDER[0] },
+      data: { teacherId, date, periodId, style: order[0] },
     });
     return;
   }
 
-  const next = LESSON_STYLE_ORDER[LESSON_STYLE_ORDER.indexOf(existing.style) + 1];
+  const next = order[order.indexOf(existing.style) + 1];
   if (!next) {
     // 最後まで回したら未担当に戻す
     await prisma.dutyRecord.delete({ where: key });
@@ -89,7 +92,8 @@ export async function setDuty(
     await prisma.dutyRecord.deleteMany({ where: { teacherId, date, periodId } });
     return;
   }
-  if (!LESSON_STYLE_ORDER.includes(style)) return;
+  const allowed = lessonStyles((await getSetting()).indivMaxStudents);
+  if (!allowed.includes(style)) return;
   await prisma.dutyRecord.upsert({
     where: key,
     create: { teacherId, date, periodId, style },
@@ -102,7 +106,7 @@ export async function setDuty(
  * 予定どおり出た日はこれ一発で済む。当日の交代があれば実績側だけ直す。
  */
 export async function copyAssignmentsToDuties(date: string): Promise<number> {
-  const [assignments, duties, lessons] = await Promise.all([
+  const [assignments, duties, lessons, setting] = await Promise.all([
     prisma.shiftAssignment.findMany({ where: { date } }),
     prisma.dutyRecord.findMany({ where: { date } }),
     // 時間割が組んであれば、そこから授業形態を引き継ぐ
@@ -110,6 +114,7 @@ export async function copyAssignmentsToDuties(date: string): Promise<number> {
       where: { date },
       include: { _count: { select: { attendances: true } } },
     }),
+    getSetting(),
   ]);
 
   const missing = assignments.filter(
@@ -123,7 +128,7 @@ export async function copyAssignmentsToDuties(date: string): Promise<number> {
       const lesson = lessons.find(
         (l) => l.teacherId === a.teacherId && l.periodId === a.periodId,
       );
-      return { teacherId: a.teacherId, date, periodId: a.periodId, style: styleOf(lesson) };
+      return { teacherId: a.teacherId, date, periodId: a.periodId, style: styleOf(lesson, setting.indivMaxStudents) };
     }),
   });
   return missing.length;
@@ -131,15 +136,16 @@ export async function copyAssignmentsToDuties(date: string): Promise<number> {
 
 /**
  * 授業から給与計算用の形態を決める。
- * 個別は生徒が1人か2人かで単価が変わるので、受講人数で分ける。
+ * 個別は同時にみた生徒の数で単価が変わるので、出席人数で分ける。
+ * 塾の上限（1対4までなど）を超える数が付いていても、上限までに丸める。
  * 授業が無ければ集団とみなす（勤怠の画面で直せる）。
  */
 function styleOf(
   lesson: { format: string; _count: { attendances: number } } | undefined,
+  indivMax: number,
 ): string {
   if (!lesson) return LESSON_STYLE.GROUP;
   if (lesson.format !== FORMAT.INDIVIDUAL) return LESSON_STYLE.GROUP;
-  return lesson._count.attendances >= 2
-    ? LESSON_STYLE.INDIV_2
-    : LESSON_STYLE.INDIV_1;
+  const n = Math.min(Math.max(lesson._count.attendances, 1), indivMax);
+  return indivStyle(n);
 }

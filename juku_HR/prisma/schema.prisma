@@ -13,6 +13,26 @@ datasource db {
 
 // ---------- マスタ ----------
 
+/// 塾ごとの設定。**塾によって違う数字をコードに埋めないための置き場所。**
+/// 行は1つだけ持つ（id = 1 固定）。読むときは lib/settings.ts を通す。
+model SchoolSetting {
+  id Int @id @default(1)
+
+  /// 個別指導で、講師1人が同時にみてよい生徒の上限。
+  /// 「1対4まで」なら 4。給与の単価もこの数だけ（1対1〜1対4）持てるようになる。
+  indivMaxStudents Int @default(2)
+
+  /// 同時に使える集団教室の数。
+  /// どの教室を使うかまでは決めない。「同時に何クラスまで立てられるか」の上限として使い、
+  /// 実際に何室使うかは、その日その科目に出勤している講師の数で決まる。
+  maxGroupRooms Int @default(1)
+
+  /// 同時に使える個別ブースの数。考え方は maxGroupRooms と同じ。
+  maxIndivRooms Int @default(1)
+
+  updatedAt DateTime @updatedAt
+}
+
 /// 科目（英語・数学・国語・理科・社会 など）
 model Subject {
   id    Int    @id @default(autoincrement())
@@ -20,8 +40,12 @@ model Subject {
   /// 表示順
   order Int    @default(0)
 
-  lessons  Lesson[]
-  teachers TeacherSubject[]
+  lessons     Lesson[]
+  teachers    TeacherSubject[]
+  demands     ShiftDemand[]
+  assignments ShiftAssignment[]
+  students    StudentSubject[]
+  classGroups ClassGroup[]
 }
 
 /// 教室（個別ブース・集団教室）
@@ -33,29 +57,44 @@ model Room {
   /// 収容できる生徒数（個別ブースなら 2 など）
   capacity Int    @default(1)
 
-  lessons Lesson[]
+  lessons       Lesson[]
+  classSessions ClassSession[]
 }
 
-/// コマ（1限 17:00-18:20 など）
-/// コマの時間帯は期タイプごとに違う。レギュラーは夕方から3コマだが、
-/// 講習期間は朝から始まって1日5コマ前後になる。そのため termKind ごとに持つ。
+/// コマ（「小1限 17:40-18:20」「中2限 20:10-21:00」など）
+///
+/// **コマの区切り方は塾によってまったく違う。** コードに埋めず、塾ごとに登録してもらう。
+/// 変わる軸は2つある。
+///
+/// - **期タイプ** — レギュラーは学校の後なので夕方から。講習は学校が無いので朝から、
+///   コマ数も長さも変わる。特別授業（テスト対策など）も別枠で組まれる。
+/// - **学年帯** — 小学生は17:40から40分、中学生は19:15から50分、のように
+///   下校時刻と集中力に合わせて別の時間割になる塾が多い。
+///
+/// 学年で分けない塾もあるので、その場合は gradeBand = ALL の1組だけ登録する。
 model Period {
   id        Int    @id @default(autoincrement())
-  /// REGULAR | SUMMER | WINTER | SPRING
+  /// REGULAR | SUMMER | WINTER | SPRING | SPECIAL
   termKind  String @default("REGULAR")
+  /// ALL(学年で分けない) | ELEM(小) | JUNIOR(中) | HIGH(高)
+  gradeBand String @default("ALL")
   name      String
   startTime String
   endTime   String
   order     Int    @default(0)
 
-  lessons     Lesson[]
-  requests    ShiftRequest[]
-  assignments ShiftAssignment[]
-  duties      DutyRecord[]
+  lessons       Lesson[]
+  requests      ShiftRequest[]
+  assignments   ShiftAssignment[]
+  duties        DutyRecord[]
+  demands          ShiftDemand[]
+  classSessions    ClassSession[]
+  studentSchedules StudentSchedule[]
 
-  // 「夏期講習の1限」と「レギュラーの1限」は別物なので、名前だけでは一意にならない
-  @@unique([termKind, name])
-  @@index([termKind, order])
+  // 「夏期講習の1限」「小学生の1限」「中学生の1限」はどれも別のコマなので、
+  // 名前だけでは一意にならない
+  @@unique([termKind, gradeBand, name])
+  @@index([termKind, gradeBand, order])
 }
 
 /// 講師
@@ -72,6 +111,10 @@ model Teacher {
   /// カードを配り直せるように、作り直せる前提で持つ。
   /// ログインは不要。教室に置いた端末やカードで打刻するため。
   punchToken   String  @unique @default(cuid())
+  /// カレンダーアプリ（Googleカレンダー等）の購読URLに入れる秘密の値。
+  /// これを知っている人は本人の予定を読めるので、実質パスワードとして扱う。
+  /// 漏れたときに配り直せるよう、punchToken と同じく作り直せる前提で持つ。
+  icsToken     String  @unique @default(cuid())
 
   // --- ログイン ---
   /// ログインID。管理者も講師も同じ入力欄から入る。
@@ -100,6 +143,15 @@ model Teacher {
   adminWorks  AdminWork[]
   messages    MessageRecipient[]
   wageRates   WageRate[]
+  payRates    TeacherPayRate[]
+
+  /// 自分についてのやりとり（管理者が書いたものも含む）
+  shiftComments ShiftComment[] @relation("ShiftCommentTeacher")
+  /// 自分が書いたやりとり
+  sentComments  ShiftComment[] @relation("ShiftCommentSender")
+
+  /// 勤務上限。未設定なら既定値を使う。
+  shiftRule TeacherShiftRule?
 }
 
 /// 授業形態ごとのコマ給。
@@ -143,6 +195,8 @@ model Student {
 
   attendances Attendance[]
   cards       AbsenceCard[]
+  subjects    StudentSubject[]
+  classes     ClassEnrollment[]
 }
 
 // ---------- 塾の予定 ----------
@@ -158,11 +212,30 @@ model SchoolEvent {
   /// CLOSED(休校日・閉室) | EVENT(行事)
   /// CLOSED の日はシフト希望を出せない。無駄な入力と、休校日への割当事故を防ぐため。
   kind      String @default("EVENT")
+
+  /// "HH:MM"。両方 null なら終日の予定。
+  ///
+  /// 終日と時間つきを別のテーブルに分けることもできるが、
+  /// 「同じ日に終日の行事と、その中の打ち合わせ」が普通に並ぶので同じ表で扱う。
+  /// 休校日(CLOSED)は必ず終日にする。isClosedDate() が日付だけで判定しており、
+  /// 時間を持たせると「13時から休校」が1日ぜんぶ休校として効いてしまうため。
+  startTime String?
+  endTime   String?
   note      String @default("")
+
+  /// 繰り返しで作った予定は、同じ値を共有する。
+  ///
+  /// 規則（毎週日曜など）を1件だけ保存する持ち方もあるが、
+  /// 「この日だけ休校をやめる」が入った途端に例外の管理が要る。
+  /// 塾の規模なら日付ぶんの行に展開したほうが単純で、
+  /// isClosedDate() の判定も今までどおり日付の比較だけで済む。
+  /// まとめて消したいときのために、どのまとまりで作られたかだけ覚えておく。
+  seriesId  String?
 
   createdAt DateTime @default(now())
 
   @@index([startDate, endDate])
+  @@index([seriesId])
 }
 
 // ---------- シフト ----------
@@ -220,14 +293,34 @@ model ShiftAssignment {
   termId    Int?
   note      String @default("")
 
+  /// どのシフト計画で作られたか。既存データがあるので null 可。
+  planId    Int?
+  /// 担当する科目。どの需要を埋めた割当かを表す。
+  /// これが無いと「人数は足りているが、その科目を教えられる人がいない」を検出できない。
+  /// 既存データがあるので null 可だが、自動作成では必ず入る。
+  subjectId Int?
+  /// GROUP | INDIV_1 | INDIV_2。給与のコマ給単価に直結する。
+  format    String?
+  /// AUTO(自動作成) | MANUAL(手修正)
+  source    String  @default("MANUAL")
+  /// true なら自動作成をやり直しても動かさない。
+  /// これが無いと「手直し→再実行→手直しが消える」となり、実質1回しか回せない。
+  locked    Boolean @default(false)
+  /// 割当時の評価値。「なぜこの人か」の根拠として残す。
+  score     Float?
+
   createdAt DateTime @default(now())
 
-  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  period  Period  @relation(fields: [periodId], references: [id])
-  term    Term?   @relation(fields: [termId], references: [id])
+  teacher Teacher    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  period  Period     @relation(fields: [periodId], references: [id])
+  term    Term?      @relation(fields: [termId], references: [id])
+  plan    ShiftPlan? @relation(fields: [planId], references: [id])
+  subject Subject?   @relation(fields: [subjectId], references: [id])
 
+  // 同じ講師が同じコマで2科目を持てないことを、DB のレベルで保証する（H13）
   @@unique([teacherId, date, periodId])
   @@index([date])
+  @@index([planId])
 }
 
 // ---------- 勤怠 ----------
@@ -265,10 +358,14 @@ model DutyRecord {
   date      String
   periodId  Int
   /// GROUP(集団) | INDIV_1(個別1対1) | INDIV_2(個別1対2)
+  /// 旧方式。給与は payItemId で決まる。移行前の実績を拾うために残している。
   style     String @default("GROUP")
+  /// どの賃金項目として払うか。未設定なら style から引く。
+  payItemId Int?
 
-  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-  period  Period  @relation(fields: [periodId], references: [id])
+  teacher Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  period  Period   @relation(fields: [periodId], references: [id])
+  payItem PayItem? @relation(fields: [payItemId], references: [id])
 
   @@unique([teacherId, date, periodId])
   @@index([date])
@@ -282,8 +379,11 @@ model AdminWork {
   /// 何分やったか
   minutes   Int
   note      String @default("")
+  /// どの賃金項目として払うか。未設定なら「事務作業」の項目に入る。
+  payItemId Int?
 
-  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacher Teacher  @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  payItem PayItem? @relation(fields: [payItemId], references: [id])
 
   @@index([teacherId, date])
   @@index([date])
@@ -418,4 +518,325 @@ model AbsenceCard {
   @@unique([lessonId, studentId])
   @@index([status])
   @@index([studentId, status])
+}
+
+// ---------- その日についてのやりとり ----------
+
+/// 講師と教室が、ある日について交わす短いやりとり。
+///
+/// シフト提出のカレンダーと、確定シフト・時間割のカレンダーは別画面だが、
+/// スレッドは「講師 × 日付」で1本にする。提出時の「この日は厳しいです」と
+/// 確定後の「代講お願いできますか」は同じ日の話なので、分けると講師も管理者も
+/// 2箇所を見に行くことになり、片方が見落とされる。
+///
+/// ShiftRequest.note / ShiftAssignment.note の役割はこちらが引き継ぐ。
+/// 一言では返事ができず、言った言わないになるため。
+/// （旧 note カラムは既存データを壊さないよう残してあるが、画面からは使わない）
+model ShiftComment {
+  id        Int    @id @default(autoincrement())
+  /// 誰との会話か。管理者が書いたものでも、相手の講師を指す。
+  teacherId Int
+  /// "YYYY-MM-DD"
+  date      String
+  /// ADMIN | TEACHER
+  senderRole String
+  /// 書いた本人。管理者は複数いるので、誰が言ったのかを残す。
+  /// 講師が書いた場合は teacherId と同じ値になる。
+  senderId  Int
+  body      String
+
+  createdAt DateTime  @default(now())
+  /// 相手が読んだ時刻。未読バッジに使う。
+  readAt    DateTime?
+
+  teacher Teacher @relation("ShiftCommentTeacher", fields: [teacherId], references: [id], onDelete: Cascade)
+  sender  Teacher @relation("ShiftCommentSender", fields: [senderId], references: [id])
+
+  // スレッドを開くたびに引くので、この順で持つ
+  @@index([teacherId, date])
+}
+
+// ---------- 賃金項目 ----------
+
+/// 賃金の項目。コマ給・時給・交通費などを管理者が自由に作れるようにしたもの。
+/// 決め打ちなのは「何に掛けるか」（basis）だけ。
+model PayItem {
+  id     Int    @id @default(autoincrement())
+  name   String
+  /// PER_SLOT(コマ数×単価) | PER_HOUR(時間×単価) | PER_DAY(日数×単価) | MONTHLY(月額固定)
+  basis  String @default("PER_SLOT")
+  /// 数量の取り方。basis によって意味が変わる。
+  ///   PER_DAY  : REGULAR(定期券あり期間) | SPOT(定期券なし期間)
+  ///   PER_SLOT : 空。実績（DutyRecord）側が payItemId でこの項目を指す
+  ///   PER_HOUR : 空。実績（AdminWork）側が payItemId でこの項目を指す
+  ///   MONTHLY  : 空。単価が入っている講師に毎月そのまま付く
+  source String @default("")
+  /// 移行用。旧 style 値（GROUP / INDIV_1 / INDIV_2）との対応。
+  /// payItemId が入っていない古い実績を、この値で拾う。
+  legacyStyle String?
+  order  Int     @default(0)
+  /// 使わなくなった項目。過去の明細のために消さずに残す。
+  active Boolean @default(true)
+
+  rates      TeacherPayRate[]
+  duties     DutyRecord[]
+  adminWorks AdminWork[]
+
+  @@index([active, order])
+}
+
+/// 講師ごとの単価。項目 × 講師で持つ。
+model TeacherPayRate {
+  teacherId Int
+  payItemId Int
+  /// 単価（円）。PER_SLOT なら1コマ、PER_HOUR なら1時間、PER_DAY なら1日、MONTHLY なら月額。
+  amount    Int @default(0)
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  payItem PayItem @relation(fields: [payItemId], references: [id], onDelete: Cascade)
+
+  @@id([teacherId, payItemId])
+  @@index([payItemId])
+}
+
+// ---------- シフト計画 ----------
+
+/// シフト計画。対象期間ごとに1つ作る。
+///
+/// 「確定前と確定後を区別する」（全体要件）を満たすための入れ物。
+/// 検討中のシフトが講師に見えてしまうと、確定していない予定で人が動く。
+model ShiftPlan {
+  id        Int    @id @default(autoincrement())
+  name      String
+  /// "YYYY-MM-DD"
+  fromDate  String
+  toDate    String
+  /// DRAFT(下書き) | CONFIRMED(確定)
+  /// 講師に見せるのは CONFIRMED だけ。
+  status    String @default("DRAFT")
+
+  /// 自動作成の重み。JSON文字列で持つ（区分値と同じく、SQLite に型が無いため）
+  weights     String    @default("")
+  /// 最後の実行結果サマリ。JSON文字列。
+  lastResult  String    @default("")
+  generatedAt DateTime?
+  confirmedAt DateTime?
+  /// 誰が確定したか
+  confirmedById Int?
+
+  // --- 確定解除 ---
+  // 確定したシフトを後から変えるには、いったん解除する必要がある。
+  // 黙って変えられると、講師が見た予定と実際がずれる。
+  // 「誰が・いつ・なぜ」を残す（全体要件の「変更履歴」の最小版。
+  //  1件ずつの変更履歴 ShiftChangeLog は次の版）。
+  reopenedAt   DateTime?
+  reopenedById Int?
+  reopenReason String    @default("")
+
+  createdAt DateTime @default(now())
+
+  assignments ShiftAssignment[]
+  demands     ShiftDemand[]
+
+  @@index([fromDate, toDate])
+}
+
+/// そのコマに、どの科目の講師が何人必要か。自動作成のゴール。
+///
+/// 「講師4人」ではなく「英語2人・数学1人」で持つ。
+/// 科目を見ずに人数だけ合わせると、誰も英語を教えられないシフトが
+/// 「正常」として確定できてしまう。
+model ShiftDemand {
+  id        Int    @id @default(autoincrement())
+  planId    Int
+  /// "YYYY-MM-DD"
+  date      String
+  periodId  Int
+  subjectId Int
+  /// GROUP | INDIV_1 | INDIV_2
+  format    String @default("INDIV_2")
+  /// 必要な講師数。0 なら授業を開かない。
+  required  Int    @default(0)
+  /// 根拠になった生徒数。「なぜ2人必要か」を画面に出すために持つ。
+  studentCount Int @default(0)
+  note      String @default("")
+
+  plan    ShiftPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  period  Period    @relation(fields: [periodId], references: [id])
+  subject Subject   @relation(fields: [subjectId], references: [id])
+
+  @@unique([planId, date, periodId, subjectId, format])
+  @@index([date])
+}
+
+/// 講師ごとの勤務上限。未設定の講師には既定値を使う。
+///
+/// これが無いと、公平性だけを見て1人に詰め込む解が出る。
+/// 既定値は仮置きで、労働時間のルールとあわせて塾に確認が要る。
+model TeacherShiftRule {
+  teacherId      Int @id
+  /// 1日あたりの上限コマ数
+  maxPerDay      Int @default(4)
+  /// 1週(日〜土)あたりの上限コマ数
+  maxPerWeek     Int @default(12)
+  /// 連続して入れる上限コマ数（休憩が取れなくなるため）
+  maxConsecutive Int @default(3)
+  /// 1週あたりの下限コマ数。0 なら下限なし。
+  minPerWeek     Int @default(0)
+
+  teacher Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+}
+
+// ---------- 生徒の受講 ----------
+
+/// 生徒が取っている科目。入塾のときに「何を取るか」を聞いて登録する。
+///
+/// ここが埋まっていないと、集団のクラス分けで「誰を振り分けるのか」が分からない。
+/// 同じ科目を集団と個別の両方で取ることもある（集団で受けつつ、苦手なので個別も）
+/// ので、形態まで含めて1行にする。
+model StudentSubject {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  subjectId Int
+  /// GROUP(集団) | INDIV_1(個別1対1) | INDIV_2(個別1対2) | ... 上限は塾の設定で決まる
+  format    String
+
+  /// **週に何コマ受けるか。** 生徒に聞いて決める「量」。
+  ///
+  /// 集団はクラスの時間割（ClassSession）が決めるので使わない。
+  /// 個別はここが起点になる：週2コマと決まって初めて、どの枠に入れるかを決められる。
+  /// 0 のままだと配置のしようが無いので、画面で不備として知らせる。
+  slotsPerWeek Int @default(0)
+
+  /// 途中でやめた科目は false にする。行を消すと過去の授業と辻褄が合わなくなる。
+  active    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+
+  student   Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subject   Subject           @relation(fields: [subjectId], references: [id])
+  schedules StudentSchedule[]
+
+  @@unique([studentId, subjectId, format])
+  @@index([subjectId, format])
+}
+
+/// 個別指導の配置。「田中さんは毎週火曜2限に英語」
+///
+/// ---- 集団の ClassSession と同じ役割 ----
+/// 集団はクラスに時間割が付く。個別は生徒に付く。どちらも「いつやるか」を持つ。
+///
+/// ---- これは入力ではなく、決めた結果 ----
+/// 生徒に「週に何コマ受けたいか」を聞き（StudentSubject.slotsPerWeek）、
+/// **担当できる講師がいつ来られるかを見て**、この行が決まる。
+/// 決めたら生徒に「火曜2限に来てください」と伝える。
+///
+/// ---- レギュラーと講習で単位が違う ----
+/// レギュラーは1週間周期で回るので曜日（dayOfWeek）で持つ。
+/// 講習は日ごとに違うので日付（date）で持つ。**どちらか一方だけを入れる。**
+/// 単位を切り替えられるようにしておかないと、講習で作り直しになる。
+model StudentSchedule {
+  id               Int     @id @default(autoincrement())
+  studentSubjectId Int
+
+  /// 0=日 .. 6=土。レギュラー用。日付で持つときは null。
+  dayOfWeek Int?
+  /// "YYYY-MM-DD"。講習用。曜日で持つときは null。
+  date      String?
+  periodId  Int
+
+  /// 有効期間 "YYYY-MM-DD"。学期ごとに組み直すので日付の範囲で持つ
+  /// （ClassGroup と同じ考え方）。date で持つ行では date と同じ値を入れる。
+  fromDate String
+  toDate   String
+
+  createdAt DateTime @default(now())
+
+  studentSubject StudentSubject @relation(fields: [studentSubjectId], references: [id], onDelete: Cascade)
+  period         Period         @relation(fields: [periodId], references: [id])
+
+  @@index([dayOfWeek, periodId])
+  @@index([date, periodId])
+  @@index([fromDate, toDate])
+}
+
+/// 集団クラス。学年 × 科目 × レベル で立てる。
+///
+/// **レベルは Ⅰ〜Ⅲ だが、必ず3クラスあるわけではない。**
+/// 人数によって2クラスのことも、1クラスだけのこともある。
+/// レベルは「枠」ではなく、実際に立ったクラスに付くラベルとして扱う。
+///
+/// 組み直しは「人数が増えたとき・学期が変わるとき・学年が変わるとき」に
+/// 臨機応変に行うので、期（Term）ではなく日付の範囲で有効期間を持つ。
+/// 分割するときは新しいクラスを作り、古いほうの toDate を切る。
+///
+/// **時間割はクラスが直接持たない（ClassSession に分けてある）。**
+/// 「月曜は中1Ⅰが英英数」のように、同じクラスが同じ日に何コマも入るため。
+/// 曜日とコマをここに1つずつ持たせると、それが表現できない。
+///
+/// 個別と違って、生徒が何人いても講師は1人。
+model ClassGroup {
+  id        Int    @id @default(autoincrement())
+  /// 表示名。"中2英語Ⅱ" のように人が読む形で持つ。
+  name      String
+  /// 小1..小6 / 中1..中3 / 高1..高3
+  grade     String
+  subjectId Int
+  /// 1..3（Ⅰ Ⅱ Ⅲ）。1クラスしか無いときは 1 を使う。
+  level     Int    @default(1)
+
+  /// 定員。0 なら上限なし。超えたら画面で警告する（保存は止めない）。
+  capacity  Int    @default(0)
+
+  /// 有効期間 "YYYY-MM-DD"
+  fromDate  String
+  toDate    String
+
+  createdAt DateTime @default(now())
+
+  subject  Subject @relation(fields: [subjectId], references: [id])
+  members  ClassEnrollment[]
+  sessions ClassSession[]
+
+  @@index([grade, subjectId])
+  @@index([fromDate, toDate])
+}
+
+/// クラスの時間割。毎週このローテーションで回る。
+///
+/// 「月曜は中1Ⅰが英英数、Ⅱが数数英」のような組み方をするので、
+/// 1つのクラスが同じ日に複数コマ入る。だからクラスとは別の行にする。
+///
+/// 毎週同じなので日付ではなく曜日で持ち、実際の日付には展開して使う。
+/// 週によって変わる場合は、クラスを組み直す（有効期間を切って新しく作る）。
+model ClassSession {
+  id           Int @id @default(autoincrement())
+  classGroupId Int
+  /// 0=日 .. 6=土
+  dayOfWeek    Int
+  periodId     Int
+  roomId       Int?
+
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+  period     Period     @relation(fields: [periodId], references: [id])
+  room       Room?      @relation(fields: [roomId], references: [id])
+
+  // 同じクラスが同じ曜日の同じコマに2回入ることはない
+  @@unique([classGroupId, dayOfWeek, periodId])
+  @@index([dayOfWeek, periodId])
+}
+
+/// 誰がどのクラスにいるか。
+/// 振り分けは人が決める（成績から自動で決めない）。
+model ClassEnrollment {
+  classGroupId Int
+  studentId    Int
+
+  createdAt DateTime @default(now())
+
+  classGroup ClassGroup @relation(fields: [classGroupId], references: [id], onDelete: Cascade)
+  student    Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@id([classGroupId, studentId])
+  @@index([studentId])
 }

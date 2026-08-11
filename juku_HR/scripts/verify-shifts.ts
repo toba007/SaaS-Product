@@ -12,6 +12,7 @@ import {
 } from "../lib/shifts";
 import { SHIFT } from "../lib/constants";
 import { dayOfWeek, monthDays } from "../lib/dates";
+import { resetAll } from "./_reset";
 
 let failed = 0;
 function check(label: string, actual: unknown, expected: unknown) {
@@ -26,16 +27,7 @@ function check(label: string, actual: unknown, expected: unknown) {
 }
 
 async function reset() {
-  await prisma.shiftAssignment.deleteMany();
-  await prisma.shiftRequest.deleteMany();
-  await prisma.term.deleteMany();
-  await prisma.absenceCard.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.lessonRecord.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.teacherSubject.deleteMany();
-  await prisma.teacher.deleteMany();
-  await prisma.period.deleteMany();
+  await resetAll();
 }
 
 async function main() {

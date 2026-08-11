@@ -1,25 +1,20 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { EventForm } from "./EventForm";
+import { FcCalendar } from "./FcCalendar";
+import { AddEventDialog } from "./AddEventDialog";
+import { EventDialog } from "./EventDialog";
+import { Shortcuts } from "./Shortcuts";
 import { deleteEvent } from "./actions";
 import { ConfirmSubmit } from "@/app/components/ConfirmSubmit";
-import { eventsOn, isClosed, type EventLite } from "@/lib/events";
-import { termKindOfDate } from "@/lib/terms";
+import { holidaysBetween } from "@/lib/holidays";
 import {
   EVENT_KIND,
   EVENT_KIND_LABEL,
-  TERM_KIND_LABEL,
   formatDateJP,
   todayISO,
 } from "@/lib/constants";
-import {
-  WEEKDAYS,
-  addMonths,
-  dayOfMonth,
-  formatYm,
-  monthGrid,
-  parseYm,
-} from "@/lib/dates";
+import { addMonths, formatYm, parseYm } from "@/lib/dates";
 
 export const metadata = { title: "塾の予定｜塾HR" };
 export const dynamic = "force-dynamic";
@@ -27,15 +22,37 @@ export const dynamic = "force-dynamic";
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ym?: string; view?: string }>;
+  searchParams: Promise<{
+    ym?: string;
+    day?: string;
+    to?: string;
+    st?: string;
+    et?: string;
+    event?: string;
+  }>;
 }) {
   const sp = await searchParams;
   const ym = parseYm(sp.ym);
-  const view = sp.view === "year" ? "year" : "month";
 
-  // 年間表示のときはその年ぶん、月表示のときは前後に少し余裕を持って取る
-  const from = view === "year" ? `${ym.year}-01-01` : `${ym.year}-01-01`;
-  const to = view === "year" ? `${ym.year}-12-31` : `${ym.year}-12-31`;
+  // 日付を押すと ?day= が付き、その日の予定を追加するダイアログが開く。
+  // 開閉を画面内の状態ではなく URL で持つのは、カレンダー本体（クライアント部品）と
+  // 右の一覧（サーバー部品）のどちらから押されても同じものを開けるようにするため。
+  // 戻るボタンで閉じられるのと、日付付きのURLを人に渡せるのも都合がよい。
+  const DATE = /^\d{4}-\d{2}-\d{2}$/;
+  const pickedDay = sp.day && DATE.test(sp.day) ? sp.day : null;
+  // ドラッグで期間を選んだとき。開始日より前なら無視する
+  const pickedTo =
+    sp.to && DATE.test(sp.to) && pickedDay && sp.to >= pickedDay ? sp.to : undefined;
+  // 時間軸の上でなぞったときの時刻
+  const TIME = /^\d{2}:\d{2}$/;
+  const pickedSt = sp.st && TIME.test(sp.st) ? sp.st : undefined;
+  const pickedEt = sp.et && TIME.test(sp.et) ? sp.et : undefined;
+  const selectedDay = pickedDay ?? todayISO();
+
+
+  // 年表示に切り替えても足りるよう、その年ぶんをまとめて取る
+  const from = `${ym.year}-01-01`;
+  const to = `${ym.year}-12-31`;
 
   const [events, terms] = await Promise.all([
     prisma.schoolEvent.findMany({
@@ -45,6 +62,22 @@ export default async function CalendarPage({
     prisma.term.findMany({ orderBy: { startDate: "asc" } }),
   ]);
 
+  // カレンダーに渡す基準日。表示中の月から外れた日を渡すと別の月が開いてしまう。
+  const todayYm = parseYm(todayISO().slice(0, 7));
+  const inThisMonth = (d: string) => d.startsWith(formatYm(ym));
+  const fcDate = pickedDay && inThisMonth(pickedDay)
+    ? pickedDay
+    : inThisMonth(todayISO())
+      ? todayISO()
+      : `${formatYm(ym)}-01`;
+
+  // 予定を押したときは、その中身と削除を出す
+  const pickedEvent = sp.event
+    ? (events.find((e) => e.id === Number(sp.event)) ?? null)
+    : null;
+
+  // 日本の祝日。休校を決める材料なので、塾の予定と並べて出す（lib/holidays.ts）
+  const holidays = holidaysBetween(from, to);
   const closedCount = events.filter((e) => e.kind === EVENT_KIND.CLOSED).length;
 
   return (
@@ -57,32 +90,33 @@ export default async function CalendarPage({
           </p>
         </div>
         <div className="flex items-center gap-1">
-          {[
-            { key: "month", label: "月" },
-            { key: "year", label: "年間" },
-          ].map((v) => (
-            <Link
-              key={v.key}
-              href={`/calendar?view=${v.key}&ym=${formatYm(ym)}`}
-              className={`px-3 py-1.5 text-sm rounded border ${
-                view === v.key
-                  ? "bg-slate-900 border-slate-900 text-white font-medium"
-                  : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              {v.label}
-            </Link>
-          ))}
+          <Link
+            href="/calendar/terms"
+            className="px-3 py-1.5 text-sm rounded border bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+          >
+            期間（講習）
+          </Link>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-4 items-start">
         <div className="space-y-3">
-          {view === "month" ? (
-            <MonthView ym={ym} events={events} terms={terms} />
-          ) : (
-            <YearView year={ym.year} events={events} />
-          )}
+          <FcCalendar
+            events={events}
+            holidays={holidays}
+            terms={terms.filter((t) => t.kind !== "REGULAR")}
+            ym={formatYm(ym)}
+            selectedDay={fcDate}
+          />
+          <p className="text-[11px] text-slate-400">
+            <span className="inline-block w-3 h-3 align-middle rounded-sm bg-amber-100 border border-amber-200 mr-1" />
+            黄色の背景は
+            <Link href="/calendar/terms" className="underline mx-0.5">
+              講習期間
+            </Link>
+            、<span className="text-rose-600">赤い文字</span>は祝日です。
+            日付を押すと予定を追加、予定を押すと中身の確認・書き換え・削除ができます
+          </p>
         </div>
 
         <div className="space-y-4">
@@ -90,7 +124,7 @@ export default async function CalendarPage({
             <div className="px-4 py-2.5 border-b border-slate-200">
               <h2 className="font-semibold text-slate-900 text-sm">予定を追加</h2>
             </div>
-            <EventForm defaultDate={todayISO()} />
+            <EventForm key={selectedDay} defaultDate={selectedDay} />
           </section>
 
           <section className="bg-white border border-slate-200 rounded-lg">
@@ -127,6 +161,7 @@ export default async function CalendarPage({
                         {e.startDate === e.endDate
                           ? formatDateJP(e.startDate)
                           : `${formatDateJP(e.startDate)} 〜 ${formatDateJP(e.endDate)}`}
+                        {e.startTime && ` ${e.startTime}〜${e.endTime}`}
                         {e.note && <span className="ml-1">／{e.note}</span>}
                       </div>
                     </div>
@@ -146,203 +181,36 @@ export default async function CalendarPage({
           </section>
         </div>
       </div>
+
+      {/* キーボード操作。Google カレンダーと同じ割り当て */}
+      <Shortcuts
+        prevHref={`/calendar?ym=${formatYm(addMonths(ym, -1))}`}
+        nextHref={`/calendar?ym=${formatYm(addMonths(ym, 1))}`}
+        todayHref={`/calendar?ym=${formatYm(todayYm)}`}
+        createHref={`/calendar?ym=${formatYm(ym)}&day=${selectedDay}`}
+      />
+
+      {pickedDay && (
+        <AddEventDialog
+          date={pickedDay}
+          endDate={pickedTo}
+          startTime={pickedSt}
+          endTime={pickedEt}
+          closeHref={`/calendar?ym=${formatYm(ym)}`}
+        />
+      )}
+
+      {pickedEvent && (
+        <EventDialog
+          event={{
+            ...pickedEvent,
+            seriesCount: pickedEvent.seriesId
+              ? events.filter((e) => e.seriesId === pickedEvent.seriesId).length
+              : 1,
+          }}
+          closeHref={`/calendar?ym=${formatYm(ym)}`}
+        />
+      )}
     </div>
-  );
-}
-
-function MonthView({
-  ym,
-  events,
-  terms,
-}: {
-  ym: { year: number; month: number };
-  events: EventLite[];
-  terms: { kind: string; startDate: string; endDate: string; name: string }[];
-}) {
-  return (
-    <>
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">
-          日付を見ながら予定を確認できます
-        </p>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/calendar?ym=${formatYm(addMonths(ym, -1))}`}
-            className="px-2.5 py-1.5 text-sm border border-slate-200 bg-white rounded hover:bg-slate-50"
-          >
-            ←
-          </Link>
-          <span className="text-sm font-medium text-slate-900 tabular-nums w-24 text-center">
-            {ym.year}年{ym.month}月
-          </span>
-          <Link
-            href={`/calendar?ym=${formatYm(addMonths(ym, 1))}`}
-            className="px-2.5 py-1.5 text-sm border border-slate-200 bg-white rounded hover:bg-slate-50"
-          >
-            →
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-        <table className="w-full table-fixed">
-          <thead>
-            <tr>
-              {WEEKDAYS.map((w, i) => (
-                <th
-                  key={w}
-                  className={`py-1.5 text-xs font-medium border-b border-slate-200 ${
-                    i === 0 ? "text-rose-500" : i === 6 ? "text-sky-500" : "text-slate-500"
-                  }`}
-                >
-                  {w}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {monthGrid(ym).map((week, wi) => (
-              <tr key={wi}>
-                {week.map((date, di) => {
-                  if (!date)
-                    return <td key={di} className="bg-slate-50/60 border border-slate-100" />;
-
-                  const on = eventsOn(date, events);
-                  const closed = isClosed(date, events);
-                  const kind = termKindOfDate(date, terms);
-
-                  return (
-                    <td
-                      key={di}
-                      className={`border border-slate-100 align-top p-1 h-20 ${
-                        closed ? "bg-rose-50" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-1">
-                        <span
-                          className={`text-xs tabular-nums ${
-                            date === todayISO()
-                              ? "bg-indigo-600 text-white rounded px-1"
-                              : di === 0
-                                ? "text-rose-500"
-                                : di === 6
-                                  ? "text-sky-500"
-                                  : "text-slate-600"
-                          }`}
-                        >
-                          {dayOfMonth(date)}
-                        </span>
-                        {closed && (
-                          <span className="text-[9px] bg-rose-500 text-white rounded px-1">
-                            閉
-                          </span>
-                        )}
-                        {kind !== "REGULAR" && (
-                          <span className="text-[9px] text-amber-700">
-                            {TERM_KIND_LABEL[kind].replace("講習", "")}
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-0.5 space-y-0.5">
-                        {on.map((e) => (
-                          <div
-                            key={e.id}
-                            title={e.note || e.title}
-                            className={`text-[9px] leading-tight truncate rounded px-1 ${
-                              e.kind === EVENT_KIND.CLOSED
-                                ? "bg-rose-100 text-rose-800"
-                                : "bg-sky-50 text-sky-800"
-                            }`}
-                          >
-                            {e.title}
-                          </div>
-                        ))}
-                      </div>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
-
-function YearView({ year, events }: { year: number; events: EventLite[] }) {
-  const byMonth = new Map<number, EventLite[]>();
-  for (const e of events) {
-    const m = Number(e.startDate.slice(5, 7));
-    const list = byMonth.get(m) ?? [];
-    list.push(e);
-    byMonth.set(m, list);
-  }
-
-  return (
-    <>
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">1年ぶんの予定をまとめて確認できます</p>
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/calendar?view=year&ym=${year - 1}-01`}
-            className="px-2.5 py-1.5 text-sm border border-slate-200 bg-white rounded hover:bg-slate-50"
-          >
-            ←
-          </Link>
-          <span className="text-sm font-medium text-slate-900 tabular-nums w-16 text-center">
-            {year}年
-          </span>
-          <Link
-            href={`/calendar?view=year&ym=${year + 1}-01`}
-            className="px-2.5 py-1.5 text-sm border border-slate-200 bg-white rounded hover:bg-slate-50"
-          >
-            →
-          </Link>
-        </div>
-      </div>
-
-      <div className="bg-white border border-slate-200 rounded-lg divide-y divide-slate-100">
-        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => {
-          const list = byMonth.get(m) ?? [];
-          return (
-            <div key={m} className="px-4 py-2 flex gap-3">
-              <Link
-                href={`/calendar?ym=${year}-${String(m).padStart(2, "0")}`}
-                className="w-12 shrink-0 text-sm font-medium text-slate-500 hover:text-indigo-600 hover:underline"
-              >
-                {m}月
-              </Link>
-              {list.length === 0 ? (
-                <span className="text-xs text-slate-300">—</span>
-              ) : (
-                <div className="flex flex-wrap gap-1.5">
-                  {list.map((e) => (
-                    <span
-                      key={e.id}
-                      title={
-                        e.startDate === e.endDate
-                          ? formatDateJP(e.startDate)
-                          : `${formatDateJP(e.startDate)}〜${formatDateJP(e.endDate)}`
-                      }
-                      className={`text-[11px] rounded px-1.5 py-0.5 ${
-                        e.kind === EVENT_KIND.CLOSED
-                          ? "bg-rose-100 text-rose-800"
-                          : "bg-sky-50 text-sky-800"
-                      }`}
-                    >
-                      {Number(e.startDate.slice(8, 10))}
-                      {e.startDate !== e.endDate &&
-                        `-${Number(e.endDate.slice(8, 10))}`}{" "}
-                      {e.title}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </>
   );
 }

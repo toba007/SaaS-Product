@@ -13,8 +13,8 @@ import { punchMinutes } from "@/lib/attendance";
 import { formatMinutes } from "@/lib/payroll";
 import {
   EMPLOYMENT_LABEL,
-  LESSON_STYLE_LABEL,
-  LESSON_STYLE_SHORT,
+  lessonStyleLabel,
+  lessonStyleShort,
   TERM_KIND_LABEL,
   formatDateJP,
   todayISO,
@@ -37,7 +37,7 @@ export default async function AttendancePage({
   const [teachers, periods, punches, duties, adminWorks, assignments, term] =
     await Promise.all([
       prisma.teacher.findMany({ where: { active: true }, orderBy: { id: "asc" } }),
-      prisma.period.findMany({ orderBy: { order: "asc" } }),
+      prisma.period.findMany({ orderBy: [{ startTime: "asc" }, { id: "asc" }] }),
       prisma.punch.findMany({ where: { date }, orderBy: { inAt: "asc" } }),
       prisma.dutyRecord.findMany({ where: { date } }),
       prisma.adminWork.findMany({ where: { date }, orderBy: { id: "asc" } }),
@@ -289,7 +289,7 @@ export default async function AttendancePage({
                             title={
                               `${p.name} ${p.startTime}-${p.endTime}` +
                               (duty
-                                ? `／${LESSON_STYLE_LABEL[duty.style]}`
+                                ? `／${lessonStyleLabel(duty.style)}`
                                 : planned
                                   ? "／予定あり・未確定"
                                   : "／未担当") +
@@ -306,7 +306,7 @@ export default async function AttendancePage({
                             {p.name}
                             <br />
                             <span className="text-[9px] font-normal">
-                              {duty ? LESSON_STYLE_SHORT[duty.style] : "—"}
+                              {duty ? lessonStyleShort(duty.style) : "—"}
                             </span>
                           </button>
                         );

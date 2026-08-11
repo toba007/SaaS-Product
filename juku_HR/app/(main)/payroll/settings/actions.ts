@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/dal";
-import { LESSON_STYLE_ORDER } from "@/lib/constants";
 
 export type SaveState = { savedId?: number; error?: string };
 
@@ -16,8 +15,11 @@ function toYen(v: FormDataEntryValue | null): number | null {
 }
 
 /**
- * 1人ぶんの給与設定を保存する。
- * コマ給は授業形態ごと。空欄にすると「未設定」に戻す（0円とは区別する）。
+ * 1人ぶんの単価を保存する。
+ *
+ * 項目は管理者が作るものなので、どの項目が来るかは決め打ちできない。
+ * フォームに入っている rate_<項目id> を全部見る。
+ * 空欄は 0 ではなく「未設定」。行ごと消して、設定漏れと 0 円を区別する。
  */
 export async function saveWages(
   _prev: SaveState,
@@ -29,29 +31,22 @@ export async function saveWages(
   const teacher = await prisma.teacher.findUnique({ where: { id: teacherId } });
   if (!teacher) return { error: "講師が見つかりません" };
 
-  const hourlyWage = toYen(formData.get("hourlyWage"));
-  const commuteRegular = toYen(formData.get("commuteRegular"));
-  const commuteSpot = toYen(formData.get("commuteSpot"));
-
-  await prisma.teacher.update({
-    where: { id: teacherId },
-    data: {
-      hourlyWage: hourlyWage ?? 0,
-      commuteRegular: commuteRegular ?? 0,
-      commuteSpot: commuteSpot ?? 0,
-    },
+  const items = await prisma.payItem.findMany({
+    where: { active: true },
+    select: { id: true },
   });
 
-  for (const style of LESSON_STYLE_ORDER) {
-    const amount = toYen(formData.get(`rate_${style}`));
+  for (const item of items) {
+    const amount = toYen(formData.get(`rate_${item.id}`));
     if (amount === null) {
-      // 空欄 = その形態は担当しない。行ごと消して「未設定」に戻す。
-      await prisma.wageRate.deleteMany({ where: { teacherId, style } });
+      await prisma.teacherPayRate.deleteMany({
+        where: { teacherId, payItemId: item.id },
+      });
       continue;
     }
-    await prisma.wageRate.upsert({
-      where: { teacherId_style: { teacherId, style } },
-      create: { teacherId, style, amount },
+    await prisma.teacherPayRate.upsert({
+      where: { teacherId_payItemId: { teacherId, payItemId: item.id } },
+      create: { teacherId, payItemId: item.id, amount },
       update: { amount },
     });
   }

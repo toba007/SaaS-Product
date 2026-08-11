@@ -18,6 +18,11 @@ export function proxy(request: NextRequest) {
   // 打刻ページ /p/[token] は二次元コードから開くのでログイン不要
   if (pathname.startsWith("/p/")) return NextResponse.next();
 
+  // カレンダー購読 /api/ics/[token] も同じ。カレンダーアプリが取りに来るので
+  // ログイン画面へ飛ばすと、向こう側では理由の分からないエラーにしかならない。
+  // 本人確認は URL のトークンで行う。
+  if (pathname.startsWith("/api/ics/")) return NextResponse.next();
+
   const hasCookie = request.cookies.has(SESSION_COOKIE);
   const isPublic = PUBLIC.some((p) => pathname.startsWith(p));
 

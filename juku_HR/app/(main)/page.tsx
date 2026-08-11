@@ -24,7 +24,7 @@ export default async function Dashboard() {
       prisma.shiftAssignment.findMany({
         where: { date: today },
         include: { teacher: true, period: true },
-        orderBy: { period: { order: "asc" } },
+        orderBy: { period: { startTime: "asc" } },
       }),
       // 今週まだ1コマも希望を出していない講師
       prisma.teacher.findMany({

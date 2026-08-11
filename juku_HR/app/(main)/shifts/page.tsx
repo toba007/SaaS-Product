@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { periodLabeler } from "@/lib/periods";
 import {
   bulkSetShiftRequests,
   clearMonthRequests,
@@ -8,7 +9,10 @@ import {
 import { TermKindTabs } from "@/app/components/TermKindTabs";
 import { parseTermKind, termKindOfDate, termKindTabs } from "@/lib/terms";
 import { eventsBetween, isClosed } from "@/lib/events";
+import { unreadByDate, unreadForAdmin } from "@/lib/comments";
+import { DayChat } from "@/app/components/DayChat";
 import {
+  ROLE,
   SHIFT,
   SHIFT_LABEL,
   SHIFT_MARK,
@@ -58,10 +62,15 @@ export default async function ShiftsPage({
   const teacher = teachers.find((t) => t.id === teacherId) ?? teachers[0];
 
   // このコマタイプのコマ
+  // 学年帯をまたいで時刻順に並べる。小2限のあとに中1限が来るのが1日の並び。
   const periods = await prisma.period.findMany({
     where: { termKind: kind },
-    orderBy: { order: "asc" },
+    orderBy: [{ startTime: "asc" }, { id: "asc" }],
   });
+
+  // 学年帯を分けている塾では、同じ日に「1限」が2つ（小1限と中1限）並ぶ。
+  // 名前だけでは見分けが付かないので、混ざるときだけ「小」「中」を頭に付ける。
+  const label = periodLabeler(periods);
 
   const kindTerms = terms.filter((t) => t.kind === kind);
   const defaultYm =
@@ -78,6 +87,23 @@ export default async function ShiftsPage({
   const requests = await prisma.shiftRequest.findMany({
     where: { teacherId: teacher.id, date: { in: days } },
   });
+
+  // この講師から届いている未読。日付に印を付けないと、書かれても誰も気づかない。
+  const unread = await unreadByDate(
+    teacher.id,
+    days[0],
+    days[days.length - 1],
+    ROLE.ADMIN,
+  );
+
+  // 講師の切り替えボタンにも出す。今開いている講師のぶんしか見えないと、
+  // 他の講師からの書き込みに気づくのが遅れる。
+  const unreadAll = await unreadForAdmin(days[0], days[days.length - 1]);
+  const unreadOf = (id: number) =>
+    [...unreadAll].reduce(
+      (n, [key, count]) => (key.startsWith(`${id}:`) ? n + count : n),
+      0,
+    );
 
   const selectedDay =
     sp.day && targetDays.includes(sp.day)
@@ -131,6 +157,11 @@ export default async function ShiftsPage({
                 }`}
               >
                 {t.name}
+                {unreadOf(t.id) > 0 && (
+                  <span className="ml-1 bg-rose-500 text-white text-[10px] rounded-full px-1">
+                    {unreadOf(t.id)}
+                  </span>
+                )}
               </Link>
             ))}
           </div>
@@ -275,7 +306,7 @@ export default async function ShiftsPage({
                                   return (
                                     <span
                                       key={p.id}
-                                      title={`${p.name} ${r ? SHIFT_LABEL[r.status] : "未回答"}`}
+                                      title={`${label(p)} ${r ? SHIFT_LABEL[r.status] : "未回答"}`}
                                       className={`text-[10px] ${
                                         r ? MARK_CLASS[r.status] : "text-slate-200"
                                       }`}
@@ -285,6 +316,13 @@ export default async function ShiftsPage({
                                   );
                                 })}
                               </div>
+                              {(unread.get(date) ?? 0) > 0 && (
+                                <div className="mt-0.5 text-[9px] leading-none">
+                                  <span className="bg-rose-500 text-white rounded-full px-1 py-px">
+                                    {unread.get(date)}
+                                  </span>
+                                </div>
+                              )}
                             </Link>
                           </td>
                         );
@@ -318,7 +356,7 @@ export default async function ShiftsPage({
                         <div key={p.id}>
                           <div className="flex items-baseline gap-2 mb-1">
                             <span className="text-sm font-medium text-slate-700">
-                              {p.name}
+                              {label(p)}
                             </span>
                             <span className="text-[11px] text-slate-400 font-mono">
                               {p.startTime}-{p.endTime}
@@ -358,6 +396,16 @@ export default async function ShiftsPage({
                 </section>
               )}
 
+              {/* この講師とのその日のやりとり。講師側の2つのカレンダーと同じスレッド */}
+              {enterable(selectedDay) && (
+                <DayChat
+                  teacherId={teacher.id}
+                  date={selectedDay}
+                  viewerRole={ROLE.ADMIN}
+                  markRead={Boolean(sp.day)}
+                />
+              )}
+
               {targetDays.length > 0 && (
                 <section className="bg-white border border-slate-200 rounded-lg">
                   <div className="px-4 py-2.5 border-b border-slate-200">
@@ -393,7 +441,7 @@ export default async function ShiftsPage({
                             defaultChecked
                             className="rounded border-slate-300"
                           />
-                          <span className="text-slate-700">{p.name}</span>
+                          <span className="text-slate-700">{label(p)}</span>
                           <span className="text-[11px] text-slate-400 font-mono">
                             {p.startTime}-{p.endTime}
                           </span>

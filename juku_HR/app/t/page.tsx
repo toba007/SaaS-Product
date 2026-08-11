@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { periodLabeler } from "@/lib/periods";
 import { requireAuth } from "@/lib/dal";
 import { bulkSetMyShifts, submitMyShift } from "./actions";
 import { TermKindTabs } from "@/app/components/TermKindTabs";
@@ -9,7 +10,11 @@ import {
   termKindTabs,
 } from "@/lib/terms";
 import { eventsBetween, eventsOn, isClosed } from "@/lib/events";
+import { unreadByDate } from "@/lib/comments";
+import { DayChat } from "@/app/components/DayChat";
 import {
+  GRADE_BAND_LABEL,
+  ROLE,
   SHIFT,
   SHIFT_LABEL,
   SHIFT_MARK,
@@ -51,10 +56,16 @@ export default async function MyShiftsPage({
   ]);
 
   // このコマタイプのコマ。レギュラーは夕方3コマ、講習は朝から6コマ、というように違う。
+  // 学年帯をまたいで時刻順に並べる。小2限のあとに中1限が来るのが1日の並び。
   const periods = await prisma.period.findMany({
     where: { termKind: kind },
-    orderBy: { order: "asc" },
+    orderBy: [{ startTime: "asc" }, { id: "asc" }],
   });
+
+  // 学年帯を分けている塾では、同じ日に「1限」が2つ（小1限と中1限）並ぶ。
+  // 名前だけでは見分けが付かないので、混ざるときだけ「小」「中」を頭に付ける。
+  const label = periodLabeler(periods);
+  const bandCount = new Set(periods.map((p) => p.gradeBand)).size;
 
   // タブを切り替えたら、その期の最初の月に飛ぶ。
   // 「夏期講習」を押したのに今月（レギュラー期間）が出ると、入れる日が1つも無くて戸惑うため。
@@ -72,20 +83,19 @@ export default async function MyShiftsPage({
   const enterable = (date: string) => inKind(date) && !isClosed(date, events);
   const targetDays = days.filter(enterable);
 
-  const [requests, myAssignments] = await Promise.all([
-    prisma.shiftRequest.findMany({
-      where: { teacherId: teacher.id, date: { in: days } },
-    }),
-    // 管理者が確定させた自分のシフト。講師は「いつ出勤なのか」をここで知る。
-    prisma.shiftAssignment.findMany({
-      where: { teacherId: teacher.id, date: { in: days } },
-    }),
-  ]);
-  const assignedOf = (date: string) =>
-    myAssignments.filter((a) => a.date === date);
-  const isAssigned = (date: string, periodId: number) =>
-    myAssignments.some((a) => a.date === date && a.periodId === periodId);
-  const assignedTotal = myAssignments.length;
+  // ここは希望を出す画面。確定シフトは /t/schedule に分けてある。
+  // 同じカレンダーに希望と確定を重ねると、今見ているのがどちらか分からなくなる。
+  const requests = await prisma.shiftRequest.findMany({
+    where: { teacherId: teacher.id, date: { in: days } },
+  });
+
+  // 教室からの未読。日付に印を付けて、書き込みがあったことに気づけるようにする。
+  const unread = await unreadByDate(
+    teacher.id,
+    days[0],
+    days[days.length - 1],
+    ROLE.TEACHER,
+  );
 
   const selectedDay =
     sp.day && targetDays.includes(sp.day)
@@ -156,10 +166,8 @@ export default async function MyShiftsPage({
               {targetDays.length === 0
                 ? "この月に対象日はありません"
                 : answered > 0
-                  ? `${okCount}コマ出られる／${answered}コマ回答済${assignedTotal > 0 ? `／確定${assignedTotal}コマ` : ""}`
-                  : assignedTotal > 0
-                    ? `確定${assignedTotal}コマ（希望は未回答）`
-                    : "まだ回答していません"}
+                  ? `${okCount}コマ出られる／${answered}コマ回答済`
+                  : "まだ回答していません"}
             </span>
             <div className="flex items-center gap-2 text-[10px]">
               <span className={MARK_CLASS.PREFER}>◎入りたい</span>
@@ -284,9 +292,11 @@ export default async function MyShiftsPage({
                                 );
                               })}
                             </div>
-                            {assignedOf(date).length > 0 && (
-                              <div className="text-[8px] text-indigo-700 font-bold leading-none text-center mt-0.5">
-                                ●{assignedOf(date).length}
+                            {(unread.get(date) ?? 0) > 0 && (
+                              <div className="text-[8px] leading-none text-center mt-0.5">
+                                <span className="bg-rose-500 text-white rounded-full px-1 py-px">
+                                  {unread.get(date)}
+                                </span>
                               </div>
                             )}
                           </Link>
@@ -301,8 +311,8 @@ export default async function MyShiftsPage({
               灰色の日は{TERM_KIND_LABEL[kind]}の期間外、
               <span className="text-rose-500">赤い「閉」</span>は休校日、
               青い点は塾の予定です。
-              <span className="text-indigo-700 font-bold">●数字</span>
-              は確定した出勤コマの数です。
+              <span className="bg-rose-500 text-white rounded-full px-1">数字</span>
+              は教室からの未読です。確定した出勤は「確定シフト」で見られます。
             </p>
           </div>
 
@@ -328,23 +338,30 @@ export default async function MyShiftsPage({
                   </p>
                 ))}
               </div>
+              {/*
+                学年帯を分けている塾では、1日に「小2コマ＋中3コマ」が並ぶ。
+                ぜんぶ平らに並べると、どこまでが小学生ぶんか分からないので、
+                帯ごとに区切って見出しを付ける。1つの帯しか無い塾では見出しは出ない。
+              */}
               <div className="p-3 space-y-2.5">
-                {periods.map((p) => {
+                {periods.map((p, i) => {
                   const r = reqOf(selectedDay, p.id);
+                  const newBand =
+                    bandCount > 1 && (i === 0 || periods[i - 1].gradeBand !== p.gradeBand);
                   return (
                     <div key={p.id}>
+                      {newBand && (
+                        <div className="text-[11px] font-medium text-slate-400 border-b border-slate-100 pb-1 mb-1.5">
+                          {GRADE_BAND_LABEL[p.gradeBand]}
+                        </div>
+                      )}
                       <div className="flex items-baseline gap-2 mb-1">
                         <span className="text-sm font-medium text-slate-700">
-                          {p.name}
+                          {label(p)}
                         </span>
                         <span className="text-[11px] text-slate-400 font-mono">
                           {p.startTime}-{p.endTime}
                         </span>
-                        {isAssigned(selectedDay, p.id) && (
-                          <span className="text-[9px] bg-indigo-600 text-white rounded px-1.5 py-0.5">
-                            出勤確定
-                          </span>
-                        )}
                       </div>
                       <form action={submitMyShift} className="flex gap-1">
                         <input type="hidden" name="date" value={selectedDay} />
@@ -379,6 +396,16 @@ export default async function MyShiftsPage({
                 </p>
               </div>
             </section>
+          )}
+
+          {/* その日についてのやりとり。日付を自分で選んだときだけ既読にする */}
+          {selectedEnterable && (
+            <DayChat
+              teacherId={teacher.id}
+              date={selectedDay}
+              viewerRole={ROLE.TEACHER}
+              markRead={Boolean(sp.day)}
+            />
           )}
 
           {/* 曜日でまとめて */}
@@ -416,7 +443,7 @@ export default async function MyShiftsPage({
                         defaultChecked
                         className="rounded border-slate-300"
                       />
-                      <span className="text-slate-700">{p.name}</span>
+                      <span className="text-slate-700">{label(p)}</span>
                     </label>
                   ))}
                 </div>

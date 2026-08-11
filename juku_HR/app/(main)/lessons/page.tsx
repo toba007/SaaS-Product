@@ -35,7 +35,7 @@ export default async function LessonsPage({
       attendances: true,
       cards: true,
     },
-    orderBy: [{ period: { order: "asc" } }, { room: { name: "asc" } }],
+    orderBy: [{ period: { startTime: "asc" } }, { room: { name: "asc" } }],
   });
 
   return (

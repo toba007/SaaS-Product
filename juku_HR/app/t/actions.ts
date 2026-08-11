@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { bulkSetWeekday, setShiftRequest } from "@/lib/shifts";
@@ -132,4 +133,23 @@ export async function answerMySurvey(formData: FormData) {
   revalidatePath(`/t/messages/${messageId}`);
   revalidatePath(`/messages/${messageId}`);
   revalidatePath("/");
+}
+
+/**
+ * カレンダー購読URLを作り直す。
+ *
+ * URL に入っているトークンが本人確認そのものなので、他人に見られたら
+ * その人は本人のシフトを読み続けられる。すぐ切れる手段を本人に持たせておく。
+ * 作り直すと前のURLは404になり、購読していたカレンダーからは予定が消える。
+ */
+export async function regenerateIcsToken() {
+  const me = await currentTeacher();
+  if (!me) return;
+
+  await prisma.teacher.update({
+    where: { id: me.id },
+    data: { icsToken: randomUUID().replace(/-/g, "") },
+  });
+
+  revalidatePath("/t/schedule");
 }

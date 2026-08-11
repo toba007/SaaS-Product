@@ -22,7 +22,7 @@ export default async function MyLessonsPage() {
       record: true,
       attendances: true,
     },
-    orderBy: [{ date: "desc" }, { period: { order: "asc" } }],
+    orderBy: [{ date: "desc" }, { period: { startTime: "asc" } }],
   });
 
   const unrecorded = lessons.filter((l) => !l.record);

@@ -66,10 +66,10 @@ export function termKindOfDate(
   return terms.find((t) => withinTerm(date, t))?.kind ?? TERM_KIND.REGULAR;
 }
 
-/** そのコマタイプのコマ一覧 */
+/** そのコマタイプのコマ一覧。学年帯をまたいで時刻順に並べる。 */
 export async function periodsOfKind(termKind: string) {
   return prisma.period.findMany({
     where: { termKind },
-    orderBy: { order: "asc" },
+    orderBy: [{ startTime: "asc" }, { id: "asc" }],
   });
 }

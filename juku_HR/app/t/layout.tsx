@@ -2,6 +2,7 @@ import { requireAuth } from "@/lib/dal";
 import { logout } from "@/app/login/actions";
 import { prisma } from "@/lib/prisma";
 import { TeacherTabs } from "./TeacherTabs";
+import { unreadTotalForTeacher } from "@/lib/comments";
 import { EMPLOYMENT_LABEL } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -17,9 +18,12 @@ export default async function TeacherLayout({
 }) {
   const teacher = await requireAuth("/t");
 
-  const unread = await prisma.messageRecipient.count({
-    where: { teacherId: teacher.id, readAt: null },
-  });
+  const [unread, unreadComments] = await Promise.all([
+    prisma.messageRecipient.count({
+      where: { teacherId: teacher.id, readAt: null },
+    }),
+    unreadTotalForTeacher(teacher.id),
+  ]);
 
   return (
     <div className="min-h-dvh bg-slate-50 pb-16">
@@ -45,7 +49,7 @@ export default async function TeacherLayout({
 
       <main className="max-w-md mx-auto px-3 py-3">{children}</main>
 
-      <TeacherTabs unread={unread} />
+      <TeacherTabs unread={unread} unreadComments={unreadComments} />
     </div>
   );
 }

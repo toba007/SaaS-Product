@@ -9,6 +9,7 @@ import { hashPassword, parseSessionValue, verifyPassword } from "../lib/auth";
 import { canEditLesson, canReadMessage } from "../lib/teacher";
 import { computePayslip } from "../lib/payroll";
 import { ROLE, homeFor } from "../lib/constants";
+import { resetAll } from "./_reset";
 
 let failed = 0;
 function check(label: string, actual: unknown, expected: unknown) {
@@ -23,23 +24,7 @@ function check(label: string, actual: unknown, expected: unknown) {
 }
 
 async function reset() {
-  await prisma.messageRecipient.deleteMany();
-  await prisma.message.deleteMany();
-  await prisma.dutyRecord.deleteMany();
-  await prisma.punch.deleteMany();
-  await prisma.adminWork.deleteMany();
-  await prisma.absenceCard.deleteMany();
-  await prisma.attendance.deleteMany();
-  await prisma.lessonRecord.deleteMany();
-  await prisma.lesson.deleteMany();
-  await prisma.shiftAssignment.deleteMany();
-  await prisma.shiftRequest.deleteMany();
-  await prisma.teacherSubject.deleteMany();
-  await prisma.teacher.deleteMany();
-  await prisma.room.deleteMany();
-  await prisma.period.deleteMany();
-  await prisma.subject.deleteMany();
-  await prisma.term.deleteMany();
+  await resetAll();
 }
 
 async function main() {
@@ -54,13 +39,18 @@ async function main() {
   });
 
   // A = 管理者(社員)、B = 講師(時間講師)
+  // 単価は賃金項目ごとに持つ。ここでは集団授業の1項目だけあれば足りる。
+  const itemGroup = await prisma.payItem.create({
+    data: { name: "集団授業", basis: "PER_SLOT", legacyStyle: "GROUP", order: 1 },
+  });
+
   const a = await prisma.teacher.create({
     data: {
       name: "佐藤 健一",
       loginId: "sato",
       passwordHash: hashPassword("sato-pw"),
       role: "ADMIN",
-      wageRates: { create: [{ style: "GROUP", amount: 2600 }] },
+      payRates: { create: [{ payItemId: itemGroup.id, amount: 2600 }] },
     },
   });
   const b = await prisma.teacher.create({
@@ -69,7 +59,7 @@ async function main() {
       loginId: "suzuki",
       passwordHash: hashPassword("suzuki-pw"),
       role: "TEACHER",
-      wageRates: { create: [{ style: "GROUP", amount: 2000 }] },
+      payRates: { create: [{ payItemId: itemGroup.id, amount: 2000 }] },
     },
   });
 
@@ -169,9 +159,9 @@ async function main() {
   const ym = { year: 2026, month: 7 };
   const slipA = await computePayslip(a.id, ym);
   const slipB = await computePayslip(b.id, ym);
-  check("Aのコマ数", slipA?.lessonCount, 1);
+  check("Aのコマ数", slipA?.slotCount, 1);
   check("Aの支給額", slipA?.total, 2600);
-  check("Bのコマ数", slipB?.lessonCount, 2);
+  check("Bのコマ数", slipB?.slotCount, 2);
   check("AとBの明細は混ざらない", slipB?.total, 4000);
 
   console.log("\n[9] 退職した講師はログインできない");
