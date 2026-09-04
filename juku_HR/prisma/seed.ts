@@ -401,6 +401,8 @@ async function main() {
           grade: c.grade,
           subjectId: subject.id,
           level: c.level,
+          // 週に何コマ開講するか。塾が先に決める数で、時間割はこの数だけ枠を取る。
+          slotsPerWeek: c.slots.length,
           capacity: 8,
           fromDate: `${thisYear}-04-01`,
           toDate: `${thisYear + 1}-03-31`,

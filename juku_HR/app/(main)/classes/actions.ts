@@ -28,6 +28,7 @@ export async function createClassGroup(
   const dayOfWeek = Number(formData.get("dayOfWeek"));
   const periodIds = formData.getAll("periodIds").map(Number).filter(Number.isInteger);
   const capacity = Number(formData.get("capacity") ?? 0);
+  const slotsPerWeek = Number(formData.get("slotsPerWeek") ?? 1);
   const fromDate = String(formData.get("fromDate") ?? "");
   const toDate = String(formData.get("toDate") ?? "");
 
@@ -38,8 +39,9 @@ export async function createClassGroup(
   if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
     return { error: "曜日が正しくありません" };
   }
-  if (periodIds.length === 0) {
-    return { error: "コマを1つ以上選んでください" };
+  // 0 は「その期は開講しない」。クラスだけ作っておく使い方を許す。
+  if (!Number.isInteger(slotsPerWeek) || slotsPerWeek < 0 || slotsPerWeek > 20) {
+    return { error: "週のコマ数は0〜20で入れてください" };
   }
   if (!ISO.test(fromDate) || !ISO.test(toDate)) {
     return { error: "有効期間を入力してください" };
@@ -48,10 +50,11 @@ export async function createClassGroup(
 
   const [subject, periods] = await Promise.all([
     prisma.subject.findUnique({ where: { id: subjectId } }),
-    prisma.period.findMany({ where: { id: { in: periodIds } }, select: { id: true } }),
+    periodIds.length > 0
+      ? prisma.period.findMany({ where: { id: { in: periodIds } }, select: { id: true } })
+      : Promise.resolve([] as { id: number }[]),
   ]);
   if (!subject) return { error: "科目が見つかりません" };
-  if (periods.length === 0) return { error: "コマが見つかりません" };
 
   await prisma.classGroup.create({
     data: {
@@ -60,8 +63,12 @@ export async function createClassGroup(
       subjectId,
       level,
       capacity: Number.isInteger(capacity) && capacity >= 0 ? capacity : 0,
+      slotsPerWeek,
       fromDate,
       toDate,
+      // 曜日とコマを選ばなかった場合は時間割を作らない。
+      // 「週に何コマやるか」だけ決めておいて、いつやるかは
+      // 開講時間割の画面で組む、という流れを取れるようにするため。
       sessions: {
         create: periods.map((p) => ({ dayOfWeek, periodId: p.id })),
       },
@@ -126,4 +133,27 @@ export async function closeClassGroup(formData: FormData) {
   // 消すと過去の授業と辻褄が合わなくなるので、終了日を切るだけにする
   await prisma.classGroup.update({ where: { id }, data: { toDate } });
   revalidatePath("/classes");
+}
+
+/**
+ * 週の開講コマ数を直す。
+ *
+ * ここが「塾が先に決める量」。**時間割を組む前に決まっている必要がある。**
+ * **0 にすると、そのクラスは時間割に出てこない**（その期は開講しない）。
+ * クラスの行は残るので、在籍と過去の授業の記録は保たれる。
+ */
+export async function setClassSlots(formData: FormData) {
+  await requireAdmin();
+
+  const id = Number(formData.get("classGroupId"));
+  const slots = Number(formData.get("slotsPerWeek"));
+  if (!Number.isInteger(slots) || slots < 0 || slots > 20) return;
+
+  const cls = await prisma.classGroup.findUnique({ where: { id }, select: { id: true } });
+  if (!cls) return;
+
+  await prisma.classGroup.update({ where: { id }, data: { slotsPerWeek: slots } });
+
+  revalidatePath("/classes");
+  revalidatePath("/shifts/timetable");
 }

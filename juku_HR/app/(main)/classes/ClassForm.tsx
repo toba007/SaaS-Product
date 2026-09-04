@@ -87,9 +87,13 @@ export function ClassForm({
           ))}
         </select>
       </label>
-      {/* 「月曜は英英数」のように同じ日に何コマも入るので、複数選べるようにする */}
+      {/*
+        曜日とコマは任意。選ばなければ時間割は作らず、週コマ数だけを宣言する。
+        いつやるかは「開講時間割」で組む、という流れを取れるようにするため。
+        「月曜は英英数」のように同じ日に何コマも入るので、複数選べる。
+      */}
       <fieldset className="text-xs text-slate-500">
-        <legend>コマ（複数可）</legend>
+        <legend>コマ（任意・複数可）</legend>
         <div className="mt-0.5 flex flex-wrap gap-2 border border-slate-200 rounded px-2 py-1.5">
           {periods.map((p) => (
             <label key={p.id} className="flex items-center gap-1 text-sm text-slate-900">
@@ -99,6 +103,18 @@ export function ClassForm({
           ))}
         </div>
       </fieldset>
+      <label className="text-xs text-slate-500">
+        週コマ数
+        <input
+          type="number"
+          name="slotsPerWeek"
+          min={0}
+          max={20}
+          defaultValue={1}
+          title="週に何コマ開講するか。0 にするとその期は開講しません"
+          className="block mt-0.5 w-16 border border-slate-200 rounded px-2 py-1 text-sm text-slate-900"
+        />
+      </label>
       <label className="text-xs text-slate-500">
         定員
         <input
@@ -137,6 +153,10 @@ export function ClassForm({
         {pending ? "作成中…" : "クラスを作る"}
       </button>
       {state.error && <p className="w-full text-sm text-rose-700">{state.error}</p>}
+      <p className="w-full text-[11px] text-slate-400">
+        曜日とコマは選ばなくて構いません。週コマ数だけ決めておけば、いつ開講するかは
+        「開講時間割」で組めます。
+      </p>
     </form>
   );
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { AssignBoard, type BoardClass } from "./AssignBoard";
 import { ClassForm } from "./ClassForm";
-import { closeClassGroup } from "./actions";
+import { closeClassGroup, setClassSlots } from "./actions";
 import { duplicateEnrollments, memberCount } from "@/lib/classes";
 import { WEEKDAYS } from "@/lib/dates";
 import {
@@ -261,6 +261,7 @@ export default async function ClassesPage({
                 <thead>
                   <tr className="text-[11px] text-slate-400">
                     <th className="text-left font-medium px-4 py-1.5">クラス</th>
+                    <th className="text-left font-medium px-2 py-1.5 w-28">週コマ数</th>
                     <th className="text-left font-medium px-2 py-1.5">曜日・コマ</th>
                     <th className="text-right font-medium px-2 py-1.5 w-20">在籍</th>
                     <th className="text-left font-medium px-2 py-1.5 w-44">有効期間</th>
@@ -285,9 +286,34 @@ export default async function ClassesPage({
                             </span>
                           )}
                         </td>
+                        <td className="px-2 py-1.5">
+                          <form action={setClassSlots} className="flex items-center gap-1">
+                            <input type="hidden" name="classGroupId" value={c.id} />
+                            <input
+                              name="slotsPerWeek"
+                              type="number"
+                              min={0}
+                              max={20}
+                              defaultValue={c.slotsPerWeek}
+                              aria-label={`${c.name}の週コマ数`}
+                              className="w-12 border border-slate-200 rounded px-1 py-0.5 text-sm text-right tabular-nums"
+                            />
+                            <span className="text-[10px] text-slate-400">
+                              {c.slotsPerWeek === 0 ? "開講しない" : "コマ"}
+                            </span>
+                            <button
+                              type="submit"
+                              className="px-1.5 py-0.5 text-[10px] border border-slate-200 rounded hover:bg-slate-50"
+                            >
+                              保存
+                            </button>
+                          </form>
+                        </td>
                         <td className="px-2 py-1.5 text-slate-600 text-xs">
-                          {c.sessions.length === 0 ? (
-                            <span className="text-rose-600">時間割なし</span>
+                          {c.slotsPerWeek === 0 ? (
+                            <span className="text-slate-300">—</span>
+                          ) : c.sessions.length === 0 ? (
+                            <span className="text-slate-400">未定</span>
                           ) : (
                             scheduleLabel(c.sessions)
                           )}

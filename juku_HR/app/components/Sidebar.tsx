@@ -104,6 +104,7 @@ const SECTIONS: Section[] = [
     title: "シフト",
     icon: IconCalendar,
     items: [
+      { href: "/shifts/timetable", label: "開講時間割" },
       { href: "/shifts/plans", label: "シフト計画・必要人数" },
       { href: "/shifts/board", label: "調整＆確定" },
       { href: "/shifts", label: "希望の確認・代理入力" },

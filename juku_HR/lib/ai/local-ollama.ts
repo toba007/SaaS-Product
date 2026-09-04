@@ -24,7 +24,11 @@ const DEFAULT_URL = "http://127.0.0.1:11434";
  */
 const DEFAULT_MODEL = "gemma4:e2b-it-qat";
 
-/** CPU 実行だと数分かかることがある */
+/**
+ * CPU 実行だと数分かかる。実測で出力2トークン/秒ほどなので、
+ * 20件ぶんの時間割（出力1,000トークン超）だと10分近くかかる。
+ * 呼ぶ側で伸ばせるようにしてある。
+ */
 const TIMEOUT_MS = 300_000;
 
 type OllamaChatResponse = {
@@ -38,6 +42,8 @@ export class OllamaClient implements LlmClient {
   constructor(
     private readonly model: string = process.env.OLLAMA_MODEL ?? DEFAULT_MODEL,
     private readonly baseUrl: string = process.env.OLLAMA_URL ?? DEFAULT_URL,
+    /** 待つ上限（ミリ秒）。まとめて流す処理では伸ばす。 */
+    private readonly timeoutMs: number = TIMEOUT_MS,
   ) {
     this.name = `ollama/${this.model}`;
   }
@@ -52,7 +58,7 @@ export class OllamaClient implements LlmClient {
       res = await fetch(`${this.baseUrl}/api/chat`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        signal: AbortSignal.timeout(TIMEOUT_MS),
+        signal: AbortSignal.timeout(this.timeoutMs),
         body: JSON.stringify({
           model: this.model,
           stream: false,
@@ -67,6 +73,15 @@ export class OllamaClient implements LlmClient {
         }),
       });
     } catch (e) {
+      // タイムアウトを「接続できません」と報告すると、起動しているのに
+      // 起動を疑うことになる。原因が違うので分けて出す。
+      if (e instanceof Error && (e.name === "TimeoutError" || e.name === "AbortError")) {
+        throw new LlmError(
+          `Ollama が ${Math.round(this.timeoutMs / 1000)} 秒以内に答えませんでした。` +
+            `入力が大きすぎるか、モデルが重すぎます（model=${this.model}）。`,
+          e,
+        );
+      }
       throw new LlmError(
         `Ollama に接続できませんでした（${this.baseUrl}）。起動しているか確認してください。`,
         e,
