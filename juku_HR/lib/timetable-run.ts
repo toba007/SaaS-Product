@@ -301,6 +301,28 @@ async function executeRun(runId: number): Promise<void> {
     bySlot.set(k, [...(bySlot.get(k) ?? []), p]);
   }
   for (const [k, list] of bySlot) {
+    // **その顔ぶれを1人で持てる講師がいるか。**
+    // 講師が担当するのは得意な2科目ほどなので、英・数・理の組を作っても
+    // 3つ全部を持てる人がいなければ埋まらない。availability は
+    // 「その枠に出られて、その科目を担当できる講師」なので、
+    // 顔ぶれ全員のぶんを掛け合わせて、1人でも残れば持てる。
+    const coverable = (members: { studentSubjectId: number }[]) => {
+      let common: Set<number> | null = null;
+      for (const m of members) {
+        const set = input.availability.get(`indiv:${m.studentSubjectId}`)?.get(k);
+        if (!set || set.size === 0) return false;
+        if (common === null) {
+          common = new Set<number>(set);
+        } else {
+          const next = new Set<number>();
+          for (const id of common) if (set.has(id)) next.add(id);
+          common = next;
+        }
+        if (common.size === 0) return false;
+      }
+      return common !== null && common.size > 0;
+    };
+
     const noOf = packGroups(
       list.map((p) => {
         const t = targetByKey.get(p.targetKey)!;
@@ -312,6 +334,7 @@ async function executeRun(runId: number): Promise<void> {
         };
       }),
       setting.indivMaxStudents,
+      coverable,
     );
     for (const p of list) {
       const t = targetByKey.get(p.targetKey)!;

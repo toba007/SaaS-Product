@@ -63,10 +63,27 @@ export const UNASSIGNED = 0;
  * 組の科目が少ないほど「全部教えられる講師」の条件が緩くなり、
  * 割当が埋まりやすくなる。混在は許すが、わざわざ作る理由も無い。
  *
+ * ---- 持てる講師がいない組は作らない ----
+ * **講師が担当するのは得意な2科目ほど**（文系／理系で分かれる）。
+ * 英・数・理の組を作っても、3つ全部を持てる人がいなければ永久に埋まらない。
+ * しかもそれが分かるのは割当まで進んだあとで、原因も見えない。
+ *
+ * そこで `coverable` を渡せるようにしてある。**一緒にできるかどうかを
+ * 講師の担当範囲で確かめてから詰める。** 渡さなければ人数だけで詰める
+ * （講師の情報を持たない画面や、組がまだ決まっていない行の表示用）。
+ *
  * 並びは科目→ StudentSubject.id の昇順で固定する。乱数を使わないので、
  * 同じ入力なら必ず同じ組になる。
  */
-export function packGroups(items: Groupable[], cap: number): Map<number, number> {
+export function packGroups(
+  items: Groupable[],
+  cap: number,
+  /**
+   * その顔ぶれを1人で持てる講師がいるか。
+   * 渡さなければ「いる」ものとして扱う。
+   */
+  coverable?: (members: Groupable[]) => boolean,
+): Map<number, number> {
   const limit = Math.max(1, Math.trunc(cap) || 1);
   const out = new Map<number, number>();
 
@@ -74,8 +91,8 @@ export function packGroups(items: Groupable[], cap: number): Map<number, number>
     (a, b) => a.subjectId - b.subjectId || a.studentSubjectId - b.studentSubjectId,
   );
 
-  // 既に決まっている組。中身の数と、1対1かどうかを覚えておく。
-  type Slot = { size: number; solo: boolean };
+  // 既に決まっている組。中身と、1対1かどうかを覚えておく。
+  type Slot = { members: Groupable[]; solo: boolean };
   const groups = new Map<number, Slot>();
 
   for (const it of sorted) {
@@ -83,10 +100,10 @@ export function packGroups(items: Groupable[], cap: number): Map<number, number>
     out.set(it.studentSubjectId, it.groupNo);
     const g = groups.get(it.groupNo);
     if (g) {
-      g.size++;
+      g.members.push(it);
       g.solo = g.solo || it.solo;
     } else {
-      groups.set(it.groupNo, { size: 1, solo: it.solo });
+      groups.set(it.groupNo, { members: [it], solo: it.solo });
     }
   }
 
@@ -102,27 +119,29 @@ export function packGroups(items: Groupable[], cap: number): Map<number, number>
     // 1対1は必ず1人。空きを探さずに新しい組を作る。
     if (it.solo) {
       const no = nextNo();
-      groups.set(no, { size: 1, solo: true });
+      groups.set(no, { members: [it], solo: true });
       out.set(it.studentSubjectId, no);
       continue;
     }
 
-    // 1対1でなく、まだ空きのある組を、番号の小さい順に探す。
-    // **科目は見ない。** 1人の講師が違う科目の生徒を同時に見るため。
+    // 1対1でなく、まだ空きがあり、**その顔ぶれを持てる講師がいる**組を、
+    // 番号の小さい順に探す。科目が揃っている必要は無いが、
+    // 誰も持てない組み合わせを作ってしまうと埋まらない。
     let found = 0;
     for (const no of [...groups.keys()].sort((a, b) => a - b)) {
       const g = groups.get(no)!;
       if (g.solo) continue;
-      if (g.size >= limit) continue;
+      if (g.members.length >= limit) continue;
+      if (coverable && !coverable([...g.members, it])) continue;
       found = no;
       break;
     }
 
     if (found === 0) {
       found = nextNo();
-      groups.set(found, { size: 1, solo: false });
+      groups.set(found, { members: [it], solo: false });
     } else {
-      groups.get(found)!.size++;
+      groups.get(found)!.members.push(it);
     }
     out.set(it.studentSubjectId, found);
   }
@@ -131,7 +150,7 @@ export function packGroups(items: Groupable[], cap: number): Map<number, number>
 }
 
 export type GroupViolation = {
-  code: "G1_OVER_CAP" | "G2_SOLO_SHARED";
+  code: "G1_OVER_CAP" | "G2_SOLO_SHARED" | "G3_NO_TEACHER";
   groupNo: number;
   message: string;
 };
@@ -148,6 +167,8 @@ export function checkGroups(
   cap: number,
   /** 番号を人が読める名前にする。無ければ番号だけで出す */
   label?: (studentSubjectId: number) => string,
+  /** その顔ぶれを1人で持てる講師がいるか。渡さなければ確かめない */
+  coverable?: (members: Groupable[]) => boolean,
 ): GroupViolation[] {
   const limit = Math.max(1, Math.trunc(cap) || 1);
   const byNo = new Map<number, Groupable[]>();
@@ -181,7 +202,15 @@ export function checkGroups(
     }
 
     // 科目が混ざっているのは**正常**。1人の講師が巡回して見るため。
-    // 代わりに「その科目を全部教えられる講師がいるか」を割当側で見る。
+    // ただし**その全部を教えられる人がいなければ、この組は永久に埋まらない。**
+    // 講師が持つのは得意な2科目ほどなので、人が組み替えたときに起こりうる。
+    if (coverable && !coverable(list)) {
+      out.push({
+        code: "G3_NO_TEACHER",
+        groupNo: no,
+        message: `組${no}の顔ぶれを1人で持てる講師がいません。科目の組み合わせを見直してください（${names(list)}）`,
+      });
+    }
   }
 
   return out;

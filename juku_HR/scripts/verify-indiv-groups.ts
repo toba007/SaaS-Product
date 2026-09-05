@@ -106,6 +106,33 @@ console.log("\n[組を作る] 実行のたびに変わらない");
   check("並び順を変えても同じ結果", a, b);
 }
 
+console.log("\n[組を作る] 持てる講師がいない組は作らない");
+{
+  // **講師が担当するのは得意な2科目ほど**（文系／理系で分かれる）。
+  // 英と数を両方持てる人がいなければ、その2人を同じ組にしてはいけない。
+  // 一緒にすると、割当まで進んでから「埋まらない」と分かる。
+  const canTeach = new Map<number, Set<number>>([
+    [10, new Set([ENG])], // 文系の講師
+    [11, new Set([MATH, SCI])], // 理系の講師
+  ]);
+  const coverable = (members: Groupable[]) =>
+    [...canTeach.values()].some((subjects) =>
+      members.every((m) => subjects.has(m.subjectId)),
+    );
+
+  const list = [it(1, ENG), it(2, MATH)];
+  const m = packGroups(list, 4, coverable);
+  check("持てる人がいなければ分ける", m.get(1) !== m.get(2), true);
+
+  // 数と理は同じ講師が持てるので、まとめてよい
+  const ok = packGroups([it(1, MATH), it(2, SCI)], 4, coverable);
+  check("持てる人がいればまとめる", ok.get(1) === ok.get(2), true);
+
+  // 渡さなければ人数だけで詰める（講師の情報を持たない画面用）
+  const plain = packGroups(list, 4);
+  check("渡さなければ人数だけで詰める", plain.get(1) === plain.get(2), true);
+}
+
 console.log("\n[組の検証] 人が壊したものを見つける");
 {
   check(
@@ -127,6 +154,21 @@ console.log("\n[組の検証] 人が壊したものを見つける");
     [],
   );
   check("組が未定なら何も言わない", checkGroups([it(1, ENG), it(2, MATH)], 1), []);
+
+  // 人が組み替えて、誰も持てない顔ぶれにしてしまった場合
+  const onlyEnglish = (members: Groupable[]) => members.every((m) => m.subjectId === ENG);
+  check(
+    "持てる講師がいない",
+    checkGroups([it(1, ENG, false, 1), it(2, MATH, false, 1)], 4, undefined, onlyEnglish).map(
+      (v) => v.code,
+    ),
+    ["G3_NO_TEACHER"],
+  );
+  check(
+    "持てる講師がいれば言わない",
+    checkGroups([it(1, ENG, false, 1), it(2, ENG, false, 1)], 4, undefined, onlyEnglish),
+    [],
+  );
 }
 
 console.log("\n[必要人数] 組が決まっていれば数えるだけ");

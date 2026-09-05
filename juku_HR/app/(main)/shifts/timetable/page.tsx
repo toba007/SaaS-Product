@@ -395,7 +395,28 @@ async function RunView({
       const [d, pid] = k.split(":").map(Number);
       const period = periods.find((x) => x.id === pid);
       const where = `${WEEKDAYS[d]}曜${period ? label(period) : `コマ${pid}`}`;
-      for (const v of checkGroups(list, setting.indivMaxStudents, nameOfLink)) {
+
+      // その顔ぶれを1人で持てる講師がいるか。**人が組み替えたあとに崩れる。**
+      // 講師が担当するのは得意な2科目ほどなので、科目を跨いで詰めると
+      // 誰も持てない組み合わせが簡単にできてしまう。
+      const coverable = (members: { studentSubjectId: number }[]) => {
+        let common: Set<number> | null = null;
+        for (const m of members) {
+          const set = input.availability.get(`indiv:${m.studentSubjectId}`)?.get(k);
+          if (!set || set.size === 0) return false;
+          if (common === null) {
+            common = new Set<number>(set);
+          } else {
+            const next = new Set<number>();
+            for (const id of common) if (set.has(id)) next.add(id);
+            common = next;
+          }
+          if (common.size === 0) return false;
+        }
+        return common !== null && common.size > 0;
+      };
+
+      for (const v of checkGroups(list, setting.indivMaxStudents, nameOfLink, coverable)) {
         groupIssues.push(`${where}：${v.message}`);
       }
     }
