@@ -129,6 +129,8 @@ export function buildIndivGrid(
   soloKeys: Set<string>,
   /** 科目名。列の見出しに出す */
   subjectName: (id: number) => string,
+  /** 科目の系統（文系／理系）。組を寄せる向きが決まる */
+  streamOf?: (id: number) => string,
 ): Grid {
   const cap = Math.max(1, Math.trunc(indivMaxStudents) || 1);
   const indiv = items.filter((i) => i.kind === "INDIV");
@@ -145,6 +147,7 @@ export function buildIndivGrid(
       const groupable: Groupable[] = here.map((i) => ({
         studentSubjectId: i.linkId ?? i.id,
         subjectId: i.subjectId,
+        stream: streamOf?.(i.subjectId),
         solo: soloKeys.has(i.targetKey),
         groupNo: i.groupNo ?? 0,
       }));

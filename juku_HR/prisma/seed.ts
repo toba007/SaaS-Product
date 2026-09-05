@@ -1,7 +1,7 @@
 // 接続は lib/prisma と共有する。別々に張ると、同じ SQLite ファイルに
 // 2本つながることになり、_reset との間で書き込みが競合する。
 import { prisma } from "../lib/prisma";
-import { todayISO } from "../lib/constants";
+import { todayISO, SUBJECT_STREAM } from "../lib/constants";
 import { hashPassword } from "../lib/auth";
 import { resetAll } from "../scripts/_reset";
 
@@ -28,9 +28,20 @@ async function main() {
   await resetAll();
 
   // ---- 科目 ----
-  const subjectNames = ["英語", "数学", "国語", "理科", "社会"];
+  // 系統は個別の組を寄せる向きに使う。**講師が持つのは得意な2科目ほどで、
+  // その2つは文系どうし・理系どうしになりやすい**（英と国は同じ人が持てるが、
+  // 英と数を両方持てる人はまずいない）。
+  const subjectDefs = [
+    { name: "英語", stream: SUBJECT_STREAM.HUMANITIES },
+    { name: "数学", stream: SUBJECT_STREAM.SCIENCE },
+    { name: "国語", stream: SUBJECT_STREAM.HUMANITIES },
+    { name: "理科", stream: SUBJECT_STREAM.SCIENCE },
+    { name: "社会", stream: SUBJECT_STREAM.HUMANITIES },
+  ];
   const subjects = await Promise.all(
-    subjectNames.map((name, i) => prisma.subject.create({ data: { name, order: i } })),
+    subjectDefs.map((d, i) =>
+      prisma.subject.create({ data: { name: d.name, stream: d.stream, order: i } }),
+    ),
   );
   const byName = (n: string) => {
     const s = subjects.find((x) => x.name === n);

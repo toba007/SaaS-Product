@@ -30,6 +30,8 @@ function check(label: string, actual: unknown, expected: unknown) {
 const ENG = 1;
 const MATH = 2;
 const SCI = 3;
+const JPN = 4;
+const ESSAY = 5;
 
 /** 生徒×科目1件。id は StudentSubject.id のつもり */
 const it = (id: number, subjectId: number, solo = false, groupNo = 0): Groupable => ({
@@ -104,6 +106,66 @@ console.log("\n[組を作る] 実行のたびに変わらない");
   const a = shape(packGroups(list, 2));
   const b = shape(packGroups([...list].reverse(), 2));
   check("並び順を変えても同じ結果", a, b);
+}
+
+console.log("\n[組を作る] 同じ系統から寄せる");
+{
+  // **講師が持つのは得意な2科目ほどで、その2つは文系どうし・理系どうし。**
+  // 系統を見ずに科目の番号順に詰めると、英(1) 数(2) 国(3) 理(4) が
+  // 「英数」「国理」に分かれ、どちらも持てる人がいない組になる。
+  const H = "HUMANITIES";
+  const S = "SCIENCE";
+  const withStream = (id: number, subjectId: number, stream: string): Groupable => ({
+    studentSubjectId: id,
+    subjectId,
+    stream,
+    solo: false,
+    groupNo: 0,
+  });
+
+  const list = [
+    withStream(1, ENG, H),
+    withStream(2, MATH, S),
+    withStream(3, JPN, H),
+    withStream(4, SCI, S),
+  ];
+  check("文系どうし・理系どうしでまとまる", shape(packGroups(list, 2)), [
+    "1=1",
+    "2=2",
+    "3=1",
+    "4=2",
+  ]);
+
+  // 系統が無ければ番号順。英と数が同じ組になってしまう（従来の動き）
+  check(
+    "系統が無ければ番号順のまま",
+    shape(packGroups([it(1, ENG), it(2, MATH), it(3, JPN), it(4, SCI)], 2)),
+    ["1=1", "2=1", "3=2", "4=2"],
+  );
+
+  // どちらでもない科目は最後に回す。
+  // 先頭に置くと文系と理系の間に挟まって、両方に橋を架けてしまう
+  // （小論文・英 が1組、国 が別、のように文系が割れる）。
+  const mixed = [
+    withStream(1, ENG, H),
+    withStream(2, JPN, H),
+    withStream(3, ESSAY, "OTHER"),
+  ];
+  const m = packGroups(mixed, 2);
+  check("どちらでもより先に、同じ系統がまとまる", m.get(1) === m.get(2), true);
+  check("どちらでもはあふれて別の組へ", m.get(3) !== m.get(1), true);
+
+  // **系統は寄せる順序であって、相性の判定ではない。**
+  // 文系と理系しかいなければ同じ組になる。それでよいかどうかは
+  // 「その2つを持てる講師がいるか」で決まるので、coverable の仕事。
+  check(
+    "系統が違っても、他にいなければ同じ組になる",
+    (() => {
+      const two = packGroups([withStream(1, ENG, H), withStream(2, MATH, S)], 2);
+      return two.get(1) === two.get(2);
+    })(),
+    true,
+  );
 }
 
 console.log("\n[組を作る] 持てる講師がいない組は作らない");

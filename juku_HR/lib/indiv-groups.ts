@@ -42,6 +42,16 @@ export type Groupable = {
   /** StudentSubject.id。同じ生徒でも科目が違えば別の件 */
   studentSubjectId: number;
   subjectId: number;
+  /**
+   * 科目の系統（HUMANITIES | SCIENCE | OTHER）。
+   *
+   * **同じ系統から先に寄せる。** 講師が担当するのは得意な2科目ほどで、
+   * その2つは文系どうし・理系どうしになりやすい。英と国の組は持てる人が
+   * いるが、英と数の組は持てる人がまずいない。
+   *
+   * 無ければ OTHER と同じ扱い（どこにでも入れる）。
+   */
+  stream?: string;
   /** 1対1で取っている生徒か。**他の生徒と同じ組にできない** */
   solo: boolean;
   /** 決まっている組番号。0 なら未定 */
@@ -52,6 +62,19 @@ export type Groupable = {
 export const UNASSIGNED = 0;
 
 /**
+ * 系統の並び順。**OTHER は最後**にする。
+ *
+ * どちらとも言えない科目を先頭に置くと、文系と理系の間に挟まって
+ * 両方に橋を架けてしまう（英・小論文・数 が1組になる）。
+ * 最後に回せば、埋まっている組の空きに入るだけで済む。
+ */
+function streamOrder(stream: string | undefined): number {
+  if (stream === "HUMANITIES") return 0;
+  if (stream === "SCIENCE") return 1;
+  return 2;
+}
+
+/**
  * 1つの枠の中を、決定的に組へ割る。
  *
  * **人が決めた組（groupNo >= 1）は動かさない。** 未定のものだけを、
@@ -59,9 +82,13 @@ export const UNASSIGNED = 0;
  * ここを毎回ゼロから組み直すと、1件足しただけで全員の組が変わってしまう。
  *
  * ---- 混ぜてよいが、混ぜないで済むなら混ぜない ----
- * 科目の昇順に詰めるので、**同じ科目の生徒が先に同じ組に寄る。**
- * 組の科目が少ないほど「全部教えられる講師」の条件が緩くなり、
- * 割当が埋まりやすくなる。混在は許すが、わざわざ作る理由も無い。
+ * **系統（文系／理系）→科目→id** の順に詰めるので、まず文系どうし・
+ * 理系どうしが同じ組に寄り、その中で同じ科目がまとまる。
+ * 組の科目が少ないほど、そして系統が揃っているほど
+ * 「全部教えられる講師」が見つかりやすい。混在は許すが、わざわざ作る理由も無い。
+ *
+ * 系統を見ずに科目の番号順に詰めると、英(1) 数(2) 国(3) 理(4) が
+ * 「英数」「国理」に分かれてしまう。どちらも持てる人がいない組み合わせになる。
  *
  * ---- 持てる講師がいない組は作らない ----
  * **講師が担当するのは得意な2科目ほど**（文系／理系で分かれる）。
@@ -88,7 +115,10 @@ export function packGroups(
   const out = new Map<number, number>();
 
   const sorted = [...items].sort(
-    (a, b) => a.subjectId - b.subjectId || a.studentSubjectId - b.studentSubjectId,
+    (a, b) =>
+      streamOrder(a.stream) - streamOrder(b.stream) ||
+      a.subjectId - b.subjectId ||
+      a.studentSubjectId - b.studentSubjectId,
   );
 
   // 既に決まっている組。中身と、1対1かどうかを覚えておく。

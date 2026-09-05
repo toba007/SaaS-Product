@@ -107,6 +107,11 @@ export function individualDemand(
   schedules: ScheduleLite[],
   dates: string[],
   indivMaxStudents: number,
+  /**
+   * 科目の系統（文系／理系）。組を寄せる向きが決まる。
+   * 渡さなければ科目の番号順に詰める。
+   */
+  streamOf?: (subjectId: number) => string,
 ): DemandRow[] {
   const cap = Math.max(1, Math.trunc(indivMaxStudents) || 1);
   const linkById = new Map(links.map((l) => [l.id, l]));
@@ -129,6 +134,7 @@ export function individualDemand(
         {
           studentSubjectId: link.id,
           subjectId: link.subjectId,
+          stream: streamOf?.(link.subjectId),
           solo: indivSizeOf(link.format) === 1,
           groupNo: s.groupNo ?? 0,
         },

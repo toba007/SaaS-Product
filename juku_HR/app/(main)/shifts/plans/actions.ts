@@ -11,7 +11,7 @@ import {
   runGenerate,
 } from "@/lib/shifts-plan";
 import { datesBetween, dayOfWeek } from "@/lib/dates";
-import { LESSON_STYLE, PLAN_STATUS } from "@/lib/constants";
+import { LESSON_STYLE, PLAN_STATUS, SUBJECT_STREAM } from "@/lib/constants";
 import { activeClasses, groupDemand } from "@/lib/classes";
 import { individualDemand, mergeDemand } from "@/lib/schedule";
 import { subjectKey } from "@/lib/subjects";
@@ -198,13 +198,17 @@ export async function buildDemandFromPlans(formData: FormData) {
   // 確定後に需要を変えると、確定済みのシフトと辻褄が合わなくなる
   if (plan.status !== PLAN_STATUS.DRAFT) return;
 
-  const [classGroups, sessions, links, schedules, setting] = await Promise.all([
+  const [classGroups, sessions, links, schedules, setting, subjects] = await Promise.all([
     prisma.classGroup.findMany(),
     prisma.classSession.findMany(),
     prisma.studentSubject.findMany({ where: { active: true } }),
     prisma.studentSchedule.findMany(),
     getSetting(),
+    prisma.subject.findMany({ select: { id: true, stream: true } }),
   ]);
+
+  // 系統（文系／理系）。組が未定の生徒を束ねるときの寄せ方が決まる。
+  const streamOf = new Map(subjects.map((s) => [s.id, s.stream]));
 
   // 休校日には需要を作らない。作ると「必要なのに誰も入れない」コマになる。
   const days = await excludeClosed(datesBetween(plan.fromDate, plan.toDate));
@@ -220,7 +224,9 @@ export async function buildDemandFromPlans(formData: FormData) {
       subjectIds: subjectKey([d.subjectId]),
       format: LESSON_STYLE.GROUP,
     })),
-    individualDemand(links, schedules, days, setting.indivMaxStudents),
+    individualDemand(links, schedules, days, setting.indivMaxStudents, (id) =>
+      streamOf.get(id) ?? SUBJECT_STREAM.OTHER,
+    ),
   );
 
   await prisma.$transaction(

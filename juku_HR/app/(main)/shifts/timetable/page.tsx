@@ -17,7 +17,7 @@ import {
 } from "@/lib/timetable-view";
 import { getSetting } from "@/lib/settings";
 import { outputTokensPerSec, projectOutputMs } from "@/lib/ai/client";
-import { indivSizeOf } from "@/lib/constants";
+import { indivSizeOf, SUBJECT_STREAM } from "@/lib/constants";
 
 export const metadata = { title: "開講時間割｜塾HR" };
 export const dynamic = "force-dynamic";
@@ -325,6 +325,9 @@ async function RunView({
   const linkById = new Map(links.map((l) => [l.id, l]));
   const subjectName = (id: number) =>
     subjects.find((s) => s.id === id)?.name ?? `科目${id}`;
+  // 系統（文系／理系）。組を寄せる向きが決まる
+  const streamOf = (id: number) =>
+    subjects.find((s) => s.id === id)?.stream ?? SUBJECT_STREAM.OTHER;
 
   const items: ViewItem[] = placements.map((p) => {
     if (p.kind === "CLASS") {
@@ -434,6 +437,7 @@ async function RunView({
     setting.indivMaxStudents,
     soloKeys,
     subjectName,
+    streamOf,
   );
 
   // 守れていない配置か、崩れた組が残っているあいだは確定させない

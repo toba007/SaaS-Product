@@ -40,6 +40,17 @@ model Subject {
   /// 表示順
   order Int    @default(0)
 
+  /// HUMANITIES(文系) | SCIENCE(理系) | OTHER(どちらでも)
+  ///
+  /// 個別の組を作るときの寄せ方に使う。**講師が担当するのは得意な2科目ほどで、
+  /// その2つは文系どうし・理系どうしになりやすい。** 英と国の組は持てる人が
+  /// いるが、英と数の組は持てる人がまずいない。
+  ///
+  /// 実在の講師の担当範囲を見るのがいちばん正しいが、それだけだと
+  /// **講師の登録が埋まるまで組が作れない。** 塾側にとって自明な情報なので、
+  /// 入力がほぼ要らないわりに初期状態を救える。詳しくは lib/constants.ts。
+  stream String @default("OTHER")
+
   lessons     Lesson[]
   teachers    TeacherSubject[]
   demands     ShiftDemand[]

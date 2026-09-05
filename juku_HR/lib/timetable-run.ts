@@ -292,6 +292,14 @@ async function executeRun(runId: number): Promise<void> {
   // ここで決めておかないと、画面が開くたびに束ね直されて
   // 「決めた」ことにならない。人が組み替えたら、その値が次まで残る。
   const setting = await getSetting();
+  // 科目の系統（文系／理系）。同じ系統から先に寄せると、
+  // 「全部教えられる講師」が見つかりやすい組になる。
+  const streamOf = new Map(
+    (await prisma.subject.findMany({ select: { id: true, stream: true } })).map((x) => [
+      x.id,
+      x.stream,
+    ]),
+  );
   const groupOf = new Map<string, number>();
   const bySlot = new Map<string, typeof result.placements>();
   for (const p of result.placements) {
@@ -329,6 +337,7 @@ async function executeRun(runId: number): Promise<void> {
         return {
           studentSubjectId: t.refId,
           subjectId: t.subjectId,
+          stream: streamOf.get(t.subjectId),
           solo: t.solo === true,
           groupNo: 0,
         };

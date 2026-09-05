@@ -1,13 +1,23 @@
 import Link from "next/link";
 import { getSetting } from "@/lib/settings";
-import { updateSchoolSetting } from "./actions";
-import { INDIV_MAX_LIMIT, lessonStyleLabel, lessonStyles } from "@/lib/constants";
+import { prisma } from "@/lib/prisma";
+import { setSubjectStream, updateSchoolSetting } from "./actions";
+import {
+  INDIV_MAX_LIMIT,
+  SUBJECT_STREAM,
+  SUBJECT_STREAM_LABEL,
+  lessonStyleLabel,
+  lessonStyles,
+} from "@/lib/constants";
 
 export const metadata = { title: "塾の設定｜塾HR" };
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const setting = await getSetting();
+  const [setting, subjects] = await Promise.all([
+    getSetting(),
+    prisma.subject.findMany({ orderBy: [{ order: "asc" }, { id: "asc" }] }),
+  ]);
   const styles = lessonStyles(setting.indivMaxStudents);
 
   return (
@@ -86,6 +96,57 @@ export default async function SettingsPage() {
             給与設定
           </Link>{" "}
           で新しい形態の単価を入れてください。入っていないと、その形態で働いた日が0円で計算されます。
+        </p>
+      </section>
+
+      {/* 科目の系統。個別の組を寄せる向きが決まる */}
+      <section className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-slate-200">
+          <h2 className="font-semibold text-slate-900 text-sm">科目の系統</h2>
+          <p className="text-[11px] text-slate-500 mt-0.5">
+            個別で<b className="text-slate-700">誰と誰を同じ講師が見るか</b>を決めるときに使います。
+            講師が持てるのは得意な2科目ほどで、その2つは文系どうし・理系どうしになりやすいためです。
+            <br />
+            英語と国語は同じ人が持てますが、
+            <b className="text-slate-700">英語と数学を両方持てる人はまずいません</b>。
+            系統が分かっていれば、そういう組を最初から作らずに済みます。
+          </p>
+        </div>
+        <ul className="divide-y divide-slate-100">
+          {subjects.map((s) => (
+            <li key={s.id} className="px-4 py-2 flex items-center gap-3">
+              <span className="text-sm text-slate-800 w-20 shrink-0">{s.name}</span>
+              <form action={setSubjectStream} className="flex items-center gap-1.5">
+                <input type="hidden" name="subjectId" value={s.id} />
+                <select
+                  name="stream"
+                  defaultValue={s.stream}
+                  aria-label={`${s.name}の系統`}
+                  className="border border-slate-300 rounded px-2 py-1 text-sm text-slate-900"
+                >
+                  {Object.values(SUBJECT_STREAM).map((v) => (
+                    <option key={v} value={v}>
+                      {SUBJECT_STREAM_LABEL[v]}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="submit"
+                  className="px-2 py-1 text-xs border border-slate-300 rounded hover:bg-slate-50"
+                >
+                  保存
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+        <p className="px-4 py-2 text-[11px] text-slate-400 border-t border-slate-100">
+          「どちらでも」はどちらの組にも入れます。面談や小論文のように、
+          塾によって扱いが違うものに使ってください。
+          <b className="text-slate-600">
+            講師の担当科目が登録されていれば、そちらが優先されます。
+          </b>
+          系統は登録が埋まるまでの当てにすぎません。
         </p>
       </section>
 
