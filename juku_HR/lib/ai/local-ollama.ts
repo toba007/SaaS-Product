@@ -8,7 +8,7 @@
  * 対話用ではなくまとめて処理する用途を想定してタイムアウトを長めに取っている。
  */
 
-import { LlmClient, LlmError, LlmRequest, LlmResult } from "./client";
+import { LlmClient, LlmError, LlmRequest, LlmResult, LlmUsage } from "./client";
 
 const DEFAULT_URL = "http://127.0.0.1:11434";
 
@@ -34,7 +34,35 @@ const TIMEOUT_MS = 300_000;
 type OllamaChatResponse = {
   message?: { content?: string };
   error?: string;
+  /** 読ませたトークン数。Ollama が数えて返す */
+  prompt_eval_count?: number;
+  /** 読むのにかかった時間（ナノ秒） */
+  prompt_eval_duration?: number;
+  /** 書かせたトークン数 */
+  eval_count?: number;
+  /** 書くのにかかった時間（ナノ秒） */
+  eval_duration?: number;
 };
+
+/** ナノ秒 → ミリ秒。Ollama の時間はすべてナノ秒で返る。 */
+const msOf = (ns: number | undefined) => (typeof ns === "number" ? Math.round(ns / 1e6) : 0);
+
+/**
+ * 応答から実測値を取り出す。
+ *
+ * **見積もりではなくモデルが数えた実数。** 「AI にどこまで任せるか」を
+ * 決めるのに使うので、文字数から推し量った値を混ぜない。
+ * 返ってこないフィールドは 0 のままにして、無かったことが分かるようにする。
+ */
+function usageOf(body: OllamaChatResponse): LlmUsage {
+  return {
+    calls: 1,
+    promptTokens: body.prompt_eval_count ?? 0,
+    outputTokens: body.eval_count ?? 0,
+    promptMs: msOf(body.prompt_eval_duration),
+    outputMs: msOf(body.eval_duration),
+  };
+}
 
 export class OllamaClient implements LlmClient {
   readonly name: string;
@@ -107,7 +135,12 @@ export class OllamaClient implements LlmClient {
       throw new LlmError(`応答を JSON として読めませんでした: ${content.slice(0, 200)}`, e);
     }
 
-    return { data, model: this.name, elapsedMs: Date.now() - startedAt };
+    return {
+      data,
+      model: this.name,
+      elapsedMs: Date.now() - startedAt,
+      usage: usageOf(body),
+    };
   }
 }
 

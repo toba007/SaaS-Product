@@ -15,12 +15,78 @@ export type LlmRequest = {
   schema: object;
 };
 
+/**
+ * 1回の呼び出しで、どれだけ読ませて、どれだけ書かせたか。
+ *
+ * ---- なぜ残すのか ----
+ * ローカル実行の重さは **書かせた量でほぼ決まる。** 読む(prefill)は並列に効くが、
+ * 書く(decode)は1トークンずつ進むため。「AI にどこまで任せるか」を決めるには、
+ * 任せた範囲ごとに書かせた量を並べて比べるしかない。
+ *
+ * 推測で見積もらないために、モデルが返す実数をそのまま持つ。
+ * Ollama は prompt_eval_count / eval_count を応答に入れて返している。
+ */
+export type LlmUsage = {
+  /** 呼んだ回数。分割して頼むと増える */
+  calls: number;
+  /** 読ませたトークン数 */
+  promptTokens: number;
+  /** 書かせたトークン数。**ここが対象の数に比例すると重くなる** */
+  outputTokens: number;
+  /** 読むのにかかった時間（ミリ秒） */
+  promptMs: number;
+  /** 書くのにかかった時間（ミリ秒） */
+  outputMs: number;
+};
+
+export const emptyUsage = (): LlmUsage => ({
+  calls: 0,
+  promptTokens: 0,
+  outputTokens: 0,
+  promptMs: 0,
+  outputMs: 0,
+});
+
+/** 分割して頼んだぶんを足し合わせる。 */
+export function addUsage(a: LlmUsage, b: LlmUsage): LlmUsage {
+  return {
+    calls: a.calls + b.calls,
+    promptTokens: a.promptTokens + b.promptTokens,
+    outputTokens: a.outputTokens + b.outputTokens,
+    promptMs: a.promptMs + b.promptMs,
+    outputMs: a.outputMs + b.outputMs,
+  };
+}
+
+/** 書く速さ（トークン/秒）。0除算を避ける。 */
+export function outputTokensPerSec(u: LlmUsage): number {
+  if (u.outputMs <= 0) return 0;
+  return u.outputTokens / (u.outputMs / 1000);
+}
+
+/**
+ * 対象が n 件になったら、書くのに何ミリ秒かかるか。
+ *
+ * **1件あたりの出力量が変わらないと仮定した見込み。** 配置そのものを
+ * 書かせている作りではこの仮定が当たり、生徒が増えるほど比例して伸びる。
+ * 要望の翻訳のように出力が対象の数に依らない作りに変えれば、
+ * 実測が見込みを大きく下回る。**その差が「任せ方を変えた効果」になる。**
+ *
+ * 測っていない（呼んでいない・件数0）ときは 0 を返す。
+ */
+export function projectOutputMs(u: LlmUsage, targetCount: number, n: number): number {
+  if (targetCount <= 0 || u.outputMs <= 0) return 0;
+  return Math.round((u.outputMs / targetCount) * n);
+}
+
 export type LlmResult<T> = {
   data: T;
   /** どのモデルが答えたか。結果を人が確認するときに出す。 */
   model: string;
   /** かかった時間（ミリ秒）。ローカルとAPIの比較に使う。 */
   elapsedMs: number;
+  /** 読ませた量・書かせた量。モデルが返さなければ 0 が入る */
+  usage: LlmUsage;
 };
 
 export interface LlmClient {

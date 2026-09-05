@@ -311,6 +311,13 @@ async function executeRun(runId: number): Promise<void> {
         fromAi: result.fromAi,
         fromFallback: result.fromFallback,
         rejected: result.rejected.length,
+        // どこまで AI に任せたかを、あとから比べられるように実測を残す
+        llmCalls: result.usage.calls,
+        promptTokens: result.usage.promptTokens,
+        outputTokens: result.usage.outputTokens,
+        promptMs: result.usage.promptMs,
+        outputMs: result.usage.outputMs,
+        targetCount: result.targetCount,
         unplaced: JSON.stringify(result.unplaced),
         finishedAt: new Date(),
       },

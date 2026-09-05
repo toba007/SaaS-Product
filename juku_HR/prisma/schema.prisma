@@ -635,6 +635,29 @@ model TimetableRun {
   /// 検証で落とした提案の数
   rejected     Int @default(0)
 
+  // ---- どれだけ読ませて、どれだけ書かせたか ----
+  //
+  // **AI にどこまで任せるかを決めるための実測値。** モデルが数えて返した数を
+  // そのまま持つ（文字数からの見積もりを混ぜない）。
+  //
+  // ローカル実行の重さは書かせた量でほぼ決まる。読む(prefill)は並列に効くが、
+  // 書く(decode)は1トークンずつ進むため。配置そのものを書かせている限り
+  // outputTokens は対象の数に比例して伸びるので、任せる範囲を変えたときに
+  // ここが横ばいになるかどうかが判断の材料になる。
+
+  /// LLM を呼んだ回数。分割して頼むと増える
+  llmCalls     Int @default(0)
+  /// 読ませたトークン数の合計
+  promptTokens Int @default(0)
+  /// 書かせたトークン数の合計。**対象の数に比例したら設計が間違っている**
+  outputTokens Int @default(0)
+  /// 読むのにかかった時間（ミリ秒）
+  promptMs     Int @default(0)
+  /// 書くのにかかった時間（ミリ秒）
+  outputMs     Int @default(0)
+  /// 頼んだ対象の件数。1件あたりの重さを出すのに使う
+  targetCount  Int @default(0)
+
   /// 置けなかった対象と理由。JSON文字列で持つ（SQLite に型が無いため）
   unplaced String @default("")
   /// 失敗したときの理由

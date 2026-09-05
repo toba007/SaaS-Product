@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ConfirmSubmit } from "@/app/components/ConfirmSubmit";
 import { AutoRefresh } from "./AutoRefresh";
 import { Grid, groupColumnLabel, indivColumnLabel } from "./Grid";
-import { addPlacement, applyRun, removePlacement, startRun } from "./actions";
+import { addPlacement, applyRun, startRun } from "./actions";
 import { RUN_MODE, RUN_STATUS, buildTimetableInput } from "@/lib/timetable-run";
 import { checkPlacements, type Placement } from "@/lib/timetable";
 import { TERM_KIND } from "@/lib/constants";
@@ -15,6 +15,7 @@ import {
   type ViewItem,
 } from "@/lib/timetable-view";
 import { getSetting } from "@/lib/settings";
+import { outputTokensPerSec, projectOutputMs } from "@/lib/ai/client";
 import { indivSizeOf } from "@/lib/constants";
 
 export const metadata = { title: "開講時間割｜塾HR" };
@@ -408,6 +409,7 @@ async function RunView({
             要望：<span className="text-slate-700">{run.note}</span>
           </p>
         )}
+        <Measured run={run} />
         {run.error && (
           <p className="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded px-2 py-1">
             {run.error}
@@ -564,6 +566,77 @@ async function RunView({
           </p>
         </section>
       )}
+    </div>
+  );
+}
+
+// ---------- 何をどれだけ AI に書かせたか ----------
+
+/**
+ * 実行1回ぶんの重さを、モデルが返した実測値で出す。
+ *
+ * ---- なぜ画面に出すのか ----
+ * ローカル実行の重さは **書かせた量でほぼ決まる。** 読む(prefill)は並列に効くが、
+ * 書く(decode)は1トークンずつ進むため。いまは配置そのものを書かせているので、
+ * 生徒が増えるほど比例して伸びる。**その比例が見えていないと、
+ * 「AI にどこまで任せるか」を勘で決めることになる。**
+ *
+ * 1件あたりの出力量から、対象が増えたときの見込みも出す。任せ方を変えて
+ * 出力が対象の数に依らなくなれば、実測がこの見込みを大きく下回る。
+ */
+function Measured({ run }: { run: RunRow }) {
+  if (run.llmCalls === 0) return null;
+
+  const perSec = outputTokensPerSec({
+    calls: run.llmCalls,
+    promptTokens: run.promptTokens,
+    outputTokens: run.outputTokens,
+    promptMs: run.promptMs,
+    outputMs: run.outputMs,
+  });
+  const perTarget =
+    run.targetCount > 0 ? Math.round(run.outputTokens / run.targetCount) : 0;
+
+  // 生徒が増えたらどうなるか。いまの規模より大きい目安だけ出す。
+  const scales = [100, 400].filter((n) => n > run.targetCount);
+  const minutes = (ms: number) => Math.round(ms / 60000);
+
+  return (
+    <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-[11px] text-slate-500 border-t border-slate-100 pt-2">
+      <Stat label="呼んだ回数" value={`${run.llmCalls}回`} />
+      <Stat label="読ませた" value={`${run.promptTokens.toLocaleString()}tok`} />
+      <Stat label="書かせた" value={`${run.outputTokens.toLocaleString()}tok`} />
+      {perSec > 0 && <Stat label="書く速さ" value={`${perSec.toFixed(1)}tok/秒`} />}
+      {perTarget > 0 && (
+        <Stat label="対象1件あたり" value={`${perTarget}tok`} hint="ここが下がらない限り、生徒が増えれば比例して重くなります" />
+      )}
+      {scales.map((n) => (
+        <Stat
+          key={n}
+          label={`対象${n}件なら`}
+          value={`約${minutes(projectOutputMs(
+            {
+              calls: run.llmCalls,
+              promptTokens: run.promptTokens,
+              outputTokens: run.outputTokens,
+              promptMs: run.promptMs,
+              outputMs: run.outputMs,
+            },
+            run.targetCount,
+            n,
+          ))}分`}
+          hint="いまの任せ方のままだった場合の見込み（書く時間だけ）"
+        />
+      ))}
+    </dl>
+  );
+}
+
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+  return (
+    <div title={hint} className="flex items-baseline gap-1">
+      <dt className="text-slate-400">{label}</dt>
+      <dd className="text-slate-700 font-medium tabular-nums">{value}</dd>
     </div>
   );
 }

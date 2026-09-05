@@ -9,7 +9,7 @@
 import "dotenv/config";
 import { prisma } from "../lib/prisma";
 import { OllamaClient, checkOllama } from "../lib/ai/local-ollama";
-import { LlmError } from "../lib/ai/client";
+import { LlmError, outputTokensPerSec, projectOutputMs } from "../lib/ai/client";
 import {
   buildPrompt,
   proposeTimetable,
@@ -243,6 +243,31 @@ async function main() {
     `  うち AI が決めた: ${result.fromAi}件 / 機械が埋めた: ${result.fromFallback}件`,
   );
   console.log(`AI の提案を落とした数: ${result.rejected.length}件`);
+
+  // ---- どれだけ読ませて、どれだけ書かせたか ----
+  //
+  // 重さは書かせた量でほぼ決まる。1件あたりの出力量が下がらない限り、
+  // 生徒が増えれば比例して重くなる。任せ方を変えたときに、ここを見比べる。
+  const u = result.usage;
+  if (u.calls > 0) {
+    const perSec = outputTokensPerSec(u);
+    console.log(`\n---- 重さ（実測）----`);
+    console.log(`呼んだ回数: ${u.calls}回`);
+    console.log(`読ませた: ${u.promptTokens}tok / ${(u.promptMs / 1000).toFixed(1)}秒`);
+    console.log(
+      `書かせた: ${u.outputTokens}tok / ${(u.outputMs / 1000).toFixed(1)}秒` +
+        (perSec > 0 ? `（${perSec.toFixed(1)}tok/秒）` : ""),
+    );
+    if (result.targetCount > 0) {
+      console.log(
+        `対象1件あたり: ${Math.round(u.outputTokens / result.targetCount)}tok`,
+      );
+      for (const n of [100, 400]) {
+        const ms = projectOutputMs(u, result.targetCount, n);
+        console.log(`  対象${n}件なら 書く時間だけで約${Math.round(ms / 60000)}分`);
+      }
+    }
+  }
 
   console.log(`\nハード制約の違反: ${real.length}件${real.length === 0 ? "（問題なし）" : ""}`);
   for (const v of real.slice(0, 8)) console.log(`  [${v.code}] ${v.message}`);

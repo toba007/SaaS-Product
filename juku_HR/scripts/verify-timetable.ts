@@ -25,6 +25,13 @@ import {
   type Target,
 } from "../lib/timetable";
 import { buildPrompt, extractCode } from "../lib/ai/propose-timetable";
+import {
+  addUsage,
+  emptyUsage,
+  outputTokensPerSec,
+  projectOutputMs,
+  type LlmUsage,
+} from "../lib/ai/client";
 import { GRADE_BAND, SHIFT } from "../lib/constants";
 
 let failed = 0;
@@ -509,6 +516,47 @@ console.log("\n[並び] 実行のたびに変わらない");
     sortPlacements(ps).map((p) => `${p.dayOfWeek}:${p.periodId}:${p.targetKey}`),
     [`${MON}:${J2.id}:class:1`, `${TUE}:${J1.id}:class:1`, `${TUE}:${J1.id}:class:2`],
   );
+}
+
+console.log("\n[重さ] 実測から見込みを出す");
+{
+  // 分割して頼むと呼び出しが増える。合計で見ないと1回ぶんしか見えない。
+  const a: LlmUsage = {
+    calls: 1,
+    promptTokens: 500,
+    outputTokens: 200,
+    promptMs: 4_000,
+    outputMs: 100_000,
+  };
+  const b: LlmUsage = {
+    calls: 1,
+    promptTokens: 700,
+    outputTokens: 300,
+    promptMs: 6_000,
+    outputMs: 150_000,
+  };
+  const sum = addUsage(a, b);
+  check("呼び出しを足し合わせる", sum, {
+    calls: 2,
+    promptTokens: 1200,
+    outputTokens: 500,
+    promptMs: 10_000,
+    outputMs: 250_000,
+  });
+  check("何も呼んでいなければ全部0", addUsage(emptyUsage(), emptyUsage()), emptyUsage());
+
+  // 500tok を 250 秒で書いた → 2tok/秒
+  check("書く速さ", outputTokensPerSec(sum), 2);
+  check("測っていなければ0", outputTokensPerSec(emptyUsage()), 0);
+
+  // 対象20件で250秒 → 1件12.5秒。100件なら1250秒。
+  //
+  // **この見込みが外れることを期待している。** 配置そのものを書かせている
+  // いまの作りでは当たるが、要望の翻訳のように出力が対象の数に依らない
+  // 任せ方に変えれば、実測は大きく下回る。その差が改善の量になる。
+  check("対象が5倍なら書く時間も5倍", projectOutputMs(sum, 20, 100), 1_250_000);
+  check("件数が0なら見込みを出さない", projectOutputMs(sum, 0, 100), 0);
+  check("測っていなければ見込みも0", projectOutputMs(emptyUsage(), 20, 100), 0);
 }
 
 console.log(failed === 0 ? "\n✅ すべて期待どおり\n" : `\n❌ ${failed} 件失敗\n`);

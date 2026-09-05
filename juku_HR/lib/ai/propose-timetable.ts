@@ -21,7 +21,7 @@
  * 外部 API に切り替えたときに、ここが抜けていることに気づけなくなるため。
  */
 
-import { LlmClient, LlmError } from "./client";
+import { LlmClient, LlmError, addUsage, emptyUsage, type LlmUsage } from "./client";
 import {
   checkPlacements,
   greedyPlace,
@@ -127,6 +127,16 @@ export type ProposeResult = {
   unplaced: { targetKey: string; label: string; reason: string; needed: number }[];
   model: string;
   elapsedMs: number;
+  /**
+   * どれだけ読ませて、どれだけ書かせたか。分割して頼んだぶんの合計。
+   *
+   * **AI にどこまで任せるかを決めるための数字。** 配置そのものを書かせている限り
+   * outputTokens は対象の数に比例して伸びる。任せる範囲を変えたときに、
+   * ここが変わるかどうかで効果が測れる。
+   */
+  usage: LlmUsage;
+  /** 何件ぶん頼んだか。1件あたりの重さを出すのに使う */
+  targetCount: number;
 };
 
 /**
@@ -285,6 +295,7 @@ export async function proposeTimetable(
   let accepted: Placement[] = [...(input.fixed ?? [])];
   let model = "";
   let elapsedMs = 0;
+  let usage = emptyUsage();
 
   for (const targets of chunks) {
     // 頼むのはこの回のぶんだけ。決まったぶんは「決定済み」として渡す。
@@ -302,6 +313,7 @@ export async function proposeTimetable(
     });
     model = raw.model;
     elapsedMs += raw.elapsedMs;
+    usage = addUsage(usage, raw.usage);
 
     // 番号を実体に戻す。知らない番号はここで落ちるので、
     // あり得ない曜日×コマの組み合わせがそもそも作れない。
@@ -376,6 +388,8 @@ export async function proposeTimetable(
     unplaced: filled.unplaced,
     model,
     elapsedMs,
+    usage,
+    targetCount: input.check.targets.length,
   };
 }
 
@@ -408,6 +422,10 @@ export function proposeWithoutLlm(input: ProposeInput): ProposeResult {
     unplaced: r.unplaced,
     model: "（AIを使わない配置）",
     elapsedMs: 0,
+    // LLM を呼んでいないので全部 0。AI を使った実行と並べたときに、
+    // 「0秒・0トークンで同じ枚数が置けている」ことが見えるようにする。
+    usage: emptyUsage(),
+    targetCount: input.check.targets.length,
   };
 }
 
