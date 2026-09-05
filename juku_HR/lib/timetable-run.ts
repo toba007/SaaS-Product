@@ -26,6 +26,7 @@ import {
   proposeWithoutLlm,
   type ProposeResult,
 } from "./ai/propose-timetable";
+import { packGroups } from "./indiv-groups";
 import {
   buildAvailability,
   foldWeekly,
@@ -282,6 +283,42 @@ async function executeRun(runId: number): Promise<void> {
 
   const targetByKey = new Map(input.targets.map((t) => [t.key, t]));
 
+  // ---- 個別の組を決める ----
+  //
+  // 「誰と誰を同じ講師が見るか」。**枠ごとに、上限まで詰める。**
+  // 科目は見ない（1人の講師が違う科目の生徒を巡回して見るため）。
+  // 1対1で取っている生徒だけは1人で1組を占める。
+  //
+  // ここで決めておかないと、画面が開くたびに束ね直されて
+  // 「決めた」ことにならない。人が組み替えたら、その値が次まで残る。
+  const setting = await getSetting();
+  const groupOf = new Map<string, number>();
+  const bySlot = new Map<string, typeof result.placements>();
+  for (const p of result.placements) {
+    const t = targetByKey.get(p.targetKey);
+    if (!t || t.kind !== "INDIV") continue;
+    const k = slotKey(p);
+    bySlot.set(k, [...(bySlot.get(k) ?? []), p]);
+  }
+  for (const [k, list] of bySlot) {
+    const noOf = packGroups(
+      list.map((p) => {
+        const t = targetByKey.get(p.targetKey)!;
+        return {
+          studentSubjectId: t.refId,
+          subjectId: t.subjectId,
+          solo: t.solo === true,
+          groupNo: 0,
+        };
+      }),
+      setting.indivMaxStudents,
+    );
+    for (const p of list) {
+      const t = targetByKey.get(p.targetKey)!;
+      groupOf.set(`${p.targetKey}:${k}`, noOf.get(t.refId) ?? 0);
+    }
+  }
+
   await prisma.$transaction([
     prisma.timetablePlacement.deleteMany({ where: { runId } }),
     prisma.timetablePlacement.createMany({
@@ -297,6 +334,7 @@ async function executeRun(runId: number): Promise<void> {
             label: t.label,
             dayOfWeek: p.dayOfWeek,
             periodId: p.periodId,
+            groupNo: groupOf.get(`${p.targetKey}:${slotKey(p)}`) ?? 0,
             reason: result.reasons.get(`${p.targetKey}:${slotKey(p)}`) ?? "",
           },
         ];
@@ -389,6 +427,9 @@ export async function applyTimetableRun(runId: number): Promise<{ ok: boolean; m
           studentSubjectId: p.refId,
           dayOfWeek: p.dayOfWeek,
           periodId: p.periodId,
+          // 誰と一緒に見るか。**人が組み替えた結果もここで一緒に確定する。**
+          // 保存しないと、次に開いたときに機械が束ね直してしまう。
+          groupNo: p.groupNo,
           fromDate: run.term.startDate,
           toDate: run.term.endDate,
         })),

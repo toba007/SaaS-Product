@@ -76,6 +76,38 @@ export async function removePlacement(formData: FormData) {
   revalidatePath(PATH);
 }
 
+/**
+ * 組を移す。**「この2人は同じ講師で」「この子は分けたい」を残すための操作。**
+ *
+ * ---- なぜ番号を直接いじらせるのか ----
+ * 組は「1人の講師が同時に見る生徒の集合」で、現物の時間割では表の1列にあたる。
+ * 番号を書き換えるのは、その列から別の列へ生徒を移すのと同じこと。
+ *
+ * ---- ここでは上限を止めない ----
+ * 詰めすぎ・1対1の同居は**画面の検証で出して、確定を止める**。
+ * 移す途中で弾くと、2人を入れ替えるだけでも順番によっては操作できなくなる。
+ */
+export async function movePlacementGroup(formData: FormData) {
+  await requireAdmin();
+
+  const id = Number(formData.get("id"));
+  const groupNo = Number(formData.get("groupNo"));
+  if (!Number.isInteger(groupNo) || groupNo < 1 || groupNo > 99) return;
+
+  const p = await prisma.timetablePlacement.findUnique({
+    where: { id },
+    select: { kind: true, run: { select: { appliedAt: true } } },
+  });
+  if (!p) return;
+  // 組は個別だけの概念。集団は1クラス＝1講師なので束ねない。
+  if (p.kind !== "INDIV") return;
+  // 反映済みの案を後から書き換えると、記録と実際がずれる
+  if (p.run.appliedAt) return;
+
+  await prisma.timetablePlacement.update({ where: { id }, data: { groupNo } });
+  revalidatePath(PATH);
+}
+
 /** 提案に1コマ足す。人が決めた枠は印を付けて、AI の提案と区別する。 */
 export async function addPlacement(formData: FormData) {
   await requireAdmin();

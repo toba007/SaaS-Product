@@ -6,6 +6,7 @@ import { Grid, groupColumnLabel, indivColumnLabel } from "./Grid";
 import { addPlacement, applyRun, startRun } from "./actions";
 import { RUN_MODE, RUN_STATUS, buildTimetableInput } from "@/lib/timetable-run";
 import { checkPlacements, type Placement } from "@/lib/timetable";
+import { checkGroups, type Groupable } from "@/lib/indiv-groups";
 import { TERM_KIND } from "@/lib/constants";
 import { WEEKDAYS } from "@/lib/dates";
 import { periodLabeler, type PeriodLite } from "@/lib/periods";
@@ -295,6 +296,7 @@ async function RunView({
     periodId: p.periodId,
   }));
   const violations = checkPlacements(asPlacements, input);
+
   const hard = violations.filter((v) => v.code !== "T5_SLOT_COUNT");
   const shortage = violations.filter((v) => v.code === "T5_SLOT_COUNT");
 
@@ -355,6 +357,9 @@ async function RunView({
       periodId: p.periodId,
       reason: p.reason,
       byHand: p.byHand,
+      // 誰と一緒に見るか。0 なら未定で、表示のときに機械が束ねる
+      groupNo: p.groupNo,
+      linkId: p.refId,
     };
   });
 
@@ -362,6 +367,39 @@ async function RunView({
   const soloKeys = new Set(
     links.filter((l) => indivSizeOf(l.format) === 1).map((l) => `indiv:${l.id}`),
   );
+
+  // 組が成り立っているかを見る。**人が組み替えたあとに崩れていないか。**
+  // 機械が作った組は必ず通るが、人は上限を超えて詰めることも、
+  // 1対1の生徒を他の生徒と同じ組にすることもできてしまう。
+  const nameOfLink = (linkId: number) => {
+    const l = linkById.get(linkId);
+    return l ? `${l.student.grade} ${l.student.name}` : `#${linkId}`;
+  };
+  const groupIssues: string[] = [];
+  {
+    const bySlot = new Map<string, Groupable[]>();
+    for (const p of placements) {
+      if (p.kind !== "INDIV") continue;
+      const k = `${p.dayOfWeek}:${p.periodId}`;
+      bySlot.set(k, [
+        ...(bySlot.get(k) ?? []),
+        {
+          studentSubjectId: p.refId,
+          subjectId: linkById.get(p.refId)?.subjectId ?? 0,
+          solo: soloKeys.has(p.targetKey),
+          groupNo: p.groupNo,
+        },
+      ]);
+    }
+    for (const [k, list] of bySlot) {
+      const [d, pid] = k.split(":").map(Number);
+      const period = periods.find((x) => x.id === pid);
+      const where = `${WEEKDAYS[d]}曜${period ? label(period) : `コマ${pid}`}`;
+      for (const v of checkGroups(list, setting.indivMaxStudents, nameOfLink)) {
+        groupIssues.push(`${where}：${v.message}`);
+      }
+    }
+  }
 
   // 開講する曜日。日曜は休みとして外す。土曜は使っていなければ列に出さない。
   const usedDays = new Set(placements.map((p) => p.dayOfWeek));
@@ -376,6 +414,9 @@ async function RunView({
     soloKeys,
     subjectName,
   );
+
+  // 守れていない配置か、崩れた組が残っているあいだは確定させない
+  const blocked = hard.length > 0 || groupIssues.length > 0;
 
   const targetKeys = [...new Set(placements.map((p) => p.targetKey))];
   const nameOfTarget = (key: string) =>
@@ -426,6 +467,19 @@ async function RunView({
               <li key={i}>
                 [{v.code}] {v.message}
               </li>
+            ))}
+          </ul>
+          <p className="text-xs">直すまで確定できません。</p>
+        </div>
+      )}
+
+      {/* 組が崩れている */}
+      {groupIssues.length > 0 && (
+        <div className="bg-rose-50 border border-rose-200 rounded-lg px-4 py-3 text-sm text-rose-900 space-y-1">
+          <p className="font-medium">組が成り立っていません（{groupIssues.length}件）</p>
+          <ul className="text-xs space-y-0.5 max-h-32 overflow-y-auto">
+            {groupIssues.map((m, i) => (
+              <li key={i}>{m}</li>
             ))}
           </ul>
           <p className="text-xs">直すまで確定できません。</p>
@@ -550,11 +604,11 @@ async function RunView({
             <ConfirmSubmit
               message={`この案を ${termName} の時間割として確定しますか？\n\nクラスの時間割と個別の受講予定を、この期のぶんだけ入れ替えます。前の内容は消えます。`}
               className={`px-4 py-1.5 text-sm rounded text-white ${
-                hard.length > 0
+                blocked
                   ? "bg-slate-300 cursor-not-allowed"
                   : "bg-emerald-600 hover:bg-emerald-700"
               }`}
-              disabled={hard.length > 0}
+              disabled={blocked}
             >
               この案で確定する
             </ConfirmSubmit>

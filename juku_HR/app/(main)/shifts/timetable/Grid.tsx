@@ -1,5 +1,5 @@
 import { ConfirmSubmit } from "@/app/components/ConfirmSubmit";
-import { removePlacement } from "./actions";
+import { movePlacementGroup, removePlacement } from "./actions";
 import { WEEKDAYS } from "@/lib/dates";
 import { roomLabel, type Grid as GridData } from "@/lib/timetable-view";
 
@@ -91,8 +91,14 @@ export function Grid({
                     >
                       {cell && (
                         <div className="space-y-0.5">
-                          <div className="font-medium text-slate-800 leading-tight">
-                            {cell.title}
+                          <div className="font-medium text-slate-800 leading-tight flex items-baseline gap-1">
+                            <span className="flex-1 min-w-0">{cell.title}</span>
+                            {/* 組番号。この列を1人の講師が受け持つ */}
+                            {cell.groupNo ? (
+                              <span className="text-[9px] font-normal text-slate-400 shrink-0">
+                                組{cell.groupNo}
+                              </span>
+                            ) : null}
                           </div>
                           {cell.items.map((i) => (
                             <div
@@ -107,6 +113,23 @@ export function Grid({
                                   <span className="ml-0.5 text-[9px] text-slate-400">手</span>
                                 )}
                               </span>
+                              {/* 組を移す。**兄弟をまとめる／相性で分ける**といった
+                                  人の判断を、次の実行まで残すための操作。 */}
+                              {editable && i.kind === "INDIV" && cell.groupNo ? (
+                                <form action={movePlacementGroup} className="shrink-0">
+                                  <input type="hidden" name="id" value={i.id} />
+                                  <input
+                                    type="number"
+                                    name="groupNo"
+                                    min={1}
+                                    max={99}
+                                    defaultValue={cell.groupNo}
+                                    aria-label={`${i.name}の組`}
+                                    title="番号を変えて Enter で組を移せます"
+                                    className="w-7 border border-transparent hover:border-slate-300 focus:border-slate-400 rounded text-[9px] text-slate-400 text-right bg-transparent"
+                                  />
+                                </form>
+                              ) : null}
                               {editable && (
                                 <form action={removePlacement} className="shrink-0">
                                   <input type="hidden" name="id" value={i.id} />

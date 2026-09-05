@@ -23,6 +23,7 @@ import {
   SHIFT,
 } from "./constants";
 import { eventsBetween, isClosed } from "./events";
+import { parseSubjectKey } from "./subjects";
 
 export type GenerateMode = "FULL" | "FILL";
 
@@ -89,7 +90,15 @@ export async function checkPreconditions(planId: number): Promise<Precondition[]
   // P8: 需要にある科目を担当できる講師が1人もいないと、そこは絶対に埋まらない。
   // データの登録漏れであって自動作成で解決できる問題ではないので、実行前に止める。
   if (demands.length > 0) {
-    const needed = [...new Set(demands.map((d) => d.subjectId))];
+    // 組が複数科目を求めることがあるので、集合をほどいて全部見る
+    const needed = [
+      ...new Set(
+        demands.flatMap((d) => {
+          const ids = parseSubjectKey(d.subjectIds);
+          return ids.length > 0 ? ids : [d.subjectId];
+        }),
+      ),
+    ];
     const [links, subjects] = await Promise.all([
       prisma.teacherSubject.findMany({
         where: { subjectId: { in: needed }, teacher: { active: true } },
@@ -201,6 +210,8 @@ export async function runGenerate(
       date: d.date,
       periodId: d.periodId,
       subjectId: d.subjectId,
+      // 個別の組は複数科目を求める。全部教えられる人だけが候補になる。
+      subjectIds: d.subjectIds,
       format: d.format,
       required: d.required,
     })),

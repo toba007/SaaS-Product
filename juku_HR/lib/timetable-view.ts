@@ -21,6 +21,7 @@
  */
 
 import { byTime, type PeriodLite } from "./periods";
+import { packGroups, type Groupable } from "./indiv-groups";
 
 /** 表に出す1件。集団はクラス、個別は生徒1人ぶん。 */
 export type ViewItem = {
@@ -39,12 +40,21 @@ export type ViewItem = {
   reason: string;
   /** 人が後から足したか */
   byHand: boolean;
+  /**
+   * 個別の組。0 なら未定で、その場合はここで機械的に束ねる。
+   * 決まっていればその通りに並べる（**人が組み替えた結果を消さない**）。
+   */
+  groupNo?: number;
+  /** StudentSubject.id。組を決めるときの識別に使う。集団は 0 */
+  linkId?: number;
 };
 
 /** 表の1マス。列1つぶん。 */
 export type ViewCell = {
   /** 「中3英語Ⅱ」（集団）／「英語」（個別の講師1人ぶん） */
   title: string;
+  /** 個別の組番号。枠の中で 1 から。集団は 0 */
+  groupNo?: number;
   items: ViewItem[];
 };
 
@@ -93,11 +103,22 @@ export function buildGroupGrid(
 }
 
 /**
- * 個別の表。**1列＝講師1人。同じ科目の生徒を上限までまとめる。**
+ * 個別の表。**1列＝講師1人。上限まで生徒をまとめる。**
+ *
+ * ---- 科目では分けない ----
+ * 現物の時間割では、1つの列に「中3(理) 中3(理) 中1(数) 中3(理)」のように
+ * **違う科目の生徒が並ぶ。** 巡回して1人ずつ見る指導なので、科目を揃える必要が無い。
+ * 科目で列を割ると、実際より多くの講師が要ることになってしまう。
  *
  * 「1対1」を希望している生徒は他の生徒と一緒にできないので、1人で1列を占める。
  * ここは必要人数の数え方（lib/schedule.ts）と揃えてある。ずれると
  * 「表では3列なのに必要人数は2人」という食い違いが出る。
+ *
+ * ---- 決まっている組はそのまま出す ----
+ * 人が組み替えた結果（groupNo）があれば**その通りに並べる。**
+ * ここで束ね直すと、開くたびに組が変わって「決めた」ことにならない。
+ * 束ねる判断そのものは lib/indiv-groups.ts に置いてあり、
+ * 必要人数の計算と同じ関数を使う。
  */
 export function buildIndivGrid(
   items: ViewItem[],
@@ -120,28 +141,33 @@ export function buildIndivGrid(
     for (const d of days) {
       const here = indiv.filter((i) => i.dayOfWeek === d && i.periodId === period.id);
 
-      // 科目ごとに分ける。科目が違えば別の講師が要る。
-      const bySubject = new Map<number, ViewItem[]>();
+      // 決まっていない組を埋める。決まっているものはそのまま残る。
+      const groupable: Groupable[] = here.map((i) => ({
+        studentSubjectId: i.linkId ?? i.id,
+        subjectId: i.subjectId,
+        solo: soloKeys.has(i.targetKey),
+        groupNo: i.groupNo ?? 0,
+      }));
+      const noOf = packGroups(groupable, cap);
+
+      // 組番号ごとにまとめる。番号の小さい順に列を並べる。
+      const byGroup = new Map<number, ViewItem[]>();
       for (const i of here) {
-        bySubject.set(i.subjectId, [...(bySubject.get(i.subjectId) ?? []), i]);
+        const no = noOf.get(i.linkId ?? i.id) ?? 0;
+        byGroup.set(no, [...(byGroup.get(no) ?? []), i]);
       }
 
       const cells: ViewCell[] = [];
-      for (const subjectId of [...bySubject.keys()].sort((a, b) => a - b)) {
-        const list = [...(bySubject.get(subjectId) ?? [])].sort(
+      for (const no of [...byGroup.keys()].sort((a, b) => a - b)) {
+        const list = [...(byGroup.get(no) ?? [])].sort(
           (a, b) => a.name.localeCompare(b.name) || a.id - b.id,
         );
-        const solo = list.filter((i) => soloKeys.has(i.targetKey));
-        const pooled = list.filter((i) => !soloKeys.has(i.targetKey));
-
-        // 1対1は1人ずつ
-        for (const i of solo) {
-          cells.push({ title: subjectName(subjectId), items: [i] });
-        }
-        // 残りは上限までまとめる
-        for (let k = 0; k < pooled.length; k += cap) {
-          cells.push({ title: subjectName(subjectId), items: pooled.slice(k, k + cap) });
-        }
+        // 見出しはその組に入っている科目。**1つとは限らない。**
+        // 「英・数」と並ぶので、担当する講師が何を教えられる必要があるかが分かる。
+        const subjects = [...new Set(list.map((i) => i.subjectId))]
+          .sort((a, b) => a - b)
+          .map((id) => subjectName(id).slice(0, 1));
+        cells.push({ title: subjects.join("・"), groupNo: no, items: list });
       }
 
       widest = Math.max(widest, cells.length);

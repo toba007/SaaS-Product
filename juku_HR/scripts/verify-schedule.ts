@@ -155,11 +155,29 @@ console.log("\n[個別の必要人数] 分ける軸");
   const a = link(1, ENGLISH);
   const b = link(2, MATH);
   const scheds = [sched(a.id, 2, P1), sched(b.id, 2, P1)];
-  // 科目が違えば別の講師が要る。まとめてはいけない。
+
+  // **科目が違っても分かれない。** 1人の講師が巡回して両方を見る。
+  // 現物の時間割で、1つの列に「理・理・数・理」と並ぶのを確かめた。
+  // 科目ごとに分けると、実際には1人で足りるところを2人要ることにしてしまう。
   check(
-    "科目が違えば分かれる",
-    individualDemand([a, b], scheds, [TUE], 4).length,
-    2,
+    "科目が違っても1人が見る",
+    individualDemand([a, b], scheds, [TUE], 4).map((d) => d.required),
+    [1],
+  );
+  // 代わりに「英語と数学の両方を教えられる人」でなければならない。
+  // その条件を割当に伝えるため、必要な科目を集合で持つ。
+  check(
+    "必要な科目が集合で残る",
+    individualDemand([a, b], scheds, [TUE], 4).map((d) => d.subjectIds),
+    [`${Math.min(ENGLISH, MATH)},${Math.max(ENGLISH, MATH)}`],
+  );
+  // 上限を超えれば、科目に関係なく組が分かれる。
+  // 分かれた結果それぞれが1科目になるので、**担当できる条件が違う別の行**になる
+  // （英だけ見られる人と数だけ見られる人では、埋められる行が違う）。
+  check(
+    "上限を超えれば分かれる",
+    individualDemand([a, b], scheds, [TUE], 1).map((d) => `${d.subjectIds}:${d.required}`),
+    [`${ENGLISH}:1`, `${MATH}:1`],
   );
 
   const c = link(3, ENGLISH);
@@ -190,10 +208,24 @@ console.log("\n[個別の必要人数] 分ける軸");
 console.log("\n[合算] 集団と個別を足す");
 {
   const group = [
-    { date: TUE, periodId: P1, subjectId: ENGLISH, format: LESSON_STYLE.GROUP, required: 2 },
+    {
+      date: TUE,
+      periodId: P1,
+      subjectId: ENGLISH,
+      subjectIds: String(ENGLISH),
+      format: LESSON_STYLE.GROUP,
+      required: 2,
+    },
   ];
   const indiv = [
-    { date: TUE, periodId: P1, subjectId: ENGLISH, format: LESSON_STYLE.INDIV_2, required: 1 },
+    {
+      date: TUE,
+      periodId: P1,
+      subjectId: ENGLISH,
+      subjectIds: String(ENGLISH),
+      format: LESSON_STYLE.INDIV_2,
+      required: 1,
+    },
   ];
   // 形態が違えば別の行のまま。集団2人と個別1人で、その枠は合計3人要る。
   check("形態が違えば別の行", mergeDemand(group, indiv).length, 2);

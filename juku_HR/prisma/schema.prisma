@@ -693,6 +693,16 @@ model TimetablePlacement {
   dayOfWeek Int
   periodId  Int
 
+  /// **個別の組。同じ枠の中で、誰と誰を同じ講師が見るか。**
+  ///
+  /// 枠（曜日×コマ）の中で 1 から振る。科目をまたいで通し番号にしてあるので、
+  /// 「火曜2限の組3」だけで指せる。組が科目をまたぐことは無い。
+  ///
+  /// **0 は「まだ決めていない」**（集団は常に 0）。0 のままなら、
+  /// これまでどおり画面と必要人数の計算が機械的に束ねる。
+  /// 詳しくは lib/indiv-groups.ts。
+  groupNo Int @default(0)
+
   /// AI が付けた理由。「なぜこの枠か」を画面に出す
   reason String @default("")
   /// 人が後から足した配置か（AI の提案と区別する）
@@ -757,7 +767,21 @@ model ShiftDemand {
   /// "YYYY-MM-DD"
   date      String
   periodId  Int
+
+  /// 代表科目。並び替えと集計に使う。**条件そのものは subjectIds を見る。**
   subjectId Int
+
+  /// **その1人が教えられる必要のある科目すべて。** "3,7"（昇順・重複なし）
+  ///
+  /// 集団は1科目なので "3" のように1つだけ。
+  /// 個別は**1人の講師が違う科目の生徒を同時に見る**ので複数になる。
+  /// 現物の時間割で、1つの列に「理・理・数・理」と並ぶのを確かめた。
+  /// この組を持てるのは理と数の両方を教えられる講師だけで、
+  /// 科目を1つしか持てないとその条件を書き表せない。
+  ///
+  /// SQLite に配列型が無いので文字列。lib/subjects.ts の subjectKey で作る。
+  subjectIds String @default("")
+
   /// GROUP | INDIV_1 | INDIV_2
   format    String @default("INDIV_2")
   /// 必要な講師数。0 なら授業を開かない。
@@ -770,7 +794,10 @@ model ShiftDemand {
   period  Period    @relation(fields: [periodId], references: [id])
   subject Subject   @relation(fields: [subjectId], references: [id])
 
-  @@unique([planId, date, periodId, subjectId, format])
+  // 一意キーは代表科目ではなく**科目の集合**で取る。
+  // 同じ枠に「英だけの組」と「英と数の組」が並ぶことがあり、
+  // 代表科目で束ねると片方が消える。
+  @@unique([planId, date, periodId, subjectIds, format])
   @@index([date])
 }
 
@@ -849,6 +876,17 @@ model StudentSchedule {
   /// "YYYY-MM-DD"。講習用。曜日で持つときは null。
   date      String?
   periodId  Int
+
+  /// **この生徒を、その枠で誰と一緒に見るか（組）。**
+  ///
+  /// 兄弟をまとめたい、相性が悪いので分けたい、去年と同じ組で続けたい。
+  /// 塾が現に持っているこの判断を、これまでは残す場所が無かった。
+  /// 画面が毎回束ね直し、必要人数も概算で数えていたため。
+  ///
+  /// 番号は枠の中で 1 から。**0 は「まだ決めていない」。**
+  /// 決まっていれば必要人数は組の数で数える（概算をやめられる）。
+  /// 詳しくは lib/indiv-groups.ts。
+  groupNo Int @default(0)
 
   /// 有効期間 "YYYY-MM-DD"。学期ごとに組み直すので日付の範囲で持つ
   /// （ClassGroup と同じ考え方）。date で持つ行では date と同じ値を入れる。

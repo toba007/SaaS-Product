@@ -14,6 +14,7 @@ import { datesBetween, dayOfWeek } from "@/lib/dates";
 import { LESSON_STYLE, PLAN_STATUS } from "@/lib/constants";
 import { activeClasses, groupDemand } from "@/lib/classes";
 import { individualDemand, mergeDemand } from "@/lib/schedule";
+import { subjectKey } from "@/lib/subjects";
 import { getSetting } from "@/lib/settings";
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
@@ -81,26 +82,29 @@ export async function bulkSetDemand(formData: FormData) {
     datesBetween(plan.fromDate, plan.toDate).filter((d) => dayOfWeek(d) === dow),
   );
 
+  // 手入力は科目1つぶんの需要。科目の集合は要素1つになる。
+  const subjectIds = subjectKey([subjectId]);
+
   for (const date of days) {
     const key = {
-      planId_date_periodId_subjectId_format: {
+      planId_date_periodId_subjectIds_format: {
         planId,
         date,
         periodId,
-        subjectId,
+        subjectIds,
         format,
       },
     };
     if (required === 0) {
       // 0 は「授業を開かない」。行を消して表す（0 の行が残ると一覧が読みにくい）
       await prisma.shiftDemand.deleteMany({
-        where: { planId, date, periodId, subjectId, format },
+        where: { planId, date, periodId, subjectIds, format },
       });
       continue;
     }
     await prisma.shiftDemand.upsert({
       where: key,
-      create: { planId, date, periodId, subjectId, format, required },
+      create: { planId, date, periodId, subjectId, subjectIds, format, required },
       update: { required },
     });
   }
@@ -206,11 +210,16 @@ export async function buildDemandFromPlans(formData: FormData) {
   const days = await excludeClosed(datesBetween(plan.fromDate, plan.toDate));
 
   const rows = mergeDemand(
+    // 集団は1クラス＝1科目なので、科目の集合は要素1つ
     groupDemand(
       activeClasses(classGroups, plan.fromDate, plan.toDate),
       sessions,
       days,
-    ).map((d) => ({ ...d, format: LESSON_STYLE.GROUP })),
+    ).map((d) => ({
+      ...d,
+      subjectIds: subjectKey([d.subjectId]),
+      format: LESSON_STYLE.GROUP,
+    })),
     individualDemand(links, schedules, days, setting.indivMaxStudents),
   );
 
@@ -218,11 +227,11 @@ export async function buildDemandFromPlans(formData: FormData) {
     rows.map((r) =>
       prisma.shiftDemand.upsert({
         where: {
-          planId_date_periodId_subjectId_format: {
+          planId_date_periodId_subjectIds_format: {
             planId,
             date: r.date,
             periodId: r.periodId,
-            subjectId: r.subjectId,
+            subjectIds: r.subjectIds,
             format: r.format,
           },
         },

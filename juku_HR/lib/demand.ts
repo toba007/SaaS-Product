@@ -12,12 +12,15 @@
  */
 
 import { SHIFT } from "./constants";
+import { parseSubjectKey } from "./subjects";
 
 export type SubjectLite = { id: number; name: string };
 export type DemandLite = {
   date: string;
   periodId: number;
   subjectId: number;
+  /** その1人が教えられる必要のある科目すべて。空なら subjectId 1つだけ */
+  subjectIds?: string;
   format: string;
   required: number;
 };
@@ -56,6 +59,12 @@ function isAvailable(r: RequestLite): boolean {
   return r.status !== SHIFT.NG;
 }
 
+/** その需要の行が、その科目を教えられる人を求めているか。 */
+function needsSubject(d: DemandLite, subjectId: number): boolean {
+  const ids = parseSubjectKey(d.subjectIds ?? "");
+  return ids.length > 0 ? ids.includes(subjectId) : d.subjectId === subjectId;
+}
+
 /**
  * 科目ごとに、必要な延べコマ数と供給の上限を並べる。
  *
@@ -81,7 +90,10 @@ export function balanceBySubject(
     const canTeach = new Set(
       links.filter((l) => l.subjectId === s.id).map((l) => l.teacherId),
     );
-    const mine = demands.filter((d) => d.subjectId === s.id);
+    // **複数科目を求める行は、その全部の科目に数える。**
+    // 「英と数の組」を英語の行にだけ数えると、数学を教えられる人が
+    // 足りていなくても気づけない。担当できる人は両方できる必要がある。
+    const mine = demands.filter((d) => needsSubject(d, s.id));
     const required = mine.reduce((sum, d) => sum + d.required, 0);
 
     // 需要のあるコマだけを見る。誰も来ない日の空き枠を供給に数えても意味がない。

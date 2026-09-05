@@ -20,6 +20,7 @@
  */
 
 import { SHIFT } from "./constants";
+import { parseSubjectKey } from "./subjects";
 import {
   buildContext,
   checkAdd,
@@ -73,7 +74,15 @@ export const DEFAULT_WEIGHTS: Weights = {
 export type DemandRow = {
   date: string;
   periodId: number;
+  /** 代表科目。並び順と集計に使う */
   subjectId: number;
+  /**
+   * **その1人が教えられる必要のある科目すべて。** "3,7"（昇順・重複なし）
+   *
+   * 個別は1人の講師が違う科目の生徒を同時に見るので、複数になることがある。
+   * 空なら subjectId 1つだけを要求しているものとして扱う（古い行との互換）。
+   */
+  subjectIds?: string;
   format: string;
   required: number;
 };
@@ -166,6 +175,34 @@ function levelKey(teacherId: number, subjectId: number): string {
 }
 
 /**
+ * その需要の行が求める科目。
+ *
+ * subjectIds があればそれ。無ければ代表科目1つ（古い行との互換）。
+ * lib/subjects.ts の subjectKey が作った形をほどく。
+ */
+function requiredSubjects(d: { subjectId: number; subjectIds?: string }): number[] {
+  const ids = parseSubjectKey(d.subjectIds ?? "");
+  return ids.length > 0 ? ids : [d.subjectId];
+}
+
+/**
+ * その需要に対する講師の習熟度。**複数科目なら、いちばん低い科目に合わせる。**
+ *
+ * 英が専門でも理が「可」なら、その組を持ったときに困るのは理の生徒。
+ * 平均にすると得意科目で薄めてしまうので、弱いほうを見る。
+ */
+function levelFor(
+  levels: Map<string, number>,
+  teacherId: number,
+  d: { subjectId: number; subjectIds?: string },
+): number {
+  const need = requiredSubjects(d);
+  let min = 3;
+  for (const sid of need) min = Math.min(min, levels.get(levelKey(teacherId, sid)) ?? 1);
+  return min;
+}
+
+/**
  * 科目の希少度。1に近いほど担当できる人が少ない。
  * 「英語も理科もできる講師」を英語に先に取られると理科が埋まらなくなるので、
  * 希少な科目を持つ講師は、誰でも教えられる科目には後回しにする。
@@ -251,8 +288,12 @@ export function generate(input: AutoInput): AutoResult {
     const remaining = d.required - lockedHere;
 
     const avail = availableAtSlot.get(`${d.date}:${d.periodId}`) ?? new Set<number>();
+
+    // **その行が求める科目を全部教えられる人だけ。**
+    // 個別は1人が違う科目の生徒を同時に見るので、1科目できるだけでは足りない。
+    const need = requiredSubjects(d);
     const candidates = active
-      .filter((t) => avail.has(t.id) && t.subjects.has(d.subjectId))
+      .filter((t) => avail.has(t.id) && need.every((sid) => t.subjects.has(sid)))
       .map((t) => t.id)
       .sort((a, b) => a - b); // 決定的に
 
@@ -314,7 +355,7 @@ export function generate(input: AutoInput): AutoResult {
       if (!isAllowed(violations)) continue;
 
       const score = scoreOf(t, slot);
-      const level = levels.get(levelKey(id, slot.subjectId)) ?? 1;
+      const level = levelFor(levels, id, slot);
       const available = availableCount.get(id) ?? 0;
 
       if (best === null) {
@@ -353,7 +394,7 @@ export function generate(input: AutoInput): AutoResult {
     const done = assignedCount.get(t.id) ?? 0;
     const fillRate = avail === 0 ? 1 : done / avail;
 
-    const level = levels.get(levelKey(t.id, slot.subjectId)) ?? 1;
+    const level = levelFor(levels, t.id, slot);
     const status = ctx.requests.get(`${t.id}:${slot.date}:${slot.periodId}`);
 
     const weekCount = countInWeek(ctx, t.id, slot.date);

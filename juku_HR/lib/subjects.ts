@@ -9,6 +9,31 @@
 
 import { SUBJECT_LEVEL, SUBJECT_SINGLE_POINT_MAX } from "./constants";
 
+/**
+ * 科目の集合を、1つの鍵にする。"3,7"（昇順・重複なし）。
+ *
+ * ---- なぜ集合で持つ必要があるのか ----
+ * **個別は1人の講師が違う科目の生徒を同時に見る。** 現物の時間割では
+ * 1つの列に「理・理・数・理」のように並ぶ（巡回して1人ずつ見るため）。
+ * その組を持てるのは「理と数の両方を教えられる講師」だけで、
+ * 科目を1つしか持てないと、この条件を書き表せない。
+ *
+ * SQLite に配列型が無いので文字列で持つ。**必ず昇順・重複なし**にして、
+ * 同じ集合が必ず同じ文字列になるようにする（需要の行の一意キーに使うため）。
+ */
+export function subjectKey(ids: number[]): string {
+  return [...new Set(ids)].sort((a, b) => a - b).join(",");
+}
+
+/** subjectKey の逆。空文字なら空の配列。 */
+export function parseSubjectKey(key: string): number[] {
+  if (!key) return [];
+  return key
+    .split(",")
+    .map((s) => Number(s.trim()))
+    .filter((n) => Number.isInteger(n) && n > 0);
+}
+
 export type SubjectLite = { id: number; name: string };
 export type TeacherLite = { id: number; name: string };
 export type TeacherSubjectLite = {
