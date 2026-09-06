@@ -32,6 +32,18 @@ export async function resetAll() {
   await prisma.message.deleteMany();
   await prisma.shiftComment.deleteMany();
 
+  // 開講時間割（配置 → 実行 の順）。
+  // **配置は Period を直接参照している**ので、コマより先に消す必要がある。
+  await prisma.timetablePlacement.deleteMany();
+  await prisma.timetableRun.deleteMany();
+
+  // クラス編成と個別の受講予定。どちらも Period を参照している。
+  await prisma.classEnrollment.deleteMany();
+  await prisma.classSession.deleteMany();
+  await prisma.classGroup.deleteMany();
+  await prisma.studentSchedule.deleteMany();
+  await prisma.studentSubject.deleteMany();
+
   // シフト（割当 → 需要 → 計画 の順。割当と需要が計画を参照している）
   await prisma.shiftAssignment.deleteMany();
   await prisma.shiftDemand.deleteMany();
@@ -53,4 +65,8 @@ export async function resetAll() {
   await prisma.room.deleteMany();
   await prisma.period.deleteMany();
   await prisma.subject.deleteMany();
+
+  // 塾ごとの設定（1行だけ）。seed が作り直すので、ここで消しておく。
+  // 残っていると「何度流しても同じ状態になる」が崩れる。
+  await prisma.schoolSetting.deleteMany();
 }
